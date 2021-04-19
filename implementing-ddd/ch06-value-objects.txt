@@ -1,0 +1,50 @@
+# CH6 VALUE OBJECTS
+
+### ORM and many values backed by database entity
+- najprostszy sposob na zapisanie kolekcji values w bazie przez any ORM (esp. HBM) 
+- traktujemy VOs jako encji bazy danych
+- mimo tego podejscia Value z model PoV musi byc wolny od technikaliow bazy, ORM, ...
+- pomaga tu pattern Layer SuperType (LST)
+- VV wprowadza klase LST IdentifiedDomainObject
+- przechowuje ona pole "klucz encji"
+   - ale jest on niewidoczny "w domenie", dla klientow bo jest private/protected
+- VV dodatkowo wprowadza "IdentifiedValueObject : IdentifiedDomainObject"
+  - klasa nie dodaje zadnego kodu!
+  - ma znaczenie tylko dla dokumentacji zrodel
+  - pozwala more explicite wyrazic problem z modelowaniem VO
+  - n: IDO ma tez wersje dla encji (omowione w CH5)
+- przyklad
+  - agregat Group ma kolekcje VOs typu "GroupMember : IdentifiedValueObject"
+  - klasa Group jest czysta od technikaliow - po prostu ma kolekcje GroupMember-s
+  - HBM cfg
+      <class name="Group" ...
+        <set name="members" ...
+          <one-to-many ...
+      
+      <class name="GroupMember" ...
+        <id ..>
+        <property ..>
+        <component ..>   <-- bo GroupMember zawiera inne VO
+          
+- jak robisz replacement kolekcji - to wywolaj wczesniej na members.Clear()
+  - HBM usunie wowczas stare obiekty
+  - btw. kolekcja jest impl. przez HBM
+  
+### ORM and many values backed by join table
+- HBM zapisze kolekcje w join table
+- VO-s sa zapisane w dedykowanej tabeli
+- VO nie potrebuje wlasnego klucz
+- kluczem obcym jest ID "parent encji"
+- zaleta: obiekt domenowy VO nie musi miec (ukrytego) klucza zeby join'owac z parent (acz ma klucz parenta)
+- w HBM to mapowanie robisz przez <composite-element>
+- problemy
+  - (chyba) zaden z VOs nie moze byc null'em - bo attrs sluza do zidentyfikanie VO
+  - VO nie moze zawierac w sobie innej kolekcji - bo glowny VO nie ma ID'a - wiec nie ma jak join'owac
+- wyglada ok, ale VV rekomenduje podejscie "backed by database entity", a to odradza
+
+
+### ORM and Enum as state objects
+- use it to save in DB: standardowy typ lub enum
+- HBM nie wspiera enumow (as of iddd publish date)
+- zapisuj enum'y przez HBM custom types (i najczesciej zapisuje w bazie jako stringi)
+- przyklad GroupMemberType (nested in GroupMember)

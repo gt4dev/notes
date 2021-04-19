@@ -1,0 +1,314 @@
+# CH5 ENTITIES
+
+- devs mają tendencję do skupiania się na danych a nie domenie
+  - nie buduja "rich behaviors" 
+  - skupiaja sie tylko na danych, atrybutach, asocjacjach
+- to bez sensu- bo sa tool'e do generowania takiego ('data-drive')
+
+
+## Why We Use Entities
+
+- use entity 
+  - to express individuality of object
+  - when you want distinguish object from others
+- entity is identified and can change (even heavely) in time
+  - so final E can be totally diff from 'start version'
+  - but still has the same identity
+
+that diffs E from VO
+- unique identity
+- mutability
+
+n: devs often overuse Es, where VO would be better than E
+but if anyway you "overuse E" then maybe you need CRUD not DDD?
+
+
+## Unique Identity (UI)
+
+UI = base of entity
+
+n: on start of projecting E
+- focus on
+  - defining identity
+  - ways of finding, matching Es
+- maybe add important behaviours for E (and attrs required by it)
+- forget about rest (other attrs/behaviours)
+
+- human readable identities can be used for ease finding/matching Es
+
+use VO as holders for I
+- VO is immutable = assure I stability
+- VO can have methods
+  - this encapsulate knowlegde (eg. can extract date-time from I)
+  - knowlegde is not leaking to clients
+
+typical strategies of creating I (in order: easy -> hard)
+- user provides vaules which create UI (app assure that values are ok)
+- aplikacja generuje identity
+- persistence store zapewnia identity
+- inny BC już mam entity z UI i my je używamy
+
+
+
+### User Provides Identity
+
+user ustala wartosci I
+- albo sam wprowadza (n: human readable)
+- albo wybiera z listy
+
+problem
+- podane przez user wartości mogą być bledne, user bedzie chcial je poprawic potem
+- a identity musi być niezmienne
+- choc czasem można pozwolić user'owi na zmiane
+
+chyba lepiej dane od user'a zapisać w zwykłych properties
+- nie rob z nich UI
+
+
+
+### Application Generates Identity
+
+to quite reliable sposoby generowanie unikalnych identity
+trzeba uważać w klastrach i rozproszonych węzłach
+
+zwykle do wyliczenie ID używane są
+- czas węzła w milisekundach
+- IP węzła
+- ID obiektu factory ktory generuje ID
+- random number
+
+- id zwykle ma 128 bitów unique values
+- reprezenowanych w 32B textu (hexach) lub 36B z hyphenami
+
+c: w Java UUID mozna generowac na 4 sposoby (random, z "input text" ..)
+
+- czasem (rzadko) problemem jest rozmiar ID pamięci
+- stosuj wowczas ID'y z bazy (8B Long, 4B int)
+
+- dla lokalnych (w ramach Agg) entity można skrócić identity do kilku bajtów
+- acz "aggregat root" wymaga global unique identity
+
+
+custom/combined identity - example
+- join in ID a few element, np: "APM-20210324-123abc" gdzie np
+  - APM = TLS nazwy BC'a
+  - data utworzenie ID
+  - krotkie UI
+- takie ID moze byc HumanReadable
+  - co jest wazne przy komunikacji z klientem/czlowiekem
+- ID takie trzymaj w VO (z pomocniczymi metodami eg MyId.GetDate():MyDate
+
+
+- kod tworzenie UI umiesc w repo np
+  MyAggRepo.NextIdentity():MyAggId
+- q: gdzie metoda do gener ID dla non-agg/local?
+  - a: pewnie w repo 'root/owning aggregatu'
+
+
+### Persistence Mechanism Generates Identity
+
+- c: unique values = f(type)
+  int =  4B = 2*10^9
+  long = 8B = 9*10^18
+
+- zaleta: zawsze bedziemy miec unikalna wartosc ID
+- wada: wydajnosc ("in app ID" is much faster)
+
+fix for performance = prefetch more IDs and cache
+- problem: gaps in IDs if server restarts
+- trying to restore IDs from "losts/gaps" can be more expensive than worth
+
+impl late ID - typical way
+- object gets ID after insert to DB
+- hmb config
+  <id name="PropertyInClass" type="long" column="product_id">
+    <generator class="sequence|or|native" ...
+  </..
+
+impl early IDs
+- yes, early is possible for "DB src"
+- create in repo method NextIdentity():ProductId
+- NextIdentity can create and return "next value" from DB sequence/cache/...
+
+
+### Another Bounded Context Assigns Identity
+
+- n: see integration details are in chapters: 3-ctx-maps, 14-integr-bcs
+
+flow
+- 1st: find partucular identity in BC2 by
+  - API exposed by BC2
+    - searching, fetching data matching criterias (email, tax id ..)
+  - show this data (if many rows) to user
+  - user picks 1 "row" - get identity from it
+- use this identity locally!!! in your BC1
+
+problems
+- data in BC2 can heavily change and maybe these changes must visible in BC1?
+- BC1 should listen for Domain Events from BC2 (so changes can be updated)
+- sometimes BC1 modify "imported data" and must send (by DEvents) to BC2
+
+- it's hardes way of generating identity
+  - out entity (its identity) depends on outer system
+- pick as last way
+
+
+
+### When the Timing of Identity Generation Matters
+
+generowanie identity moze nastapic
+- early - as part of constructing object
+- late - podczas persystencji obiektu
+
+- zaleznie od reqs - mozna stosowac oba
+- VV recommends setting ID early
+
+flow for late ID
+- client 
+  - creates object (w/o ID)
+  - add it to repo
+- repo persist obj
+- ID is generated (by DB, but not only)
+- ID is assigned to entity object
+
+"late ID" is problematic 
+- with domain events
+  - when obj is created - we want to generate event
+  - but ID is not yet assigned
+  - thus for DE use early ID
+- when Entity is in Set
+  - in Set there can be only 1 entity without ID
+  - thus
+    - either use early ID
+    - or override equals - so distingiush entities by attributes (VO-like)
+
+
+
+VVVVVVVVVVVVVVVVVVVVVVVVVVVV CONT. HERE VVVVVVVVVVVVVVVVVVVVVVVVVVVV
+
+### Surrogate Identity (SI)
+- identyfikator zastepczy
+
+- zwykle orm (hbm tez) preferuja natywnych primer identity z baz danych - do identyfikacji encji
+  - np: on DB side: numeric, sequence; on VM side: long, int
+
+- a domena czesto wymaga innego identity (niz orm'owe)
+  - np. guid, user-name ...
+  
+- easy solution solution - use 2 identities
+  - 1st - from domain (and fulfilling domain reqs)
+  - 2nd - surrogate identity - spelnia reqs of orm
+
+- impl
+  - add to MyEntity field: "long id" (or int ..)
+  - add to my_entity column: id (primary key)
+  - set hmb mapping
+
+- hide & optimize SI
+  - hide SI on client/model side
+  - create "abstract class IdentifiedDomainObject"
+  - add field "private long id" //
+  - c: it's LaterSuperType pattern (from EAA)
+  - n: in CH10-Agg VV create "EntityBase" with handling optimistic concurency
+
+- c: VV zaklada keys
+  - SI - primary na kolumnie: id
+  - domain identity - unique na: tenant_id_id, username
+
+- c: identyfikator domenowy (w User)
+  - składa się z dwóch pol 
+  - kompletnie nie widac w kodzie User co buduje identifykator domenowy (poza equals)
+  - acz w DB jest zalozony unique key
+
+- SI w DB can be used to keep referential integrity miedzy tabelami
+  - q: tez miedzy agregatami?
+
+
+### Identity Stability
+
+- in most cases: identity must be stable through whole entity life
+
+- protect identity
+  - make setters, fields protected/private (so no-client can change it)
+  - set identity fields 
+    - only by private setters 
+      - which checks is it 1st field init or 2nd
+      - if 2nd - throw excep
+
+
+## Discovering Entities and Thier Intrinsic Ch-cs
+
+- UL z BC daje koncepcję i terminy do projektowania modelu
+- UL musi być wypracowany z ekspertami i przez analize wymagań
+- c: mapowanie nouns/verbs na klasy i metody to ZBYT DUZE uproszczenie modelowania
+- finalnie caly zepol porozumiewa sie "uzywajac UL"
+
+- on start: mozna zapisać UL jako słownik pojęć i zbiór prostych przypadków użycia
+- docelowo: UL jest wyrazany tylko przez kod (a i trudno trzymać sync miedzy ew. dokum. a kodem)
+
+
+### Unconvering Entities and Properties
+
+moze zostac zrobiona zmiana wartosci w 
+- primitive property
+- caly VO moze zostac podmieniony
+
+klasa User as E
+- każdy user has UI
+- some data is changing 'in time'
+
+c: VV uzywa primitive string to keep username (other are  using VOs here, esp. to limit string lenght)
+- cause there are no any special behavious
+
+klasa Tenant ma prop TenandId (jako V)
+- TenantId is not "owned" by Tenand only
+  - equally well it can be used by any other class: User ...
+
+c: User w BC:identity UI = username, tenantId
+- inne BC dodadza do User atrybuty: adres, kontakt, billing info, location...
+- chociaz jak bedzie potrzeba - to bc:identity moze zawierac more data (i zawiera): Person ...
+- ale to dane z innych BC'ow i tam powinny byc zdefiniowane!!!
+  - p/p inne BC powinny
+    - uzywac UI z bc:identity
+      q: ale jak? jest zlozony z 2 pol, jak VV refuje do User'a z innych BC...)
+    - nie kopiowac u siebie wartosci username (acz to part of UI - wiec pewnie trzeba "wyjatkowo")
+
+
+### Digging for Essential Behavior
+
+- raczej nie uzywaj setters/getter (ani E, ani VO)
+- chyba ze wynika to z UL - to wtedy ok
+- jak w 1 req robisz kilka setters - to jest to bardzo podejrzane
+
+przyklad - aktywacja tenant
+- wystaw metody activate/deactivate
+- c: to zgodne z zasada EE: "intention revealing interface"
+
+c: VV worked out 2 patts for security:
+- User
+- Fundamental Identity
+
+sample E:
+User zawiera Person (entity), Person zawiera VO: ContactInfo, name
+
+c: E User ma metody
+- change password - ok, normalne
+- change "personal contact information" - to modyfikuje nested entity "contact information" (a nie samego User'a)
+
+c: ukrywanie detali
+- User ma property 'password' ale niedostepne publicznie
+- publicznie dostepne jest 'change password'
+
+c: ukrywanie detali
+- obiekt Person jest wystawiony publicznie z User'a
+- ale pp to sie zmieni - bo nie kazdy klient to person
+- wowczas publicznie trzeba wystawic interfact Principal
+
+
+### Roles And Responsibilities
+
+### Construction
+
+### Validation
+
+### Change Tracking

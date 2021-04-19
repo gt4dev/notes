@@ -1,0 +1,98 @@
+# CH7 SERVICES
+- w DDD serwisem jest bezstanowa operacja wykonujaca zadanie z domeny
+- best recom "kiedy uzyc serwis": jak zauwazysz ze metoda nie pasuje do zadnego agregatu, encji, VO
+
+## what a domain service is (but 1st what it isn't)
+- typowo w SW serwis wyobrazamy sobie jakis grubo-ziarnisty komponent wystawiajacy metody dla klientow 
+  - to nie jest DS
+- nie myl DS z serwisem aplikacyjnym
+  - DS stricte przechowuje logike biznesowa
+- nazwe interfejsu/operacji - wez z jezyka domenowego
+- DS musi byc stateless
+- DS'y zwykle operuja na wielu obiektach domenowych ktore nalezy zmienic w single, atomowej operacji
+- typowe powody uzycia DS
+  - wykonywania waznych procesow biznesowych
+  - przeksztalcenie obiektu domenowy w inny
+  - obliczyc wartosc X na bazie stanu wielu obiektow domenowych (chociaz to podpada pod w/w 1st case)
+    - bo z jednogo OD to mozna obliczyc wartosc wolajac metode na tym OD
+    
+## make sure you need a service
+- logike w DS rob to tylko w really justified cases, think twice!!!
+- inaczej pp za duzo wrzucisz do DS i dostaniesz 'anemic domain model'
+- w realu, w typowym projekcie wiekszosc logiki jest w E/VO
+- hint: to czy flow umiescic w DS czy innym DO - wprost (explicite) powinno wynikac z UbiLang
+  - np. "users of a system must be authenticated"
+  - mozna uznac ze potrzeba metody user.IsAuthenticated(password)
+  - ale nie wynika to EXPLICITLY z UL
+  - wiec autentykowanie robimy przez DS
+- n: wiedza specyf. dla domeny NIGDY nie powinna wyplywac na strone klienta np
+- np: jak autentykujemy user'a to 
+  - nie wystawiamy do klienta modelu poszczegolnych obiektow: user, tenant, authService ...
+  - tylko wystawiamy 1 operacje np: AuthService.Authenticat(password, user):UserDesc
+    - c: UserDesc extends Serializable, a nie "VOBase"
+      - nie kazdy VO musi extendowac VOBase, najlepiej zaden niech tego nie robi
+      - chociaz UserDesc to moze DTO?
+
+## modeling service in the domain
+- proste
+- 1st decide: czy chcesz uzyc SeparatedInterface pattern [folwer]
+- interfejs wrzuc do tego pakietu domeny, my-boudned-context/domain/model/
+- impl. interfejsu wrzuc do infra (jesli zawiera duzo technikaliow z poza UbiLang)
+  - np: my-boudned-context/infrastructure/services
+- typowa impl. DS.MySampleOperation
+  - 1st: validate params - if bad -> throw exception
+  - do logic
+    - call some repos for DomainObjects
+    - call methods on it
+    - call next repos, get next domain objects
+    - call another DS ...
+    [generalnie: mix wszystkeigo co potrzeba zeby wykonac logike DS]
+- c: VV wrzuca all "IoC objects" (repos, DS, ...) do jednego worka, bez zadnych rozdzialow na model, infra... 
+  
+## is separated interface a necessity
+- zasadniczo jesli DS ma czysto biznesowy kod (nie zawiera technikaliow) - to mozna bezposrednio w modelu pisac klase
+- nie dodawaj postfix Impl do klasy implementujacej interfajs - bo to against UL
+- przyklad: jesli masz interfejs AuthenticationService i klase ...Impl - to moze 
+  - albo dac naswe nazwe Default... (szczegolnie jakby bedzie wiecej implementacji interfejscu)
+  - albo nie rozdzielac interfejsu i impl
+- naturalnie jak interfejs i impl. sa w roznych pakietach - to "rozdzielenie" jest
+- acz sa rozne obozy - czy uzywac Impl i i czy rozdzielac interfejs od klasy (w przypadku pure UL)
+
+## a calculation process
+- przyklad: klasa BusinessPriorityCalculator
+  - nie ma w nazwie klasy zadnego postfix Service
+  - nie rozdzilamy klasy i interfejsu (na chwile obecna nie ma potrzeby)
+- klasa ma metode businessPriorityTotal(...):BusinessPriorityTotals
+- logika metody
+  - wywolania repozytoriow do pobrania interesujacych agregatow
+    - c: repo ma metode myRepo.GetSthWhichIsSth1AndDoSth2(tenantId)
+      - specjalizowana pod current case
+      - troche to w kontrze do robienia repos podobnych do interfejsu collection
+  - potem robimy jakies przeliczenia, tworzymy i zwracamy VO
+- repozytoria
+  - mozna uzywac w DS'ach
+  - nie mozna (zwykle) w Agregatach
+  
+## transformation services
+- tu implemtacja DS'a rezyduje w pakiecie infra
+- najczesciej te DS'y robia integracji miedzy BC'ami
+- implementacji DS czesto zawiera:
+  - translatory
+  - adaptery
+  - ...
+- VV omawia more w Integrating BC (13)
+  
+## using mini-layer of DS
+- DS czasem tworzy mini-layer nad A, E, VO
+- nie jest to rekomendowane ze wzgledu na ryzyko stowrzenia 'anemicznego modelu domeny'
+- ale czasem jest to uzasadnione
+
+## testing services
+- przyklad AuthenticationServiceTest : IdentityTest
+- klasa bazowa IdentityTest jest pp wspolna dla all testow z BC "identity"
+- metody testu sprawdzaja typowe scenariusze
+  - happy day scenario "testAuthenticatinoSuccess"
+  - kilka alter. scenariuszy "testAuth...FailedPassword"
+- n: zeby testowac DS - musisz miec jakies repos
+  - w realu beda to mocki lub realne R (jesli baza nie zawiera duzo danych)
+- testy DS'a bazuja na sprawdzeniu rezultatu z serwisu - czy sa ok wartosci
