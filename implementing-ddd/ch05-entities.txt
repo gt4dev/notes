@@ -183,102 +183,98 @@ flow for late ID
     - or override equals - so distingiush entities by attributes (VO-like)
 
 
-
-VVVVVVVVVVVVVVVVVVVVVVVVVVVV CONT. HERE VVVVVVVVVVVVVVVVVVVVVVVVVVVV
-
 ### Surrogate Identity (SI)
 - identyfikator zastepczy
 
-- zwykle orm (hbm tez) preferuja natywnych primer identity z baz danych - do identyfikacji encji
-  - np: on DB side: numeric, sequence; on VM side: long, int
-
-- a domena czesto wymaga innego identity (niz orm'owe)
-  - np. guid, user-name ...
+- typowy ORM (eg: HBM) preferuje natywnych primer identity z baz danych
+- on DB side it can be: numeric, sequence; 
+- on VM side: long, int
+- domena czesto wymaga innego identity np: guid, user-name ...
   
-- easy solution solution - use 2 identities
-  - 1st - from domain (and fulfilling domain reqs)
-  - 2nd - surrogate identity - spelnia reqs of orm
+easy solution solution - use 2 identities
+- 1st - from domain (and fulfilling domain reqs)
+- 2nd - surrogate identity - spelnia ORM reqs
 
-- impl
-  - add to MyEntity field: "long id" (or int ..)
-  - add to my_entity column: id (primary key)
-  - set hmb mapping
+impl
+- add to MyEntity field: "long id" (or int ..)
+- add to my_entity column: "id (primary key)"
+- set HBM mapping
 
-- hide & optimize SI
-  - hide SI on client/model side
-  - create "abstract class IdentifiedDomainObject"
-  - add field "private long id" //
-  - c: it's LaterSuperType pattern (from EAA)
-  - n: in CH10-Agg VV create "EntityBase" with handling optimistic concurency
+hide & optimize SI
+- hide SI on client/model side
+- create "abstract class IdentifiedDomainObject" with field "private long id"
+c: it's LaterSuperType pattern (from EAA)
+n: in CH10-Agg VV creates "EntityBase" with a above + optimistic concurency
 
-- c: VV zaklada keys
-  - SI - primary na kolumnie: id
-  - domain identity - unique na: tenant_id_id, username
+c: VV ustawia db constranins w table
+- SI - primary na kolumnie: id
+- domain identity - unique na: tenant_id_id, username
+n: DI tez jest zamodelowane w DB
 
-- c: identyfikator domenowy (w User)
-  - składa się z dwóch pol 
-  - kompletnie nie widac w kodzie User co buduje identifykator domenowy (poza equals)
-  - acz w DB jest zalozony unique key
+n: przykladzie User
+- identyfikator domenowy składa się z dwóch pol (TenantId, username)
+- pola te nie wyrozniaja sie z kodu klasy User (ok, poza uzyciem ich w equals)
+- conc: client E (na bazie jej API) "musi zgadnac" co jest jej ID
+- w DB jest zalozony unique key - ale more to protect data than identify
 
 - SI w DB can be used to keep referential integrity miedzy tabelami
-  - q: tez miedzy agregatami?
+- q: tez miedzy agregatami?
 
 
 ### Identity Stability
 
-- in most cases: identity must be stable through whole entity life
+- in most cases: identity must be stable through the whole entity life
 
-- protect identity
-  - make setters, fields protected/private (so no-client can change it)
-  - set identity fields 
-    - only by private setters 
-      - which checks is it 1st field init or 2nd
-      - if 2nd - throw excep
+protect identity
+- make setters, fields protected/private (so client can't change it)
+- set identity fields - only by (private) setters 
+  - which checks is it 1st field init or 2nd
+  - if 2nd - throws excep
 
 
 ## Discovering Entities and Thier Intrinsic Ch-cs
 
-- UL z BC daje koncepcję i terminy do projektowania modelu
+- UL z BC daje slownictwo do projektowania modelu
 - UL musi być wypracowany z ekspertami i przez analize wymagań
-- c: mapowanie nouns/verbs na klasy i metody to ZBYT DUZE uproszczenie modelowania
 - finalnie caly zepol porozumiewa sie "uzywajac UL"
+- c: uznanie mapowania nouns/verbs na klasy/metody to ZBYT DUZE uproszczenie
 
 - on start: mozna zapisać UL jako słownik pojęć i zbiór prostych przypadków użycia
-- docelowo: UL jest wyrazany tylko przez kod (a i trudno trzymać sync miedzy ew. dokum. a kodem)
+- finalnie: UL jest wyrazany TYLKO przez kod (bo trudno trzymać sync miedzy docs i kodem)
 
 
 ### Unconvering Entities and Properties
 
-moze zostac zrobiona zmiana wartosci w 
-- primitive property
-- caly VO moze zostac podmieniony
+sposoby zmiany wartosc E:
+- primitive property is changing
+- whole VO is replaced
 
-klasa User as E
-- każdy user has UI
-- some data is changing 'in time'
+n: w encji User (i wszedzie indziej)
+- UI jest stale (TenantId, username)
+- all other data is changing 'in time' (Person, ..)
 
-c: VV uzywa primitive string to keep username (other are  using VOs here, esp. to limit string lenght)
-- cause there are no any special behavious
+- VV uzywa primitive string to keep username 
+- cause here are no any special behavious
+- Alex is using VOs here (to eg limit string lenght)
 
-klasa Tenant ma prop TenandId (jako V)
-- TenantId is not "owned" by Tenand only
-  - equally well it can be used by any other class: User ...
+- klasa Tenant ma prop TenandId (jako V)
+- but TenantId is not "owned" by Tenand only
+- equally well it can be (and is) used by other classes: User ...
 
-c: User w BC:identity UI = username, tenantId
-- inne BC dodadza do User atrybuty: adres, kontakt, billing info, location...
-- chociaz jak bedzie potrzeba - to bc:identity moze zawierac more data (i zawiera): Person ...
-- ale to dane z innych BC'ow i tam powinny byc zdefiniowane!!!
-  - p/p inne BC powinny
-    - uzywac UI z bc:identity
-      q: ale jak? jest zlozony z 2 pol, jak VV refuje do User'a z innych BC...)
-    - nie kopiowac u siebie wartosci username (acz to part of UI - wiec pewnie trzeba "wyjatkowo")
+c: User in many BCs
+- UI = username, tenantId
+- inne BC (nie bc:identiy) moga zbierac inne dane zw. z User: adres, kontakt, billing info, location...
+- n: acz jak jest potrzeba to "bc:identity" moze (i zawiera) zawierac more data: Person ...
+- p/p inne BC powinny - w celu refowania do User - uzywac UI z bc:identity
+- n: pp normalnie raczej kopiujesz danych miedzi BC ("1 src of truth") ale "username" to klucz i trzeba
+- q: jak VV refuje do User'a z innych BC, mamy to UI z 2 pol, ...
 
 
 ### Digging for Essential Behavior
 
-- raczej nie uzywaj setters/getter (ani E, ani VO)
-- chyba ze wynika to z UL - to wtedy ok
-- jak w 1 req robisz kilka setters - to jest to bardzo podejrzane
+- raczej nie uzywaj setters/getter (ani w E, ani w VO)
+- chyba ze wynika to z UL - wtedy to ok
+- jak w 1 req wolasz kilka setters - to jest to bardzo podejrzane
 
 przyklad - aktywacja tenant
 - wystaw metody activate/deactivate
@@ -289,25 +285,65 @@ c: VV worked out 2 patts for security:
 - Fundamental Identity
 
 sample E:
-User zawiera Person (entity), Person zawiera VO: ContactInfo, name
+- User zawiera Person (entity)
+- Person zawiera VO: ContactInfo and name (string)
 
 c: E User ma metody
-- change password - ok, normalne
-- change "personal contact information" - to modyfikuje nested entity "contact information" (a nie samego User'a)
+- change password - normalne
+- change "personal contact information" - ciekawe
+  - modyfikuje nested entity "contact information"
+  - a nie samego User'a
 
 c: ukrywanie detali
 - User ma property 'password' ale niedostepne publicznie
-- publicznie dostepne jest 'change password'
+- publicznie dostepna jest met: 'change password'
 
 c: ukrywanie detali
-- obiekt Person jest wystawiony publicznie z User'a
-- ale pp to sie zmieni - bo nie kazdy klient to person
-- wowczas publicznie trzeba wystawic interfact Principal
+- obiekt User wystawia publicznie obiekt Person
+- ale pp to sie zmieni - bo nie kazdy user jest person
+- wowczas publicznie trzeba bedzie wystawic pole z interfact Principal
 
+
+VVVVVVVVVVVVVVVVVVVVVVVVVVVV CONT. HERE VVVVVVVVVVVVVVVVVVVVVVVVVVVV
 
 ### Roles And Responsibilities
 
+- odkrywanie roles & resps to wazny element modelowanie (nie tylko dla E)
+
+- w OO interfejs zwykle okresla role obiektu
+- klasa może implementować wiele ról, tj interfejsów
+
+- c: jesli klasa nie implementuje interfejsów - ma rolę reprezentowaną przez publiczne jej metody
+
+przyklady
+- klasa User (bez interfejsów) ma rolę user
+- jesli klasa implementuje interfejsy User i Person - ma dwie role
+
+- pp best use case for "role interfeces" is hiding methods from client
+- class (by interface) exposes only these methods which are needed for client
+
+
 ### Construction
+
+przy tworzeniu instancji E - constr musi zebrac:
+- infa potrzebne do identyfikacji E
+  - acz to dotyczy pp tylko early entity generation - w late nie ma takiej mozliwosci
+- infa wymagane do wyszukania E (? - not sure)
+  - jeśli E jest szukana po name, desc ... -  to te infa musza byc dane w constr
+  - np. constr w User ustawia Person ...
+
+niezmienniki
+- E can contain 1 or more invariants (notion from Agg)
+- if calcing/assuring invariant reqs 
+  - setting some state/fields
+  - some prop can't be null
+  .. then all req infos must be provided in constr
+
+self-encapsulation
+- VV czesto w const wywoluje setter'y (ktore sa protected/private)
+- settery: waliduja wartosc i ustawiaja property
+- c: nie trzeba wrapować "stringi w VO" (as Alex does) - walidacje mozna zrobic w w/w sposob
+
 
 ### Validation
 
