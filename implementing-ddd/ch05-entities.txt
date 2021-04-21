@@ -304,45 +304,48 @@ c: ukrywanie detali
 - wowczas publicznie trzeba bedzie wystawic pole z interfact Principal
 
 
-VVVVVVVVVVVVVVVVVVVVVVVVVVVV CONT. HERE VVVVVVVVVVVVVVVVVVVVVVVVVVVV
-
 ### Roles And Responsibilities
 
-- odkrywanie roles & resps to wazny element modelowanie (nie tylko dla E)
+- ogolnie odkrywanie roles & resps to wazny element modelowania
 
 - w OO interfejs zwykle okresla role obiektu
-- klasa może implementować wiele ról, tj interfejsów
-
-- c: jesli klasa nie implementuje interfejsów - ma rolę reprezentowaną przez publiczne jej metody
+- klasa może implementować wiele interfejsów / roles
+- c: jesli klasa nie implementuje interfejsów - to ma rolę reprezentowaną przez publiczne metody
 
 przyklady
-- klasa User (bez interfejsów) ma rolę user
-- jesli klasa implementuje interfejsy User i Person - ma dwie role
+- klasa User (bez interfejsów) ma rolę user'a
+- klasa X ktora implementuje interfejsy User i Person - ma obie te role
 
-- pp best use case for "role interfeces" is hiding methods from client
-- class (by interface) exposes only these methods which are needed for client
+p/p best use case for "role interfaces" is 
+- hiding some methods from client
+- and exposing only these which are needed
 
 
 ### Construction
 
-przy tworzeniu instancji E - constr musi zebrac:
+constr of E musi zebrac:
 - infa potrzebne do identyfikacji E
-  - acz to dotyczy pp tylko early entity generation - w late nie ma takiej mozliwosci
-- infa wymagane do wyszukania E (? - not sure)
-  - jeśli E jest szukana po name, desc ... -  to te infa musza byc dane w constr
-  - np. constr w User ustawia Person ...
+  - p/p to dotyczy tylko "early entity generation"
+  - bo w late nie ma takiej mozliwosci
+
+- jesli E nie jest wyszukiwana przez UI
+  - to const zbiera infa uzywane do wyszukania E
+  - np: name, desc ...
+
+- c: constr of User takes Person
 
 niezmienniki
-- E can contain 1 or more invariants (notion from Agg)
+- E can contain 1 or more invariants
 - if calcing/assuring invariant reqs 
   - setting some state/fields
-  - some prop can't be null
-  .. then all req infos must be provided in constr
+  - assuring some prop != null
+.. then all req infos must be provided in constr
 
 self-encapsulation
-- VV czesto w const wywoluje setter'y (ktore sa protected/private)
+- prefered VV pattern
+- w const wolaj setter'y (ktore sa protected/private)
 - settery: waliduja wartosc i ustawiaja property
-- c: nie trzeba wrapować "stringi w VO" (as Alex does) - walidacje mozna zrobic w w/w sposob
+- c: nie trzeba wrapować "stringi w VO" (as Alex does) - settery zapewniaja walidacje
 
 
 ### Validation
