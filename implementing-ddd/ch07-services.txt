@@ -1,3 +1,6 @@
+VVVVVVVVVVVVVVVVVVVVVVVVVVVV CONT. HERE VVVVVVVVVVVVVVVVVVVVVVVVVVVV
+
+
 # CH7 SERVICES
 - w DDD serwisem jest bezstanowa operacja wykonujaca zadanie z domeny
 - best recom "kiedy uzyc serwis": jak zauwazysz ze metoda nie pasuje do zadnego agregatu, encji, VO

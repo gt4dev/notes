@@ -31,24 +31,21 @@ przyklad
   - btw. kolekcja jest impl. przez HBM
 
 
-VVVVVVVVVVVVVVVVVVVVVVVVVVVV CONT. HERE VVVVVVVVVVVVVVVVVVVVVVVVVVVV
-
-
 ### ORM and many values backed by join table
-- HBM zapisze kolekcje w join table
+- HBM zapisuje kolekcje w join table (what is hbm-join-table?)
 - VO-s sa zapisane w dedykowanej tabeli
-- VO nie potrebuje wlasnego klucz
+- VO nie potrzebuje wlasnego klucz
 - kluczem obcym jest ID "parent encji"
 - zaleta: obiekt domenowy VO nie musi miec (ukrytego) klucza zeby join'owac z parent (acz ma klucz parenta)
 - w HBM to mapowanie robisz przez <composite-element>
 - problemy
-  - (chyba) zaden z VOs nie moze byc null'em - bo attrs sluza do zidentyfikanie VO
-  - VO nie moze zawierac w sobie innej kolekcji - bo glowny VO nie ma ID'a - wiec nie ma jak join'owac
+  - (chyba) zaden z VOs nie moze byc null'em - bo wartosci identyfikuja VO
+  - VO nie moze zawierac innej kolekcji - bo glowny VO nie ma ID'a - wiec nie ma jak join'owac
 - wyglada ok, ale VV rekomenduje podejscie "backed by database entity", a to odradza
 
 
 ### ORM and Enum as state objects
 - use it to save in DB: standardowy typ lub enum
 - HBM nie wspiera enumow (as of iddd publish date)
-- zapisuj enum'y przez HBM custom types (i najczesciej zapisuje w bazie jako stringi)
+- zapisuj enum'y przez HBM custom types (najczesciej jako stringi)
 - przyklad GroupMemberType (nested in GroupMember)

@@ -350,4 +350,129 @@ self-encapsulation
 
 ### Validation
 
+zakres sprawdzenia poprawności
+- pojedynczy atrybuty
+- cały obiektu
+- kompozycja obiektów
+
+
+n: attr/obiekt/kompozycja moga miec "temporary invalid/incomplete state"
+- jest to ok w sensie technicznym/biznesowym
+- walidacja tylko sprawdza poprawnosc stanu
+
+
+
+WALIDOWANIE ATRYBUTÓW
+
+- ch6-vo desc how to protect single attrs
+
+- ustawianie wartosci attr i walidowanie - to dwie różne sprawy
+- do ustawiania attr use self-encapsulation (VV mocno to recomenduje)
+
+self-encapsulation (SE)
+- do attr'ow klasy dostajesz sie przez setter'y/gettery
+  - nawet "class-owner of attrs" ich uzywa
+- zaleta
+  - abstrakcja od zmiennych (gt: isn't too abstr?)
+  - prosta "walidacja" przy setter'ach
+
+c: SE to nie jest walidacja
+- walidacje robia walidatory, a nie obiekty domenowe
+- SE to bardziej: asercja, design by contract
+
+przykład - klasa VO EmailAddress 
+- w konstruktorze pobiera string:adres
+- constr calls setAddress(a)
+- setter robi
+  - walidacje (czy null, czy ok length, czy RegExp email ...) 
+  - finalne ustawienie zmiennej
+
+c: podczas przypisania obiektu VO jako zmienna E 
+- E nie moze zwalidowac wewn. stanu VO
+- E moze spr. tylko czy obiekt != null
+- VO musi samo zagwaranotwac spojnosc
+
+c: gdzie sprawdzic "limit dlugosci string" etc
+- niektorzy sprawdzenie limitu string zostawiaja bazie
+  - rzuci excep jesli string przekracza limit np. 100 znakow
+- wg VV modelu moze sprawdzac takie niskie detale
+- dodatkowo model rzuci dokladny excep "ktora wartosc jest zla"
+  - baza rzuci general exception (bez info ktory string jest too long)
+
+
+
+VALIDATE WHOLE OBJECTS
+
+- w celu walidacji: musisz miec dostęp do wszystkich atrybutów obiektu
+- use patterns: specification (EE), strategy (Gamma)
+
+deferred validation pattern (by Cunningham)
+- sprawdzenie wykonujemy w "ostatnim możliwym momencie"
+- szczegółowo sprawdzamy obiekt
+- DVP można użyć do 1 obiektu i kompozycji
+
+- walidowanie E wymaga dostępu do calego stanu
+- dodanie walidacji do E jest zle bo
+  - W często sie zmienia (częściej niż E)
+  - responsibility of E to trzymanie stanu (SRP)
+
+- walidator buduj jako osobna klase
+- W umieść w tym samym pakiecie co E
+- attrs w E zrob widoczne dla W ("package" or higher, "private" odetnie dostep)
+- VV mówi nawet o dostępie "public"
+  - jesli będzie to potrzebne (bo np walidator jest poza pakietem E)
+  - ale to złe dla modelu
+
+- klasa W może implementować pattern: specification lub strategy
+- W przypadku wykrycia problemu W
+  - notyfikuje klienta 
+  - lub zapisuje informacje do odczytania później
+- ważne żeby walidacja robic "do konca" (a nie rzucac excep on 1st problem)
+
+impl
+- create abstract class Validator
+- konkretny walidator np E1 rozszerza abstrakcyjny i nadpisuje validate()
+- validate() zwyczajnie sprawdza stan obiektu
+- w przypadku problemów zgłasza błędy do NotificationHandler 
+  - który jest zdef. w abstract Validator
+- NotiHandler
+  - moze byc uniwersalny: zbiera info o problemach w postaci string
+    nh.NotifyProblem("field A incorrect");
+    nt.NotifyProblem("field X bad");
+  - mozemy specjalizowany: "E1NotiHandler : NotiHandler" i zglaszac problemy jako
+    nh.NotiIncorrectX()
+    nh.NotiBadY()
+
+- n: walidowana encja jest param. constr. Walidatora
+
+- client calls W by:
+  MyE1.validate(ValidationNotificationHandler vnh){
+    (new MyE1Validator(this, vnh)).validate();
+  }
+- E nie wie jak robic walidacje
+- acz ma metode validate wiec wie o mozliwosc 'samo-walidacji'
+
+
+
+VALIDATING OBJECT COMPOSITIONS
+
+- use deferred validation
+
+flow
+- create walidator object
+- pass to it set/composition of objects
+
+- possibly do validation in DomainService
+  - DS reads set of objects from Repo
+  - then DS does V
+    - single object
+    - composition
+
+when to validate
+- listen DEvents which can trigger validation and do validation
+
+
+
 ### Change Tracking
+
+// short about use DEvents + EventStore to track E changes
