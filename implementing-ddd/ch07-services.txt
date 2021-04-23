@@ -1,47 +1,44 @@
-VVVVVVVVVVVVVVVVVVVVVVVVVVVV CONT. HERE VVVVVVVVVVVVVVVVVVVVVVVVVVVV
-
-
 # CH7 SERVICES
-- w DDD serwisem jest bezstanowa operacja wykonujaca zadanie z domeny
-- best recom "kiedy uzyc serwis": jak zauwazysz ze metoda nie pasuje do zadnego agregatu, encji, VO
+- w DDD serwis = bezstanowa operacja wykonujaca zadanie z domeny
+- best recom "kiedy uzyc serwis": jak metoda nie pasuje do zadnego agregatu, encji, VO
 
 ## what a domain service is (but 1st what it isn't)
-- typowo w SW serwis wyobrazamy sobie jakis grubo-ziarnisty komponent wystawiajacy metody dla klientow 
-  - to nie jest DS
-- nie myl DS z serwisem aplikacyjnym
-  - DS stricte przechowuje logike biznesowa
 - nazwe interfejsu/operacji - wez z jezyka domenowego
-- DS musi byc stateless
-- DS'y zwykle operuja na wielu obiektach domenowych ktore nalezy zmienic w single, atomowej operacji
+- DS jest stateless
+- DS'y zwykle operuja na wielu obiektach domenowych - zmienianych w single, atomowej operacji
 - typowe powody uzycia DS
   - wykonywania waznych procesow biznesowych
   - przeksztalcenie obiektu domenowy w inny
-  - obliczyc wartosc X na bazie stanu wielu obiektow domenowych (chociaz to podpada pod w/w 1st case)
-    - bo z jednogo OD to mozna obliczyc wartosc wolajac metode na tym OD
+  - obliczanie wartosc na bazie stanu wielu obiektow domenowych
+    - wyliczenia bazujaca na 1 E - sa metodami E
+
     
 ## make sure you need a service
-- logike w DS rob to tylko w really justified cases, think twice!!!
-- inaczej pp za duzo wrzucisz do DS i dostaniesz 'anemic domain model'
-- w realu, w typowym projekcie wiekszosc logiki jest w E/VO
-- hint: to czy flow umiescic w DS czy innym DO - wprost (explicite) powinno wynikac z UbiLang
-  - np. "users of a system must be authenticated"
-  - mozna uznac ze potrzeba metody user.IsAuthenticated(password)
-  - ale nie wynika to EXPLICITLY z UL
-  - wiec autentykowanie robimy przez DS
-- n: wiedza specyf. dla domeny NIGDY nie powinna wyplywac na strone klienta np
-- np: jak autentykujemy user'a to 
-  - nie wystawiamy do klienta modelu poszczegolnych obiektow: user, tenant, authService ...
-  - tylko wystawiamy 1 operacje np: AuthService.Authenticat(password, user):UserDesc
-    - c: UserDesc extends Serializable, a nie "VOBase"
-      - nie kazdy VO musi extendowac VOBase, najlepiej zaden niech tego nie robi
-      - chociaz UserDesc to moze DTO?
+- logike do DS wrzucac mega ostroznie, think twice!!!
+- jak za duzo wrzucisz do DS to dostaniesz 'anemic domain model'
+- w "typowym projekcie" wiekszosc logiki jest w E/VO
+- zwykle "wprost z UL" wynika czy logika jest w DO czy DS
+
+- wiedza "szczegolowa" domeny nie powinna wyplywac na strone klienta
+- np: jak autentykujemy user'a to
+  - nie wystawiamy do klienta obiektow: user, tenant, authService ...
+  - wystawiamy 1 operacje np: AuthService.Authenticat(password, user):UserDesc
+
+c: UserDesc extends Serializable, nie "VOBase"
+- a jest z modelu
+- generalnie VO u VV extenduja
+  - serializable, assertion-concern ...
+  - IdentifiedValueObject (which extends IdentifiedDomainObject)
+  - .. (moze i inne)
+
 
 ## modeling service in the domain
 - proste
-- 1st decide: czy chcesz uzyc SeparatedInterface pattern [folwer]
-- interfejs wrzuc do tego pakietu domeny, my-boudned-context/domain/model/
-- impl. interfejsu wrzuc do infra (jesli zawiera duzo technikaliow z poza UbiLang)
-  - np: my-boudned-context/infrastructure/services
+- 1st decide: czy uzyc SeparatedInterface pattern [Folwer]
+- interfejs wrzuc do pakietu domeny
+  np: my-boudned-context/domain/model/
+- if impl. interfejsu zawiera duzo technikaliow z poza UL - wrzuc do pakietu infra 
+  np: my-boudned-context/infrastructure/services
 - typowa impl. DS.MySampleOperation
   - 1st: validate params - if bad -> throw exception
   - do logic
@@ -49,17 +46,27 @@ VVVVVVVVVVVVVVVVVVVVVVVVVVVV CONT. HERE VVVVVVVVVVVVVVVVVVVVVVVVVVVV
     - call methods on it
     - call next repos, get next domain objects
     - call another DS ...
-    [generalnie: mix wszystkeigo co potrzeba zeby wykonac logike DS]
-- c: VV wrzuca all "IoC objects" (repos, DS, ...) do jednego worka, bez zadnych rozdzialow na model, infra... 
+    [generalnie: mix wszystkiego co potrzeba zeby wykonac logike]
+
+- c: VV wrzuca all "IoC objects" (repos, DS, ...) do jednego worka
+- bez separacji modeli, infra... 
+
   
 ## is separated interface a necessity
-- zasadniczo jesli DS ma czysto biznesowy kod (nie zawiera technikaliow) - to mozna bezposrednio w modelu pisac klase
-- nie dodawaj postfix Impl do klasy implementujacej interfajs - bo to against UL
-- przyklad: jesli masz interfejs AuthenticationService i klase ...Impl - to moze 
-  - albo dac naswe nazwe Default... (szczegolnie jakby bedzie wiecej implementacji interfejscu)
-  - albo nie rozdzielac interfejsu i impl
-- naturalnie jak interfejs i impl. sa w roznych pakietach - to "rozdzielenie" jest
-- acz sa rozne obozy - czy uzywac Impl i i czy rozdzielac interfejs od klasy (w przypadku pure UL)
+- jesli DS ma czysto biznesowy kod (bez technikaliow) - to mozna bezposrednio w modelu pisac klase
+- nie dodawaj postfix Impl w nazwie klasy - to against UL
+
+przyklad: jesli masz interfejs AuthenticationService i "klase ...Impl" - to lepiej:
+- albo dac naswe nazwe Default... (szczegolnie jakby bedzie wiecej implementacji interfejscu)
+- albo nie rozdzielac interfejsu i impl
+
+- acz sa rozne opinie ws
+  - czy uzywac postfix Impl 
+  - czy rozdzielac interfejs od klasy (w przypadku pure UL)
+.. wiec nie ma co filozowac
+
+
+VVVVVVVVVVVVVVVVVVVVVVVVVVVV CONT. HERE VVVVVVVVVVVVVVVVVVVVVVVVVVVV
 
 ## a calculation process
 - przyklad: klasa BusinessPriorityCalculator
