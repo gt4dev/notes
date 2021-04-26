@@ -1,18 +1,221 @@
 # 6 VALUE OBJECTS
 
+6 Value Object
+
+- vo są czesto "przyćmione" przez e
+- gdziekolwiek możliwe powinieneś użyć vo zamiast e
+- more nawet projekt e powinien skupiac sie na serwowaniu vo
+
+- vo skupiają się na mierzeniu, kwantyfikowaniu (okreslaniu ilosci), opisywaniu 
+- a to łatwe do kodowania, testowania, optymalizowania i utzymania (wow, chyba all plusy)
+
+ciekawostka
+- popularnym podejsciem jest zamodelowanie domeny jako struktury tabel (1 obiekt domeny = 1 tabela) i powiazanie tabel kluczami
+- efektem jest mocno zszyty wielki graf obiektow, przeladowany set/get-erami
+- to zlo
+
+- obiekt vo towrzymy, przekazujemy klientom i zapominamy o nim
+- to rewolucjonizuje podejście do programowania
+- wg VV to jak przejście z old lang na lang uzywajacy GC!
+
+- użyj vo jeśli interesuja cie tylko o atrybuty
+- nie dawaj identity
+
+- beginners często nie wiedza czy użyc e czy vo
+- ale profs tez tak maja ;]
+
+
+VVVVVVVVVVVVVVVVVVVVV CONT. HERE
+
+
 ## 6.1 value characteristics
+
+61 Value characteristic
+
+Kiedy rozważasz użycie vo do modelowania idei z ul upewnić się że ma  większość z charakterystyk
+.  mierzy, kwantyfikuje lub opisuje przedmiot z domeny
+.  może być niezmienne
+.  modeluje konceptualna całosc ( agreguje wiele atrybutów w jedną jednostkę)
+.   obiekt może być całkowicie wymienione jeśli jeden z atrybutów się zmieni
+.  może być porównany z innymi przez wartość
+.  używa Side Effect free behavior
+
+Możliwe że powinieneś używać v o znacznie częściej  niż do tej pory
+
+
+
+
 
 ### 6.1.1 measures, quantifies or desc
 
+611 measures...
+
+Vo to nie  jest rzecz przedmiot z domeny
+To mega dziwne
+Bo vo to koncept który mierzy kwantyfikacji je lub opisuje przedmiot lub rzecz
+Przykład 
+osoba ma wiek, a wiek to pomiar, kwantyfikacja
+Osoba na imię,  to opis
+
+To troszeczkę podobne do Conceptual whole
+
+
+
+
+
 ### 6.1.2 immutable
+
+612 niezmienny
+
+Mega rzadko czasami  Vo jest zmienne,  piszę o  e e
+
+Po utworzeniu akcji obiekt staje się z niezmienny, kompletnie
+Wartości tworzące vo podajemy w konstruktorzek( chociaż pewnie dla sytuacji stworzenia z bazy  to pewnie troszeczkę inaczej)
+
+Naturalnie vo mogą korzystać, referować do innych vo
+
+Naturalnie żadne metody modyfikujące stan vo nie mogą być dostępne publicznie,  wywołane po utworzeniu obiektu
+Wyłączając sytuację inicjalizacji obiektów z bazy, deserializacji z Json,  XML etc
+
+
+Uwaga
+Vo może mieć referencje do entity
+Ale VV chyba tego nie zaleca
+Bo jak entity zmienia stan , to zmienia się również stan Vo, A to łamie zasadę niezmienności
+Więc dopuszczaj możliwość tylko Jeśli  znacznie uprości to kod
+Ciekawostka:  nawet w takim przypadku( zagnieżdżenie zagnieżdżenia e w  vo)  Klient nie może bezpośrednio wołać  metody z e,  tylko woła metody z vo, a Te Zasadniczo nie powinny modyfikować stanu  vo,  stąd to  zagnieżdżenie Być może jest dopuszczalny
+
+Zauważ że jeśli projektujesz obiekt który musi być przez zachowanie, to Zastanów się czy to rzeczywiście jest potrzebne, może zamiast zmiany  stanu obiektu  lepiej kompletnie wymienić
+
+
+
+
+
 
 ### 6.1.3 conceptual whole
 
+613 Conceptual Whole
+
+Vo zwykle zawiera wiele atrybutów będący w relacji między sobą
+Każdy jest ważną częścią całości,  tylko razem tworzą pomiar, kwantyfikacja lub opis
+
+Ciekawostka cuningham opracował pattern Whole Value
+
+Przykład:  50 $
+Ma dwa atrybuty
+Osobno oba znaczą coś innego,  razem tworzą Conceptual whole  wyznaczającą wartość pieniężną  przedmiotu
+Sam przedmiot( klasa Thing) pewnie będzie miał Property worth  klasy monetary value 
+
+Przy okazji ciekawe przykład
+VV w klasie thing of worth  zamieścił dwa atrybuty  typu Vo
+.  omówiony monetary Value
+. thing name!
+Tak nazwa przedmiotu ma vo a nie string
+To oczywiście zależy od  wymagań,  ale jeśli nazwa ma jakieś zachowania na przykład CapitalizedName ( która dba o to by Pierwsza litera w nazwie była duża a reszta zawsze była mała)  logikę warto schować w vo
+Ale to ważne by pamiętać że używamy tylko kiedy mamy rzeczywiście jakieś dodatkowe zachowania na danym atrybucie
+
+To oczywiste ale zauważ że cały obiekt jest tworzone w jednej operacji,  w konstruktorze
+To musi być zawsze zagwarantowane,  cały obiekt tworzony jest w jednej operacji
+
+
+
+
+
 ### 6.1.4 replacebility
+
+614 replac...
+
+Vo Should Be Held as reference  by entity
+If vo Changes,  completely  Wymień to na nową wartość
+
+Ciekawostka, kompletna wymiana jest realizowana podczas ustawiania wartości prymitywów
+Na przykład ustawiasz INT z 3 na 5  to wymieniasz 3 na 5
+
+W przypadku wymienialności
+Po prostu w momencie potrzeby zmiany Vo  podstawiać pod zmienną ( klasy lub zmienną w metodzie) nowy obiekt z nowym stanem, cokolwiek tam potrzebujesz zmienić zmieniasz wszystko
+
+Ciekawe że to podejście może wydawać operatywne Szczególnie jeśli zmiany są częste,  a obiekt skomplikowany,  a zmiana w jednym miejscu 
+ale da się to obejść  przez tak zwane Side Effect free  behavior
+
+
+
+
 
 ### 6.1.5 value equality
 
+615 równość wartości
+
+Zauważ że w systemie może być bardzo wiele instancji obiektów które z logicznego punktu widzenia są równe
+
+Zauważ że teoretycznie mógłbyś podmienić po zamieniać referencja i jeśli obiekty nadal byłyby równa to nawet jeśli są to różne instancje to nie zmienia to zachowania aplikacji,  podmiana zamiana obiektów nic nie zmienia
+
+Porównanie robimy przez porównanie typów a potem atrybutów obiektów
+Jeśli oba są takie same to obiekty są równe
+
+Implementacja porównania
+Override equals()
+Wewnątrz Porównaj  klasy i 
+każdy atrybut z klasy Vo
+
+Ciekawe że VV odczytuje atrybuty przez gettery
+To uzupełnienie,  druga strona Self encapsulation
+Wcześniej widać było tylko setery
+Poproszę,  tu używa getrów
+
+Ciekawostka,  equals  porównuje wewnętrzny stan,  wewnętrzne atrybuty
+Dzięki temu porównanie będzie dobrze działało ( w przypadku klasy Vo FullName,  z metodą CapitalizedName)  niezależnie czy aktualnie patrzymy na zwykły name czy Capitalized,  porównanie zadziała prawidłowo
+
+Ciekawostka kiedy v o kiedy e
+Jeśli obiekt nie wymaga Unique identity,  do it as Vo
+
+
+
+
+
+
 ### 6.1.6 side-effect-free behavior
+
+616 Side Effect free behavi
+
+Pattern od EE
+
+Ciekawostka funkcja to operacja obiektu która nie modyfikuje jego stanu
+
+Oczywiście Sound Effect free metody to są funkcje
+
+Wszystkie metody obiektu vo muszą być funkcjami
+
+Ciekawostka funkcyjnych językach dopuszczalna jest tylko Sound Effect free behavior,   to znaczy wszędzie na wejściu i wyjściu są vo
+
+Ciekawostka mayer i fowler  nazywają funkcje metodami query  pattern CQS ( Command q separ) 
+
+Przykłady 
+klasa fullname,  metoda 'with middle Initial'  zwraca zupełnie nową instancję  fullname,  dodatkowo zainicjowano atrybutem middle 
+
+Ciekawostka czy vo może modyfikować e przekazana jako parametr W metodzie vo
+Z punktu widzenia  niezmieniania stanu vo to metoda vo która modyfikuje e jest dopuszczalna
+Pytanie czy łatwo takie coś przetestować,  a nie łatwo ani  trudno
+Najlepiej Jeśli taka metoda zwraca rezultat który  na bazie którego  encja sama siebie zmodyfikować,  a metoda najlepiej niech nie modyfikuje e
+
+A czy jest to dopuszczalne to Starajmy się tego unikać
+Przykład strona 230
+Obiekt vo BusinessPriority.  priority of( Product) 
+Gdzie Product to encja
+Metoda zwraca float priority (wyliczony na bazie encji) 
+Problemy z tym kodem
+. Vo zależy od e,  więc vo musi rozumieć e i jego strukture
+Jeśli to możliwe unikaj tego,  vo najlepiej ograniczyć do znajomości samego siebie i swoich atrybutów
+.  osoba czytająca ten kod  nie wiem które pole z Product jest używane,  lepiej gdyby konkretne vo Product było  wyprodukowane i podane do  nasze metody,  byłoby to dużo bardziej explicit,  i model byłby bardziej czysty
+.  nie można łatwo stwierdzić że entity niemodyfikowana przez vo
+
+Optymalne dla powyższego przykładu byłoby kod ze strony 231
+
+Bardzo bardzo rzadko ale jednak zdarza się że obiekt musi być u mutable.   w takiej sytuacji raczej staraj się używać vo z Side Effect free behavior  albo entity
+
+
+
+
+
 
 ## 6.2 integrate with minimalism
 
