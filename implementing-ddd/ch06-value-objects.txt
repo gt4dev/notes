@@ -25,86 +25,63 @@ ciekawostka
 - ale profs tez tak maja ;]
 
 
-VVVVVVVVVVVVVVVVVVVVV CONT. HERE
-
-
 ## 6.1 value characteristics
 
-61 Value characteristic
-
-Kiedy rozważasz użycie vo do modelowania idei z ul upewnić się że ma  większość z charakterystyk
-.  mierzy, kwantyfikuje lub opisuje przedmiot z domeny
-.  może być niezmienne
-.  modeluje konceptualna całosc ( agreguje wiele atrybutów w jedną jednostkę)
-.   obiekt może być całkowicie wymienione jeśli jeden z atrybutów się zmieni
-.  może być porównany z innymi przez wartość
-.  używa Side Effect free behavior
-
-Możliwe że powinieneś używać v o znacznie częściej  niż do tej pory
-
-
-
+- możliwe że powinieneś używać VO znacznie częściej niż do tej pory
 
 
 ### 6.1.1 measures, quantifies or desc
 
-611 measures...
-
-Vo to nie  jest rzecz przedmiot z domeny
-To mega dziwne
-Bo vo to koncept który mierzy kwantyfikacji je lub opisuje przedmiot lub rzecz
-Przykład 
-osoba ma wiek, a wiek to pomiar, kwantyfikacja
-Osoba na imię,  to opis
-
-To troszeczkę podobne do Conceptual whole
-
-
+- VO nie modeluje rzeczy, przedmiotu z UL
+- VO mierzy, kwantyfikauje lub opisuje rzecz/przedmiot
+- np osoba (przedmiot/rzecz) ma
+  - wiek (wiek to pomiar, kwantyfikacja)
+  - imię (to opis)
+- troche to podobne do Conceptual Whole
 
 
 
 ### 6.1.2 immutable
 
-612 niezmienny
+- c: VO baaaardzo rzadko ale moze byc zmienne (pisze o tym EE)
 
-Mega rzadko czasami  Vo jest zmienne,  piszę o  e e
+- od razu po utworzeniu - obiekt staje się z kompletnie niezmienny
+- wartości tworzące VO podajemy w konstruktorze
+  - acz przy odtwarzaniu z DB, JSON, XML ... init moze nastapic pozniej
 
-Po utworzeniu akcji obiekt staje się z niezmienny, kompletnie
-Wartości tworzące vo podajemy w konstruktorzek( chociaż pewnie dla sytuacji stworzenia z bazy  to pewnie troszeczkę inaczej)
+obvious ale
+- vo mogą referować do innych vo
+- metody modyfikujące stan vo nie mogą być dostępne publicznie, wywołane po constr
 
-Naturalnie vo mogą korzystać, referować do innych vo
+VO może mieć ref do E
+- VV tego nie zaleca
+  - bo jak entity zmieni stan, to zmienia się również vo, a to łamie zasadę niezmienności
+- dopuszczalne tylko jeśli znacznie uprości to kod
+- nawet w takim case klient nie może bezpośrednio wołać metody z e 
+   - woła metody z vo (cos jak Aggr)
+   - a Te nie powinny modyfikować stanu vo
+    - wiec to dopuszczalny
 
-Naturalnie żadne metody modyfikujące stan vo nie mogą być dostępne publicznie,  wywołane po utworzeniu obiektu
-Wyłączając sytuację inicjalizacji obiektów z bazy, deserializacji z Json,  XML etc
-
-
-Uwaga
-Vo może mieć referencje do entity
-Ale VV chyba tego nie zaleca
-Bo jak entity zmienia stan , to zmienia się również stan Vo, A to łamie zasadę niezmienności
-Więc dopuszczaj możliwość tylko Jeśli  znacznie uprości to kod
-Ciekawostka:  nawet w takim przypadku( zagnieżdżenie zagnieżdżenia e w  vo)  Klient nie może bezpośrednio wołać  metody z e,  tylko woła metody z vo, a Te Zasadniczo nie powinny modyfikować stanu  vo,  stąd to  zagnieżdżenie Być może jest dopuszczalny
-
-Zauważ że jeśli projektujesz obiekt który musi być przez zachowanie, to Zastanów się czy to rzeczywiście jest potrzebne, może zamiast zmiany  stanu obiektu  lepiej kompletnie wymienić
-
-
+- jeśli projektujesz obiekt który musi zmienic stan 
+- to może lepiej wowczas kompletnie wymienic obiekt
 
 
+### 6.1.3 conceptual whole (CH)
+
+- VO agreguje (zwykle) wiele powiazanych atrybutów 
+- każdy jest ważną częścią całości, tylko razem tworzą pomiar, kwantyfikuja ...
+
+- c: pattern CW opracowal cuningham
+
+- przykład: 50usd
+- dwa atrybuty
+  - osobno znaczą coś innego, razem tworzą CH - wyznaczającą wartość pieniężną przedmiotu
+class Thing {
+  MonetaryValue worth;
+}
 
 
-### 6.1.3 conceptual whole
-
-613 Conceptual Whole
-
-Vo zwykle zawiera wiele atrybutów będący w relacji między sobą
-Każdy jest ważną częścią całości,  tylko razem tworzą pomiar, kwantyfikacja lub opis
-
-Ciekawostka cuningham opracował pattern Whole Value
-
-Przykład:  50 $
-Ma dwa atrybuty
-Osobno oba znaczą coś innego,  razem tworzą Conceptual whole  wyznaczającą wartość pieniężną  przedmiotu
-Sam przedmiot( klasa Thing) pewnie będzie miał Property worth  klasy monetary value 
+VVVVVVVVVVVVVVVVVVVVV CONT. HERE
 
 Przy okazji ciekawe przykład
 VV w klasie thing of worth  zamieścił dwa atrybuty  typu Vo
