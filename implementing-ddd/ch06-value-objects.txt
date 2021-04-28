@@ -4,22 +4,25 @@
 
 - vo są czesto "przyćmione" przez e
 - gdziekolwiek możliwe powinieneś użyć vo zamiast e
-- more nawet projekt e powinien skupiac sie na serwowaniu vo
+- nawet same e powinny skupiac sie na serwowaniu vo
 
 - vo skupiają się na mierzeniu, kwantyfikowaniu (okreslaniu ilosci), opisywaniu 
-- a to łatwe do kodowania, testowania, optymalizowania i utzymania (wow, chyba all plusy)
+- dzieki temu to łatwe do kodowania, testowania, optymalizowania i utrzymania (wow, chyba all plusy)
 
 ciekawostka
-- popularnym podejsciem jest zamodelowanie domeny jako struktury tabel (1 obiekt domeny = 1 tabela) i powiazanie tabel kluczami
-- efektem jest mocno zszyty wielki graf obiektow, przeladowany set/get-erami
-- to zlo
+- popularnym podejsciem jest 
+  - zamodelowanie domeny jako struktury tabel (1 obiekt domeny = 1 tabela) 
+  - powiazanie tabel kluczami
+- efektem jest zlo
+  - mocno zszyty wielki graf obiektow
+  - przeladowany set/get-erami
 
 - obiekt vo towrzymy, przekazujemy klientom i zapominamy o nim
 - to rewolucjonizuje podejście do programowania
-- wg VV to jak przejście z old lang na lang uzywajacy GC!
+- wg VV to jak przejście z old lang na lang uzywajace GC!
 
 - użyj vo jeśli interesuja cie tylko o atrybuty
-- nie dawaj identity
+- bez identity etc.
 
 - beginners często nie wiedza czy użyc e czy vo
 - ale profs tez tak maja ;]
@@ -32,122 +35,105 @@ ciekawostka
 
 ### 6.1.1 measures, quantifies or desc
 
-- VO nie modeluje rzeczy, przedmiotu z UL
+- VO nie modeluje rzeczy/przedmiotu z UL
 - VO mierzy, kwantyfikauje lub opisuje rzecz/przedmiot
-- np osoba (przedmiot/rzecz) ma
+- np osoba ma
   - wiek (wiek to pomiar, kwantyfikacja)
   - imię (to opis)
 - troche to podobne do Conceptual Whole
 
 
-
 ### 6.1.2 immutable
 
-- c: VO baaaardzo rzadko ale moze byc zmienne (pisze o tym EE)
+- c: VO baaaardzo rzadko ale moze byc zmienne (more w EE)
 
 - od razu po utworzeniu - obiekt staje się z kompletnie niezmienny
 - wartości tworzące VO podajemy w konstruktorze
-  - acz przy odtwarzaniu z DB, JSON, XML ... init moze nastapic pozniej
+- acz przy odtwarzaniu VO z DB, JSON, XML ... init moze nastapic pozniej
 
 obvious ale
 - vo mogą referować do innych vo
-- metody modyfikujące stan vo nie mogą być dostępne publicznie, wywołane po constr
+- metody modyfikujące stan vo nie mogą być 
+  - publicznie
+  - wywołane po constr
 
 VO może mieć ref do E
 - VV tego nie zaleca
-  - bo jak entity zmieni stan, to zmienia się również vo, a to łamie zasadę niezmienności
+- jak entity zmieni stan, to zmienia się również vo, a to łamie zasadę niezmienności
 - dopuszczalne tylko jeśli znacznie uprości to kod
-- nawet w takim case klient nie może bezpośrednio wołać metody z e 
-   - woła metody z vo (cos jak Aggr)
-   - a Te nie powinny modyfikować stanu vo
+- nawet w takim case klient nie może bezpośrednio wołać metody e 
+  - woła metody vo (cos jak aggr)
+  - u: metody te nie modyfikuja stanu vo!
     - wiec to dopuszczalny
 
 - jeśli projektujesz obiekt który musi zmienic stan 
-- to może lepiej wowczas kompletnie wymienic obiekt
-
+- to rozwaz czy lepiej kompletnie wymienic obiekt
 
 ### 6.1.3 conceptual whole (CH)
 
-- VO agreguje (zwykle) wiele powiazanych atrybutów 
-- każdy jest ważną częścią całości, tylko razem tworzą pomiar, kwantyfikuja ...
+- VO zawiera (najczesciej) wiele atrybutów 
+- każdy jest nieodlaczna częścią całości, tylko razem tworzą pomiar, kwantyfikuja ...
 
-- c: pattern CW opracowal cuningham
+c: pattern CH opracowal Cuningham
 
-- przykład: 50usd
+przykład: 50usd
 - dwa atrybuty
-  - osobno znaczą coś innego, razem tworzą CH - wyznaczającą wartość pieniężną przedmiotu
-class Thing {
+  - razem tworzą CH - okreslaja wartość pieniężną
+  - osobno kazdy znaczy coś innego
+
+ciekawy przykład
+class ThingOfWorth {
   MonetaryValue worth;
+  ThingName name;  <<< tak, name w VO a nie string!
 }
+- warto uzyc VO zamiast primitive (string, ...) jeśli wokolo V jest "zachowanie"
+- zbuduj VO i zamknij zachowanie w metodzie (schowaj jego logike przed klientami)
+- eg: ThingName.CapitalizedName()
+  - dba 1st letter byla duza reszta była mała
 
-
-VVVVVVVVVVVVVVVVVVVVV CONT. HERE
-
-Przy okazji ciekawe przykład
-VV w klasie thing of worth  zamieścił dwa atrybuty  typu Vo
-.  omówiony monetary Value
-. thing name!
-Tak nazwa przedmiotu ma vo a nie string
-To oczywiście zależy od  wymagań,  ale jeśli nazwa ma jakieś zachowania na przykład CapitalizedName ( która dba o to by Pierwsza litera w nazwie była duża a reszta zawsze była mała)  logikę warto schować w vo
-Ale to ważne by pamiętać że używamy tylko kiedy mamy rzeczywiście jakieś dodatkowe zachowania na danym atrybucie
-
-To oczywiste ale zauważ że cały obiekt jest tworzone w jednej operacji,  w konstruktorze
-To musi być zawsze zagwarantowane,  cały obiekt tworzony jest w jednej operacji
-
-
-
+obvious but
+- cały vo jest zawsze tworzony w jednej operacji - w konstruktorze
 
 
 ### 6.1.4 replacebility
 
-614 replac...
-
-Vo Should Be Held as reference  by entity
-If vo Changes,  completely  Wymień to na nową wartość
-
-Ciekawostka, kompletna wymiana jest realizowana podczas ustawiania wartości prymitywów
-Na przykład ustawiasz INT z 3 na 5  to wymieniasz 3 na 5
-
-W przypadku wymienialności
-Po prostu w momencie potrzeby zmiany Vo  podstawiać pod zmienną ( klasy lub zmienną w metodzie) nowy obiekt z nowym stanem, cokolwiek tam potrzebujesz zmienić zmieniasz wszystko
-
-Ciekawe że to podejście może wydawać operatywne Szczególnie jeśli zmiany są częste,  a obiekt skomplikowany,  a zmiana w jednym miejscu 
-ale da się to obejść  przez tak zwane Side Effect free  behavior
+- vo typically is held (as reference) by e
+- if vo changes - completely change vo (update e's reference)
 
 
+c: full relacement is done during setting primitives
+eg: when setting int with 3 to 5 - you replace it (not update)
 
+whatever you need to update in vo (1 value, many values ..) - rebuild whole object
+- build whole new vo
+- set this new object in place of 'old'
+
+replacebility moze sie wydawac nieefektywne dla malych i czestych zmian
+ale da sie to zoptymalizowac
+przez uzycie side effect free behavior
 
 
 ### 6.1.5 value equality
 
-615 równość wartości
+- w app może istniej wiele roznych VO które z logicznego punktu widzenia są równe
+- teoretycznie mógłbyś zostawic 1 taki VO i wstawic ref do niego wszedzie w app - nie zmieni to zachowania app
 
-Zauważ że w systemie może być bardzo wiele instancji obiektów które z logicznego punktu widzenia są równe
+- porównanie robimy przez porównanie 
+  - typów 
+  - atrybutów (cmp all, 1-by-1)
+- if both are equal - objects are equal
 
-Zauważ że teoretycznie mógłbyś podmienić po zamieniać referencja i jeśli obiekty nadal byłyby równa to nawet jeśli są to różne instancje to nie zmienia to zachowania aplikacji,  podmiana zamiana obiektów nic nie zmienia
+c: VV in equals() reads values by getters
+- so VV uses full self-encapsulation (setters in consructors)
 
-Porównanie robimy przez porównanie typów a potem atrybutów obiektów
-Jeśli oba są takie same to obiekty są równe
+c: equals uses all INTERNAL attrs to cmp objects
+- so regardles of which eg. FullName is used (CapitalizedName(), Initials() ...)
+- cmp is done correctly 
 
-Implementacja porównania
-Override equals()
-Wewnątrz Porównaj  klasy i 
-każdy atrybut z klasy Vo
-
-Ciekawe że VV odczytuje atrybuty przez gettery
-To uzupełnienie,  druga strona Self encapsulation
-Wcześniej widać było tylko setery
-Poproszę,  tu używa getrów
-
-Ciekawostka,  equals  porównuje wewnętrzny stan,  wewnętrzne atrybuty
-Dzięki temu porównanie będzie dobrze działało ( w przypadku klasy Vo FullName,  z metodą CapitalizedName)  niezależnie czy aktualnie patrzymy na zwykły name czy Capitalized,  porównanie zadziała prawidłowo
-
-Ciekawostka kiedy v o kiedy e
-Jeśli obiekt nie wymaga Unique identity,  do it as Vo
+vin: if object doesn't req unique identity - do it as VO, else as E
 
 
-
-
+VVVVVVVVVVVVVVVVVVVVV CONT. HERE
 
 
 ### 6.1.6 side-effect-free behavior
