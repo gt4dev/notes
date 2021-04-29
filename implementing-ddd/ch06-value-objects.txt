@@ -133,49 +133,46 @@ c: equals uses all INTERNAL attrs to cmp objects
 vin: if object doesn't req unique identity - do it as VO, else as E
 
 
+### 6.1.6 side-effect-free behavior (sefb)
+
+- pattern od EE
+
+- funkcja = metoda obiektu która nie modyfikuje jego stanu
+- all sefb = funkcje
+- all vo methods must be functions
+
+c: w funkcyjnych jezkykach uzywa sie tylko sefb
+czyli chyba tylko operuje sie na "VO'ach"
+
+c: Mayer/Fowler funkcje nazywaja "metodami query" z pattern CQS (Command Querry Separation) 
+
+przykład
+- FullName.withMiddle(sth):FullName
+- metoda z vo FullName zwraca nowy obiekt FullName, wzbogacony o middle name
+
+czy vo może modyfikować e przekazana jako parametr metody vo
+- jesli metoda ta modyfikuje tylko stan e (nie zmienia stanu vo) - jest dopuszczalna
+- ale to raczej trudno przetestowac
+- thus best
+  - vo method should return sth what E can consume/set-on-itself
+  - vo method shouldn't modify e
+
+- obiekt vo businessPriority.priorityOf(product):float // bp = vp, p = e
+- 'float' jest wyliczany ze stanu e
+- problems here
+  - vo zależy od e (i musi znac strukture e)
+    - unikaj tego
+    - vo best ograniczyć do znajomości siebie i swoich atrybutów
+  - nie widzimy wprost które pole z Product jest używane
+    - more explicite jest 'wyciagniecie z Product' konkretnego stanu (np. product.PrioritySthSth())
+    - i przekazanie go do vo
+  - nie widzimy wprost czy e jest modyfikowane
+
+- very very rare ale czasem vo jest modyfikowalne!
+- acz staraj sie zamiast tego - budowac vo (or entity?) z sefb
+
+
 VVVVVVVVVVVVVVVVVVVVV CONT. HERE
-
-
-### 6.1.6 side-effect-free behavior
-
-616 Side Effect free behavi
-
-Pattern od EE
-
-Ciekawostka funkcja to operacja obiektu która nie modyfikuje jego stanu
-
-Oczywiście Sound Effect free metody to są funkcje
-
-Wszystkie metody obiektu vo muszą być funkcjami
-
-Ciekawostka funkcyjnych językach dopuszczalna jest tylko Sound Effect free behavior,   to znaczy wszędzie na wejściu i wyjściu są vo
-
-Ciekawostka mayer i fowler  nazywają funkcje metodami query  pattern CQS ( Command q separ) 
-
-Przykłady 
-klasa fullname,  metoda 'with middle Initial'  zwraca zupełnie nową instancję  fullname,  dodatkowo zainicjowano atrybutem middle 
-
-Ciekawostka czy vo może modyfikować e przekazana jako parametr W metodzie vo
-Z punktu widzenia  niezmieniania stanu vo to metoda vo która modyfikuje e jest dopuszczalna
-Pytanie czy łatwo takie coś przetestować,  a nie łatwo ani  trudno
-Najlepiej Jeśli taka metoda zwraca rezultat który  na bazie którego  encja sama siebie zmodyfikować,  a metoda najlepiej niech nie modyfikuje e
-
-A czy jest to dopuszczalne to Starajmy się tego unikać
-Przykład strona 230
-Obiekt vo BusinessPriority.  priority of( Product) 
-Gdzie Product to encja
-Metoda zwraca float priority (wyliczony na bazie encji) 
-Problemy z tym kodem
-. Vo zależy od e,  więc vo musi rozumieć e i jego strukture
-Jeśli to możliwe unikaj tego,  vo najlepiej ograniczyć do znajomości samego siebie i swoich atrybutów
-.  osoba czytająca ten kod  nie wiem które pole z Product jest używane,  lepiej gdyby konkretne vo Product było  wyprodukowane i podane do  nasze metody,  byłoby to dużo bardziej explicit,  i model byłby bardziej czysty
-.  nie można łatwo stwierdzić że entity niemodyfikowana przez vo
-
-Optymalne dla powyższego przykładu byłoby kod ze strony 231
-
-Bardzo bardzo rzadko ale jednak zdarza się że obiekt musi być u mutable.   w takiej sytuacji raczej staraj się używać vo z Side Effect free behavior  albo entity
-
-
 
 
 
