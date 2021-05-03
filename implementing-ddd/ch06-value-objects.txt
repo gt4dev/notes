@@ -192,96 +192,81 @@ problem: integration is static
 - ale wowczas dane sie zmieniaja - nie mozna uzyc VO - trzeba je trzymac w E
 
 
-VVVVVVVVVVVVVVVVVVVVV CONT. HERE
-
-
 ## 6.3 standard types expressed as values
 
-63 standard types expressed as values
+ST
+- opisuje rzeczy, mierzy ... (like vo)
+- rozroznie stuff (e,vo) od siebie
 
-ST to chyba VV koncepcja
-St to obiekty opisujące rzeczy
-S t jest pomiędzy entity( która   jest rzeczą) a Vo ( które opisuje rzecz),  st  do odróżnienia rzeczy od siebie
+sample 1
+- UL defs phone number
+- phone moze byc dla cell, home, work, ...
+- tworzymy VO dla phone number i rozowzniamy przez ST
 
-Przykład masz w ul vo phone number,  
-phone number może być dla domu komórki pracy inny
-Nie ma sensu tworzyć osobnej klasy vo dla każdego z tych typów
-Każdy z typów jest określany przez st
+sample 2
+- UL defs currency and app defs explicitly: usd, jpy, eur, pln
 
-I w ramach domeny używamy tylko i wyłącznie tych phone number,  nie możemy innych instancji/ może bardziej:  typów
+- ST are similar to enums "but" are "instantiated"
 
-Inny przykład:  currency,  definiujemy że w systemie można używać dolarów jenów euro i tak dalej
+STs can be defined on diff levels
+- single BC, app
+- corpration
+- international stds
 
-Chociaż standard types chyba bardziej są podobne do enuma niż do obiektu,  reprezentują raczej  prymitywne values
-
-St  można zdefiniować na różnych poziomach
--  pojedynczej aplikacji
-Całej korporacji
-Standardów międzynarodowych
-
-Czasami ( najczęściej) są zdefiniowane w specjalizowanym bc,  służącym do zarządzania dostępnymi st
-. st Są tam reprezentowane jako  encje
-.  ty jako konsument będziesz je stamtąd pobierał ale reprezentował jako vo( zwykle ale gwarancji nie ma) 
-.  jest to okej bo st  służą do mierzenia opisywania A to jest główna rola vo
-.  Note tego wynika różnica między vo a st
-
-St  rezydują w swoim natywnym bc
-Zwykle jako emocje z atrybutami
-.  identity
-.  name
-.  description
-Może być więcej atrybutów
-Co ciekawe po stronie konsumująego bc  Wystarczy jedno vo z jednym atrybutem,  tak w jednym
-
-Zasadniczo st można sprowadzić do  obiektów które są bardzo bardzo podobne do enum
-Na przykład mamy enum group member type  który może przyjąć dwie wartości grup lub user  i  dla tych wartości tworzone są dwa obiekty grup lub user
-Inny przykład
-Mamy enum  backlog item status
-Z wartościami:  Planed Scheduled komited...
-I w tym przypadku st to obiekt który przyjmuje jedną z tych wartości( przecież nie pamiętam czymw java z enum robi się obiekty,  detal)
+freq STs are managed in specialized BCs, usually
+- defined as Es, with attrs
+  - identity
+  - name
+  - description
+  .. but can be more
+- you consume them as VO, usually with 1 (yes, 1) attr
+  
+samples (on enums)
+"enum GroupMemberType {Grup, User "and some overrides"}"
+  - yes, literally enum: used as enum 
+  - no magic, no single vo instances, just plain enum!!!
+enum  BacklogItemStatus {Planed Scheduled Commited...}
 
 
-Uwaga, nie musisz używać enum  do budowy st
-Możesz tworzyć Unique vo  dla każdego typu Z ST
+U: instead enum you can create unique VO for each ST
 
-Ogólnie są też inne alternatywne sposoby budowy st
-Przykład,  użycie agregatu jako st,  jedna instancja a na typ  st
-Pomyśl dwa razy
-Ogólnie st nie powinny utrzymywane/ kodowane w kontekście  w którym są używane
-Ogólnie/ szeroko dostępne s t powinny być zdefiniowane w oddzielnym bc
-Trzeba dobrze zaplanować aktualizacje st w takiej sytuacji
-Typowo wystawisz agregaty reprezentujące st  z danego globalnego kontekstu  jako  niezmienialne ( na pewno po stronie konsumujacego kontekstu)  A może  nawet jako  globalne niezmienne vo
+ST from Agg
+- 1 instance of Agg for ST type
+- but think twice
 
-Jak zaimplementować shared immutable vo ST
-Pobrać z serwisu lub Factory
-Stwórz  serwis Factory dla każdego st które jest  współdzielone  w całej aplikacji
-Serwis lub Factory czyta dane z wspólnej bazy
-Przykładowe serwis obsługiwał phone number,  inne Postal address Type,  inny currency Type
-Na przykład domain Service( tak domein serwis)  o nazwie currency service  będzie czytał z globalnej tablice tbl-vurrency  i zwracał vo currency Type
-Detale na 238
+c: ST (raczej) nie powinny byc utrzymywane w BC który ich używa
+- q: why, bo to overloading "BC resp"?
 
-Chociaż vv rekomenduje używanie enum dla st
-Uwaga ważna,  w takiej sytuacji również warto wystawiać obiekty przez serwis lub Factory
-Choć oczywiście implementacja będzie dużo prostsza,  bo będziemy wracać statyczne instancje poszczególnych st
-To podejście VV również  zaleca st musi być trzymane w bazie
-Wówczas ręcznie  generujesz enum na bazie kontentu bazy 
+- widly used ST should be def in specialized BC
+- problem can be modifying such STs
+- expose Aggs (changable!!)
+  - on consument side as VO (immutable)
+  - maybe globally expose as immutable VO?
 
+shared immutable ST
+- create service (DS) or factory for each shared ST
+  - it reads data from shared database
+- sample services are for PhoneNumber, PostalAddressType, CurrencyType
+- service (or factory) returns then VO eg: Currency
+
+acz use simplest approach = enums
+
+VV recoms "enums based ST" also expose from service/factory
+code for enum must be "generated" from DB
 
 
 
 ## 6.4 testing value objects
 
-64 testing
+// quite regular infos
+- tests write in a way that non-technical expert can understand id = use only UL
 
-// quite regular Knowledge  Bad
 
-Testy są tak pisane że non-technical ekspert  mogą to zrozumieć,  używają tylko u l
-
+VVVVVVVVVVVVVVVVVVVVV CONT. HERE
 
 
 ## 6.5 implementation
 
-65 implementation
 
 Klasa biznes priority bp prezentuje wszystkie charakterystyki vo i więcej ( to jest Jak użyć vo jako Strategy pattern aka policy)
 
