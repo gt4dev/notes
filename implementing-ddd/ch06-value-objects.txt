@@ -268,76 +268,72 @@ VVVVVVVVVVVVVVVVVVVVV CONT. HERE
 ## 6.5 implementation
 
 
-Klasa biznes priority bp prezentuje wszystkie charakterystyki vo i więcej ( to jest Jak użyć vo jako Strategy pattern aka policy)
+- BusinessPriority to super przyklad vo 
+- pokazuje nawet uzycie jako strategy pattern (aka policy)
 
-bp jest serializable
-Przyda się To do serializacji vo np remote komunikacji lub zapisania  prrsystencji obiektu
+BP jest serializable
+- to wazne przy vo remote calls, persisting object
 
-Vv  daje zwykle 2 konstruktory do vo
-Jeden służy do initu obiektu (wewnątrz używane selv delegation)
-Drugi kopiuje
-Ciekawe że robimy shallow copy,  nie kopiujemy  atrybutów tylko bierzemy ich referencje( jeśli nie są prymitywami)
-Zauważ że Deep  copy lub clone  nie mają  sensu w przypadku vo,  bo wartości zawsze są takie same
-Ale czasami Deep Copy jest wymagana ( na pewno nie w przypadku vo,  Tu jest kompletnie niepotrzebne) to można zrobić, zakodować to
-A czy jest to upierdliwe
-
-Ciekawe że konstruktor kopiujący potrzebny jest w testach,  w celu sprawdzenia czy niezmienność jest zachowana
- bierzemy jakieś vo
- robimy kopiey 
-zmieniamy i porównujemy do pierwotnego vo 
-
-
-O co chodzi z paterem Strategy/ policy
-Masz w v o jakieś publiczne metody
-Na  przykład metoda Total Value
-Zbiera żadnych parametrów, a zwraca float
-Włącz nie działa ona bezpośrednio na atrybutach wywołuje inne metody które zwracają dane /float  i operuje dopiero wartościach
-Strategii polega na tym że W każdej chwili można nadpisać dowolną z tych wewnątrz używanych metod
-No nie jest to Rocket Science he he
-Obecnie bp vo nie ma wydzielonego interfejsu (separated interface) ale pewnie będzie miało
-I będzie wiele implementacji vo i wtedy będzie strategy działało
-
-Gettery
-VV odradza tworzenie nazwy metod typu get something
-Jeśli zwykle na przykład miałeś metodę getValueX
-To teraz pisz zwykłe valueX()
-Bo jest to bardziej human-readable
-
-VV uważa że specyfikacja Java Bean miała zły wpływ na projekt obiektów,  DDd w szczególności
-Przykładem dobrego  projektu jest klasa string
-Ma ona kilka metod typu get( okej wszystkiego naprawisz)
-Ale główne metody mają postać typu
-chart At,  index of,  length
-Ciekawe że VV używa seterów na przykład set Ratings ( tylko w konstruktorze,  niewidoczne publicznie) 
-A potem ma metodę ratings,  widoczna publicznie(bez get) 
-Druga ciekawostka,  że widać że atrybut prywatny w vo,  może być  upubliczniony 
-
-W ramach implementacji musisz uwzględnić  na pisanie metod
-equals
-hash code
-to string
-Ale to klasyka
+VV daje 2 konstruktory do vo
+- 1st - do initu obiektu (it calls self delegation methods)
+- 2nd - create copy
+  - c: robimy shallow copy, nie kopiujemy nested objects but ref to them (beside primitives, but string?)
+    - w VO deep copy nie ma sensu (typowo), acz czasem jest potrzebne
+  - 2nd const - useful for testing immutability, like
+    - create vo0
+    - create copy vo1
+    - call methods of vo1 (try to "modify it")
+    - compare both vo
+- u: 3th const - bez params, na potrzeby hbm, schowany (protected)
 
 
-Uwaga uwaga jest trzeci konstruktor, bez parametrów,  na potrzeby hbm,  ciekawostka widoczność protected,  schowany w skrócie
+pattern strategy/policy
+- vo (BP) ma publiczne metody, eg: TotalValue():float
+- metoda 
+  - nie dziala bezposrednio na attrs v0
+  - internally calls other methods (self-delegatino and others)
+  - operates on result from a/m methods
+- strategy bo 
+  - at any time you can override any of these methods
+  - docelowo BP bedzie miec wiele implementacji i sie to przyda
 
+nazwy getterow
+- VV odradza nazwy metod eg getSomething()
+- jesli masz metode getValueSth() to nazwij ja ValueSth
+- it's more human-readable, UL-friendly
+
+
+c: bad Java Beans specification
+- it had bad influence on projects of object
+- good old example: String
+  - good methods: chartAt,  indexOf, length ..
+  - ale sa bad getSth ...
+
+
+c: encapsulation
+- masz setter setRatings (private, calles in constr)
+- masz "getter" "public ratings()" - just returns attr value
+- conc: w ten sposob mozesz "upubliczniac" private attr (choc to pewnie uzasadnione)
+
+
+also remember to impl
+- equals
+- hashCode
+- toString
 
 
 
 ## 6.6 persisting value objects
 
-66 persisting vo
+- zwykle VO persystujemy razem z A (do ktorego jest przypiete VO)
+- n: all dalsze przyklady zakladaja ze VO jest czescia A
+- typowo A (razem z VO) jest read/write by repo
 
-Zwykle Jesteśmy zainteresowani persystoowaniem vo razem z agregatem do którego jest podpięty
-We wszystkich przykładach zakładamy że vo jest podpięty pod agregat
-Zakładamy że agregat jest dodawany lub czytany przez repozytorium,  a powiązane vo jest zapisywane i odczytywane razem z  entity która zawiera Vo
-
-Zwykle używane orm
-Ale to dodaje trochę  skomplikowania trzeba zmapować klasę na tabelę, atrybuty na kolumny
-Są opcje no SQL oraz Key-Value stores( obie całkiem reluable and enterprise ready)
-Ogólnie Various stores mega mocno upraszczają przechowywanie agregatów
-W tym rozdziale mamy Focus na orm,  trochę o Stores jest w rozdziale 12 repositories
-
+- zwykle pers. robimy z orm
+- ale to complicated (bo trzeba zrobic mapowanie, przygotowac tabele ...)
+- no-SQL/key-value stores mega ulatwiaja pers. of A
+  - troche o tym z ch12-repos
+  - tu tylko sql
 
 
 
