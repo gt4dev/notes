@@ -1,7 +1,5 @@
 # 6 VALUE OBJECTS
 
-6 Value Object
-
 - vo są czesto "przyćmione" przez e
 - gdziekolwiek możliwe powinieneś użyć vo zamiast e
 - nawet same e powinny skupiac sie na serwowaniu vo

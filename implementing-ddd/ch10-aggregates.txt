@@ -1,0 +1,42 @@
+# ch10 aggregates
+
+## 1 using aggregates in the scrum core domain
+### 1.1 1st attempt: large-cluster aggregate
+### 1.2 2nd attempt: multiple aggregates
+
+## 2 rule: model true invariants in consistency boundaries
+
+## 3 rule: design small aggregates
+### 3.1  don't trust every use case
+
+## 4 rule: reference other aggregates by identity
+### 4.1 making aggregates work together through identity reference
+### 4.2 model navigation
+### 4.3 scalability and distribution
+
+## 5 rule: use eventual consistency outside the boundary
+### 5.1  ask whose job it is
+
+## 6 reason to break the rules
+### 6.1 r1: user interface convinience
+### 6.2 r2: lack of technical mechanism
+### 6.3 r3: global transacitons
+### 6.4 r4: query performance
+### 6.5 adhering to the rules
+
+## 7 gaining insight through discovery
+### 7.1 rethinking the design, again
+### 7.2 estimating aggregate cost
+### 7.3 common usage scenarios
+### 7.4 memory consumption
+### 7.5 exploring another alternative design
+### 7.6 implememnting eventual consistency
+### 7.7 is it the team member's job?
+### 7.8 time to decision
+
+## 8 implementation
+### 8.1 create a rool entity with unique identity
+### 8.2 favor value object parts
+### 8.3 using law of Demeter and tell, don't ask
+### 8.4 optimistic concurrency
+### 8.5 aboid dependency injection
