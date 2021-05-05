@@ -262,11 +262,7 @@ code for enum must be "generated" from DB
 - tests write in a way that non-technical expert can understand id = use only UL
 
 
-VVVVVVVVVVVVVVVVVVVVV CONT. HERE
-
-
 ## 6.5 implementation
-
 
 - BusinessPriority to super przyklad vo 
 - pokazuje nawet uzycie jako strategy pattern (aka policy)
@@ -286,7 +282,6 @@ VV daje 2 konstruktory do vo
     - compare both vo
 - u: 3th const - bez params, na potrzeby hbm, schowany (protected)
 
-
 pattern strategy/policy
 - vo (BP) ma publiczne metody, eg: TotalValue():float
 - metoda 
@@ -302,21 +297,18 @@ nazwy getterow
 - jesli masz metode getValueSth() to nazwij ja ValueSth
 - it's more human-readable, UL-friendly
 
-
 c: bad Java Beans specification
 - it had bad influence on projects of object
 - good old example: String
   - good methods: chartAt,  indexOf, length ..
   - ale sa bad getSth ...
 
-
 c: encapsulation
 - masz setter setRatings (private, calles in constr)
 - masz "getter" "public ratings()" - just returns attr value
 - conc: w ten sposob mozesz "upubliczniac" private attr (choc to pewnie uzasadnione)
 
-
-also remember to impl
+remember to impl
 - equals
 - hashCode
 - toString
@@ -336,89 +328,60 @@ also remember to impl
   - tu tylko sql
 
 
-
 ### 6.6.1 reject undue influence of data model leakage
 
-661 Reject undue...
+- typowo VO is stored in DB in denormalized form (in the same table/row what hosting E)
+- easy and convient way
 
-Najczęściej Vo jest zapisywane w bazie w postaci zdenormalizowanej
-To jest, w tej samej tabeli zawierająca v o entity
-To proste i przyjemne scenariusz  persisting data
+- czasem VO is stored as DB entity (own table, primary key ..)
+- it's mainly for E with nested VOs collections
 
-Czasem jednak vo jest zapisywane jako entity bazy danych
-Ma własną tabelę,  własny klucz Główny
-Dzieje się tak głównie gdy mamy encje z zagnieżdżoną kolekcją Vo
+- regardless of case - DB shouldn't influence domain model
+- more - it should be reverse: domain model drives data model
+- although as always - there are exceptions
 
-Niezależnie od scenariusza, mechanizm zapisu do bazy nie powinien wpływać na model domenowych
-Więcej,  model danych  powinien być Driveowany przez model domeny,  nigdy odwrotnie
-Chociaż jak zwykle są wyjątki
-
-Ale czasem ważna jest struktura modelu danych,  modelu bazy
-Musimy zachować integralność referencyjną
-Trzeba wspierać raportowanie
-etc
-To trzeba zaadresować
-Większość większość twierdzi że raportowanie nie powinno działać na bazie produkcyjnej,  i powinna mieć wyspecjalizowane dedykowany Design modelu danych
-
-Jednak finalnie niezależnie od modelu danych( kluczy integralności indeksów Entity..)  powinno to wszystko wpływać na model obiektowy
-
-
+- sometimes particular data model structure is needed (keep ref integritiy, indexes, keys, support raporting, querries ...)
+- many claim that raporting should: not work on prod DB, has own data stucture
 
 
 ### 6.6.2 orm and single value objects
 
-662 orm and Single Value Object
+- easy case
+- idea: store VO in the table & row of E but own columns (each attr in own column)
 
-Zapis jednego vo do bazy jest zwyklr prosty
-Idea-  zapisać vo w wierszu entity,  ale we własnych kolumnach( każdy atrybut ma swoją kolumnę)
-Zwykle kolumny mają nazwy pozwalające wyróżnić kolumny należące do vo
-Zobacz w przykład nazwę na stronie 2 51
-Vo Business priority ratings  ma atrybuty Benefit i cost
-Kolumny w  entity nazywają się  Business priority rating benefit(  rozdzielone podkreśleniem)
-Dokładna na stronie  252 na dole strony 
+column naming (distinguish all E cols)
+- path of objects: businessPriority.ratings.benefit
+- map to column: business_priority_ratings_benefit
 
-Hbm Użyj elementu component do zamodelowanie tego scenariusza
-Komponenty z hbm pozwala na zmapowanie bezpośrednio do tablice entity naszego Vo
+- in hbm use <component>
 
-Ciekawostka
-W przykładzie VV jest zagnieżdżone jedno vo w drugie vo
-Co w mapowaniu hbm za moderowany jest jako zagnieżdżenie jednego komponent w drugi komponent
+c
+- VV's sample nestes 1 VO in another
+- in hbm cfg it by nesting <component> in another <component>
 
-Zauważ że nie ma w model domeny żadnych wpływów z bazy
-
-
-
+- n: domain model (vo) doesn't have any stuff from DB model
 
 
 ### 6.6.3 orm and many values serialized into a single column
 
-663 orm and many values...
+- list of VO is viewed in E as Set or List
+- serialize collection to text and store in 1 column
 
-Jest to sytuacja kiedy wiele vo mapujemy  przy pomocy orm
-Lista vo obiektów jest przypięta do entity jest reprezentowana jako Set or list
-
-Możliwość 1
-Serializować kolekcje do reprezentacji tekstowej i zapisać w jednej kolumnie
-Ma to wady ale czasami da się to rozwiązanie zastosować
-Wady
- szerokość kolumny,  czasami nie wiesz ile elementów jest w kolekcji,  albo Jaka jest wielkość pojedynczego obiektu k( to szczególnie się przydarza gdy masz Strings wewnątrz Vo   nie ma maksymalnej wielkości tych stringów
-Ciekawe że w my SQL maksymalna wielkość kolumny do 65000 znaków, Jednocześnie jest to maksymalny rozmiar wiersza
-w Oracle varchar2  ma maksymalną wielkość 4000
-
-Konieczność zapytanie
-I będziesz mógł używać tych vo w zapytaniach SQL
-Bo są stringami
-A czy to raczej rzadki Case
-
-Woda 3:   Wymaga to implementacji hbm Custom user Type 
-Według VV nie jest to dużym problemem w stosunku do wcześniejszych
-
-
-
+wady
+- col width - sometimes we don't know 
+  - size of collection (can be long)
+  - size of single object (some strings can be looooong)
+  c: w MySQL max table/column width = 65k chars    
+  c: w Oracle varchar2 max = 4k chars
+- queries
+  - can use VO in Q (cause are srings)
+  - but it's rather rare need
+- need to impl custom hbm type (no big issue)
 
 
 
 ### 6.6.4 ORM and many values backed by database entity
+
 - najprostszy sposob na zapisanie kolekcji values w bazie przez ORM (esp. HBM) 
 - traktujemy VOs jako encje bazy danych
 - VO z "model PoV" musi byc wolny od technikaliow bazy, ORM, ...
@@ -450,6 +413,7 @@ przyklad
 
 
 ### 6.6.5 ORM and many values backed by join table
+
 - HBM zapisuje kolekcje w join table (what is hbm-join-table?)
 - VO-s sa zapisane w dedykowanej tabeli
 - VO nie potrzebuje wlasnego klucz
@@ -463,6 +427,7 @@ przyklad
 
 
 ### 6.6.6 ORM and Enum as state objects
+
 - use it to save in DB: standardowy typ lub enum
 - HBM nie wspiera enumow (as of iddd publish date)
 - zapisuj enum'y przez HBM custom types (najczesciej jako stringi)
