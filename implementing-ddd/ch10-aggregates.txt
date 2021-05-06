@@ -1,42 +1,398 @@
 # ch10 aggregates
 
+- grupowanie encji i vo w agregaty to jeden z mniej zrozumiałych tematów DDD
+
+- typowy problem to robienie zbyt duzych agg (i zagniezdzanie full entities)
+- nie mozna tez pociac agg na 'zbyt male' bo to nie chroni invariants
+
+
 ## 1 using aggregates in the scrum core domain
+
+- samples base on bc=apm
+
+
 ### 1.1 1st attempt: large-cluster aggregate
+
+- assume Product is very large agg
+- contains objects: BacklogItem, Release, Sprint ..
+
+- klasa wyglada prosto
+- ale stworzy tone problems
+  - many tx will fail (conflicts)
+    - q: czyli w "1 user env" to wygodne i ok podejcie?
+
+optimistic concurrency
+- class Product extends ConcurencySafeEntity
+- CSE impls optimistic concurrency
+dzialanie OC
+- CSE zawiera pole concurrencyVersion (tabel ma kolumne concurrency_version)
+- podczas zapisu E - jesli numer wersji jest starszy niz juz zapisany w bazie - to update jest odrzucany
+- hbm uzywa elem <version> do wskazania pola
+sample
+- user A i B pracuja na tym samym obiekcie Product,ver=1
+- A dodaj BacklogItem i robi commit, teraz ver=2
+- B dodaje Release i probuje zrobic commit - tx fails bo ma stale ver
+
+c: nadpisywanie zmian w key-value stores
+- przy kazdym zapisie agg - zapisywana jest jego CALA zawartosc
+- to nappisuje zmiany innych user'ow nawzajem
+- to niedopuszczalne
+
+n: poza fails of tx - large agg has other probs
+- wydajność
+- skalowalność
+
+
+VVVVVVVV CONT. HERE
+
 ### 1.2 2nd attempt: multiple aggregates
+
+10 1 2 second attempt
+
+Sprawdzamy inny model
+Mamy 4 osobne agregaty
+Product, backlog item,  Release,  sprint
+Każdy pod agregat( w cudzysłowiu)  odwołuje się do Product przez  Product ID (  identity of Product)
+
+W porównaniu do poprzedniego modelu
+Zmieni się sygnatura metod w agregacie Product
+w Large agregat  mieliśmy metody  typu
+Product.  public Void ScheduleSprint( parametry opisujące Sprint,  bez żadnych id)
+W wersji Small agregat metoda będzie miała sygnaturę
+Product. Public Sprint ScheduleSprint( parametry identyczne jak wyżej)
+Kolosalna zmiana
+Wy large były Commands ( zwracały Void,  modyfikowany stan Product)
+Small mamy Querries,  działają jak factories,  tworzą instancje agregatu i zwracają go
+
+Jak to użyć w as
+Stwórz metodę w as
+Public Void plan Product backlog item(
+Tenant ID, Product ID jako stringi,  jeszcze nie vo
+Dane biznesowe,  string sumarry,  kategory,   backlog item Type,  Story points)
+Zauważ że wszystkie wszystkie  wszystkie parametry są na  prymitywach
+Dopiero w as  stringi zastaną sparsowane  do statycznych typów
+idki  przez konstruktor po który pobiera string,  na przykład konstruktor konstruktor tenant ID
+
+
+
+A to bardzo ciekawe,  pozostałe strings
+Są bardzo ważne przez statyczne metody vo( pewnie jakieś factories)
+Na przykład
+( z dużych liter)  backlog item Type.  value of( string z parametry metody As,  a back log itemtype) :  zwraca  właściwy obiek vo
+
+Bardzo ciekawe
+V v używa konwencji parametrów metody prefiksem a
+Na przykład
+Powyższa metoda  As  ma parametry:  a TenantId,  aCategory...  wszędzie a
+
+Wracając do głównej metody As
+Z repozytorium Product wyszukujemy odpowiedni  obiekt klasy Product 
+Na tym obiekcie wywołujemy metodę
+Plan   backlog item( z parametrami o  typie vo) 
+Zwrócone agregaty backlog item  przekazujemy do repozytorium  backlog item,  metoda ADd
+
+Wracając do problemu transakcji i
+W nowym podejściu problem nie występuje
+Możemy tworzyć dowolną ilość  pod agregatów,  jednocześnie i równoległe
+
+
+Bardzo ciekawe że w przypadku large agregat
+Moglibyśmy ustawić flagę hbm optimistic Lock= false
+i Zasadniczo nie byłoby problemów z transakcjami!!  bo nie byłoby konfliktów przy dodawaniu nowych PODobiektów typu  Release
+Według vv  Jedynym problemem byłby wzrost Product Bez kontroli
 
 ## 2 rule: model true invariants in consistency boundaries
 
+10 2 role model true..
+
+Żeby odkryć agregaty W BC  musimy odkryć prawdziwe niezmienniki modelu,  Po prostu musimy.
+Bo tylko to wyznacza zawartość agregatu
+
+Inwariant  to reguła biznesowa która musi być zawsze consistent.   ważna Prosta i skuteczna definicja
+Mamy dwa rodzaje konsystencji
+-  transactional consistency
+-  eventual c.
+Inwariant dotyczy tylko transakcyjnej konsystencji
+
+Przykład
+Mamy  inwariant c równa się a plus b
+Mamy klasę agregat1 z polami A B C  i jakimiś operacjami
+Cokolwiek się będzie działo, niezależnie jakie operacje będą wywołane  invariant zawsze musi być  spełniony
+
+Ciekawostka agregat jest synonimem transactional consystency Boundary
+
+Zwykle konsystencję zapewnia transakcja
+Wówczas podczas commit transakcji  wszystko wewnątrz granic musi być konsystentne
+
+Zauważ Że w stanach przejściowych inwariant nie musi być zachowany,  ważna  jest spójność inwariant  w momencie commit
+
+Zauważ że bc modyfikuje tylko  jeden agregat w transakcji ( teoretycznie tak powinien)
+
+Zauważ też że aby prawidłowo zaprojektować agregat,  należy wykonać analizę transakcji,  tak transakcji!  co kiedy ma być spójne
+
+Zauważ że ui   powinien  być tak zaprojektowane że  modyfikujemy tylko jeden agregat w jednej operacji,
+Inaczej u i będzie modyfikował wiele agregatów,  a tego nie chcemy
+
+Ważny wniosek,  przede wszystkim wyznaczają granice konsystencji,  a nie tworzą graf obiektów
+
+
 ## 3 rule: design small aggregates
+
+10 3 rule Design Small aggregates
+
+Standardowe problemy dużych agregatów to( wspomniane wcześniej)
+Problemy Z konfliktami transakcji
+Wydajność
+Skalowalność
+
+Problem kolejny
+Załóżmy że Mamy  gruby agregat Product
+O po  roku pracy ma on 1000ce  backlog items,  releases sprints,... 
+Załóżmy że chcesz dodać kolejny  backlog item
+Musisz wczytać wszystkie historyczne  backlog item,  mimo że ich nie potrzebujesz,  żeby dodać nowy b item
+Mamy problem z wydajnością i pamięcią
+Ciekawostka,  pozostałe powiązane encje ( Release Sprint) można ustawić jako lazy-loading i nie muszą one być wczytywane
+
+Ważna ciekawostka
+Large aggregates mają problemy z
+ nieprawdziwymi inwariantami
+  dla rzekomej wygody tworzą duże struktury, grafy obiektów
+
+
+Co to jest mały agregat, jak mały powinien być
+Nie jestem pewien, VV rekomenduje zrobienie jednego root entity i minimalnej ilości atrybutów które wymaga
+Jako przykład podaje Product z atrybutami name i description, chyba powinny być raczej zmienianew jednym agregacie, bo są zwykłe zmiany razem( Chyba że są jakieś korekty ale to nie jest problem)
+
+Podczas modelowania agregatu myśl czy dany element  modelu gdzie się zmieniał w czasie czy może być kompletnie wymieniony
+Jeśli może być wymienione Zaprojektuj go jako vo
+Ciekawostka,  jeśli przejdziesz Przeanalizuj sz model Case by Case  to zauważysz że wiele e  może być za modelowane jako vo
+
+Ciekawostka, w projekcie biznesowe typowo 70% agregatów ma tylko jedną  entity plus jakiś properties vo
+30% agregatów miał 2 lub 3 encje
+Przykład pokazuje  że większość agregatów  to są pojedyncze entity
+
 ### 3.1  don't trust every use case
 
+10 3 1  dont Trust Every ....
+
+Analitycy dostarczają specyfikację use cases
+Jest detaliczna jest dobra ale w niej perspektywy  dewelopera
+Trzeba dołączyć do tego decyzję o tworzeniu agregatów
+Typowy problem który wymaga poprawki jest modyfikowanie wielu agregatów
+Musimy ustalić czy można zmiany na wiele transakcji czy musi być tylko jedna ( to trzeba być też sceptycznym to do rzeczywistych wymagań)
+
+Ciekawostka,  jeśli próbujesz w jednej transakcji zmodyfikować wiele agregatów( czytaj,  próbujesz mieć konsystentne zmiany w nich razem)  możliwe że  źle zaprojektowałeś invariant
+Możliwe że trzeba połączyć kilka agregatów( tak trzeba zmodyfikować kilka agregatów)  i wymyślić nowy agregat z nowymi koncepcjami
+
+Zauważ ,oczywista oczywistość,  że łączenie kilku agregatów jeden wymaga zmiany nazwy , zamodelowania nowego konceptu
+
+Inną opcją na modyfikacje,  optymalizację jest  użycie między agregatami eventual consistency
+Ale trzeba sprawdzić akceptowalny jest Delay w modyfikacji
+
+
 ## 4 rule: reference other aggregates by identity
+
+10 4 Rule,  reference other aggregates by identity
+
+Wiadomo że jak projektujesz obiekt To chciałbyś nawigować w grafie obiektów,
+ kusi zastosowanie Composinal structure
+
+Bardzo ważne, agregat może przechowywanie referencja do roota innego agregatu
+Ale pamiętaj że  refereferowany agregat  absolutnie nie jest częścią consystency Boundary ( agregatu który trzyma ref)
+
+Koniecznie Dodaj przykład ze strony 360
+Backlog item  trzyma ref do Product
+
+Implikacje
+.  w jednej transakcji Można modyfikować tylko 1 agregat z powyższych
+.  w przypadku jeśli musisz w jednej zmodyfikować kilka agregatów to bardzo mocny sygnał że jakaś koncepcja ul została nieodkryta,  że są złe granicę konsystencji
+.  Jeśli mimo powyższego jest problem,  to może trzeba użyć eventual consistency
+
 ### 4.1 making aggregates work together through identity reference
+
+10 4 1  making  agregats work... 
+
+preferuj refowanie do  innych agregatów agregatów  przez ich globalne Id
+
+Skopiuj przykłady ze strony 36 2
+Dokładnie ten sam element ale nowa technika co 360
+
+Refowanie przez IT pozwala uniknąć eager loading refs (to o dosyć oczywiste)
+Model działa lepiej bo wymaga mniej czasu na załadowanie i zabiera mniej pamięci
+
 ### 4.2 model navigation
+
+10 4 2  model Navigation
+
+Jak robić Nawigacje mając tylko id?
+Podejście 1
+Niektórzy używają repozytoria wołane ze środka,  tak ze środka, agregatu  żeby doczekać dane
+Nazywa się to 'disconnected domain model'
+Jest to forma lazy-loading,  ciekawe
+
+Podejście 2, rekomendowane,
+Użyj repository lub dService  do doczytania danych ( w zasadzie chodzić to może tylko o drugi agregat) przed  tym( tak przed)  jak będziesz w te dane potrzebował( potrzebował w tym pierwotnym agregacie)
+
+Przykład
+Na agregacie backlog item  chcemy wywołać metodę  jak na stronie 362
+Dane do metody Przygotowujemy wcześniej
+Wczytujemy agregat Team
+Alternatywą byłoby  posiadanie referencji do Team w agregacie  backlog item,
+Ale to byłoby problematyczne
+
+To podejście uwalnia agregat od zależności od repozytorium lub DS
+Ale w przypadku bardzo skomplikowanych domen można,  warto przekazać  jako parametr metody ref do repo lub DS( tak jako parametr metody,  Ciekawe czemu nie jako pole klasy)
+Wówczas agregat robi Double dispatch żeby dociągnąć dane
+
+Pamiętaj że Jakkolwiek nie wyciągasz danych  w jednej transakcji modyfikujesz tylko jeden agregat
+
+
+Używanie id do robienia refów  utrudnia nawigowanie po stronie ui ( które czytają stan agregatu)
+Czasem Wymaga to użycia kilku repozytoriów żeby  pobrać pełne dane dla use Case
+Może to powodować problemy wydajnościowe Jeśli tak warto rozważyć theta joins  lub cqrs
+
+Ciekawostka hbm wspiera ww t-joins
+Pozwala to odczytać chyba kilka powiązanych agregatów w jednym zapytaniu
+T-joint to po prostu hbm zapytania które zwracają 2 różne ale powiązane obiekty, prosta sprawa, 
+
 ### 4.3 scalability and distribution
 
+10 4 3  scalability and Distribution
+
+Agregaty ryfują się nawzajem przez identity
+Z tego powodu mogą być używany w szerokiej skali
+Prawie Infiniti scalability można osiągnąć( Jak podaje gościu z Amazona) 
+Nie ma Problemu ze skalowalnośćia  Storage
+
+Na kwestia
+Typowy projekt DDD zawiera wiele bc
+Ponieważ refy agregatami są  typu id  to możemy refować agregaty z  dalekich bc ( chyba jestem  pewny)
+W szczególności jeśli wysyłamy domain Events zawierające id agregatu,  i siejemy to na wiele bc
+Naturalnie w takim środowisku transakcje rozproszone są między systemy,  mamy   consistent State eventually
+
 ## 5 rule: use eventual consistency outside the boundary
-### 5.1  ask whose job it is
+
+10 5  role use eventual consistency...
+
+ee Mówi  Co musi być zrobione żeby zachować modhel consistency  kiedy wiele agregatów musi być zmienionych przy jednym request
+W skrócie,  use eventual consistency
+
+Ta zasada dotyczy się bardzo dużych skale( gdzie bardzo dużo agregatów ma być modyfikowanych' jednocześnie')  oraz małych skale z kilkoma agregatami
+Chyba ee ma na myśli nawet Case: batch processing( Kiedy rzeczywiście mnóstwo agregatów jest modyfikowanych)
+
+Uzgodnij z ekspertami domenowymi czy dopuszczalne jest  delay  pomiędzy modyfikacjami instancji
+
+Jak realizować eventual consistency
+Przykład na 365
+Masz agregat  backlog item
+Ma on metodę typu Command  na przykład comitTo
+Komenda na koniec wysyła event  który jest asynchronicznie konsumowany subscribers
+Each subscriber  execute in a separate transaction, keeping  the rule  of modifying one aggregate in one transaction
+Zauważ że metoda Command wysyła event  backlog item komitet
+Zauważ że backlog item ma ref do Sprint id,  backlog item nie jesteśmy zainteresowani  niczym więcej,  encja Sprint lub  inne subscriber  po evencie zmodyfikuje stan Sprint( Sprint Doda do siebie informacje o nowym item) 
+
+What if modification  fails  on subscriber side
+Modification can be retried  jeśli subskrajber nie potwierdzi sukcesu do mechanizmu messaging
+Message will be redelivered  do momentu aż osiągniemy consistency
+There Can Be many   prób  dopóki messaging nie otrzyma potwierdzenia
+Można ustawić limit prób
+Wówczas po failu  może trzeba będzie skompensować transakcje  albo przynajmniej zaraportować problem żeby  user mogły zareagować
+
+Ciekawostka, VV rekomenduje robienie  powtórzeń nieliniowo, znaczy każda następna próba jest robiona Z
+ opóźnieniem jednej sekundy dwóch sekund 4, 8 i tak dalej
+ 
+
+### 5.1 ask whose job it is
+
+10 5 1   ask whose job it is
+
+Czasem trudno określić Czy można  transactional or eventual consistency
+Z powodów technicznych niektórzy ( zwykle ci używający cqrs) preferują eventual consistency,
+Inni( ci którzy używają klasycznego podejścia no cqrs)   transactional consistency
+Ale to bzdura
+
+Według e e Trzeba sprawdzić  czyim zadaniem  jest zapewnienie konsystencji   danych
+Jeśli to zadania Użytkownika który wykonuje use-case -  Wykonaj zadanie w transakcji 
+Jeśli to zadanie innego użytkownika lub systemu to Wykonaj zadanie w eventual consistency
 
 ## 6 reason to break the rules
+
+
+
 ### 6.1 r1: user interface convinience
+
+
+
 ### 6.2 r2: lack of technical mechanism
+
+
+
 ### 6.3 r3: global transacitons
+
+
+
 ### 6.4 r4: query performance
+
+
+
 ### 6.5 adhering to the rules
 
+
+
 ## 7 gaining insight through discovery
+
+
+
 ### 7.1 rethinking the design, again
+
+
+
 ### 7.2 estimating aggregate cost
+
+
+
 ### 7.3 common usage scenarios
+
+
+
 ### 7.4 memory consumption
+
+
+
 ### 7.5 exploring another alternative design
+
+
+
 ### 7.6 implememnting eventual consistency
+
+
+
 ### 7.7 is it the team member's job?
+
+
+
 ### 7.8 time to decision
 
+
+
 ## 8 implementation
+
+
+
 ### 8.1 create a rool entity with unique identity
+
+
+
 ### 8.2 favor value object parts
+
+
+
 ### 8.3 using law of Demeter and tell, don't ask
+
+
+
 ### 8.4 optimistic concurrency
+
+
+
 ### 8.5 aboid dependency injection
