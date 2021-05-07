@@ -3,7 +3,7 @@
 - devs mają tendencję do skupiania się na danych a nie domenie
   - nie buduja "rich behaviors" 
   - skupiaja sie tylko na danych, atrybutach, asocjacjach
-- to bez sensu- bo sa tool'e do generowania takiego ('data-drive')
+- to bez sensu - bo sa tool'e do generowania kodu z modelu db
 
 
 ## Why We Use Entities
@@ -11,8 +11,8 @@
 - use entity 
   - to express individuality of object
   - when you want distinguish object from others
-- entity is identified and can change (even heavely) in time
-  - so final E can be totally diff from 'start version'
+- entity is identified and can change (even heavely!) in long time
+  - final E can be totally diff from 'start version'
   - but still has the same identity
 
 that diffs E from VO
@@ -20,7 +20,7 @@ that diffs E from VO
 - mutability
 
 n: devs often overuse Es, where VO would be better than E
-but if anyway you "overuse E" then maybe you need CRUD not DDD?
+if you "overuse E" then maybe you need CRUD not DDD?
 
 
 ## Unique Identity (UI)
@@ -237,7 +237,7 @@ protect identity
 - UL z BC daje slownictwo do projektowania modelu
 - UL musi być wypracowany z ekspertami i przez analize wymagań
 - finalnie caly zepol porozumiewa sie "uzywajac UL"
-- c: uznanie mapowania nouns/verbs na klasy/metody to ZBYT DUZE uproszczenie
+- c: mapowanie nouns/verbs na klasy/metody to ZBYT DUZE uproszczenie projektowania modelu
 
 - on start: mozna zapisać UL jako słownik pojęć i zbiór prostych przypadków użycia
 - finalnie: UL jest wyrazany TYLKO przez kod (bo trudno trzymać sync miedzy docs i kodem)
@@ -246,16 +246,16 @@ protect identity
 ### Unconvering Entities and Properties
 
 sposoby zmiany wartosc E:
-- primitive property is changing
+- primitive property is changed
 - whole VO is replaced
 
-n: w encji User (i wszedzie indziej)
-- UI jest stale (TenantId, username)
+przyklad: w encji User
+- UnId jest stale (tu: TenantId, username)
 - all other data is changing 'in time' (Person, ..)
 
 - VV uzywa primitive string to keep username 
-- cause here are no any special behavious
-- Alex is using VOs here (to eg limit string lenght)
+- cause here is no any special behavious
+- Alex uses VOs here (to limit string lenght etc.)
 
 - klasa Tenant ma prop TenandId (jako V)
 - but TenantId is not "owned" by Tenand only
@@ -263,29 +263,29 @@ n: w encji User (i wszedzie indziej)
 
 c: User in many BCs
 - UI = username, tenantId
-- inne BC (nie bc:identiy) moga zbierac inne dane zw. z User: adres, kontakt, billing info, location...
-- n: acz jak jest potrzeba to "bc:identity" moze (i zawiera) zawierac more data: Person ...
-- p/p inne BC powinny - w celu refowania do User - uzywac UI z bc:identity
-- n: pp normalnie raczej kopiujesz danych miedzi BC ("1 src of truth") ale "username" to klucz i trzeba
-- q: jak VV refuje do User'a z innych BC, mamy to UI z 2 pol, ...
+- inne BC (inne niz bc:identiy) moga zbierac inne dane zw. z User: adres, kontakt, billing info, location...
+- n: acz jak jest business need to "bc:identity" tez moze zbierac te dane (i w sumie zawiera: Person ...)
+- p/p inne BC powinny - w celu refowania do User - uzywac UnId z bc:identity
+- n: pp normalnie raczej nie kopiujesz danych miedzi BC ("1 src of truth") ale "username" to klucz i trzeba
+- q: jak VV refuje do User'a z innych BC, bo mamy to UnId z 2 pol
 
 
 ### Digging for Essential Behavior
 
 - raczej nie uzywaj setters/getter (ani w E, ani w VO)
-- chyba ze wynika to z UL - wtedy to ok
+- chyba ze wynika to z UL - wtedy ok
 - jak w 1 req wolasz kilka setters - to jest to bardzo podejrzane
 
 przyklad - aktywacja tenant
 - wystaw metody activate/deactivate
-- c: to zgodne z zasada EE: "intention revealing interface"
+- to zgodne z zasada EE: "intention revealing interface"
 
 c: VV worked out 2 patts for security:
 - User
 - Fundamental Identity
 
 sample E:
-- User zawiera Person (entity)
+- User zawiera Person (both extends ConcurrencySafeEntity)
 - Person zawiera VO: ContactInfo and name (string)
 
 c: E User ma metody

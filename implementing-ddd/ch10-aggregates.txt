@@ -47,129 +47,122 @@ VVVVVVVV CONT. HERE
 
 ### 1.2 2nd attempt: multiple aggregates
 
-10 1 2 second attempt
+consider another model
+- 4 aggrs: Product, BacklogItem, Release, Sprint
+- each refs Product by ProductId (identity of Product)
 
-Sprawdzamy inny model
-Mamy 4 osobne agregaty
-Product, backlog item,  Release,  sprint
-Każdy pod agregat( w cudzysłowiu)  odwołuje się do Product przez  Product ID (  identity of Product)
+comparing to prev. model
+- signature of Product methods will change
+- w large jest
+  Product { void ScheduleSprint("params desc sprint, w/o any IDs")
+- w small jest
+  Product { Sprint ScheduleSprint("params identyczne")
+- mega zmiana
+  - w large jest command
+  - w small jest querry 
+    - dziala jak factory (tworzy i zwraca agregat)
 
-W porównaniu do poprzedniego modelu
-Zmieni się sygnatura metod w agregacie Product
-w Large agregat  mieliśmy metody  typu
-Product.  public Void ScheduleSprint( parametry opisujące Sprint,  bez żadnych id)
-W wersji Small agregat metoda będzie miała sygnaturę
-Product. Public Sprint ScheduleSprint( parametry identyczne jak wyżej)
-Kolosalna zmiana
-Wy large były Commands ( zwracały Void,  modyfikowany stan Product)
-Small mamy Querries,  działają jak factories,  tworzą instancje agregatu i zwracają go
+uzycie w AS
+MyAS { 
+  public void planProductBacklogItem(
+    aTenantID, aProductID 
+    aSummary, aCategory, aBacklogItemType, aStoryPoint) 
+- all params as primitives / strings!!!
+- metoda konwertuje strings w VO
+  - ID'kie przez "new TenantId(tenandId)"
+  - reszta przez "static methods/factorie" w VO
+      BacklogItemType.valueOf(backlogItemType):BacklogItemType
+- z repo wyszukujemy agg Product
+- i wywolujemy na nim
+    product.planBacklogItem("params juz jako VO"):BacklogItem
+- zwrocony agg BI dajemy do
+    biRepo.Add(bi)
+    
+c: VV uzywa konwencji prefix'owania method params with 'a'
 
-Jak to użyć w as
-Stwórz metodę w as
-Public Void plan Product backlog item(
-Tenant ID, Product ID jako stringi,  jeszcze nie vo
-Dane biznesowe,  string sumarry,  kategory,   backlog item Type,  Story points)
-Zauważ że wszystkie wszystkie  wszystkie parametry są na  prymitywach
-Dopiero w as  stringi zastaną sparsowane  do statycznych typów
-idki  przez konstruktor po który pobiera string,  na przykład konstruktor konstruktor tenant ID
+c: w 'small agg' nie ma problemu konfliktu tx'ow (mozna tworzyc dowolna || ilosc aggs)
 
-
-
-A to bardzo ciekawe,  pozostałe strings
-Są bardzo ważne przez statyczne metody vo( pewnie jakieś factories)
-Na przykład
-( z dużych liter)  backlog item Type.  value of( string z parametry metody As,  a back log itemtype) :  zwraca  właściwy obiek vo
-
-Bardzo ciekawe
-V v używa konwencji parametrów metody prefiksem a
-Na przykład
-Powyższa metoda  As  ma parametry:  a TenantId,  aCategory...  wszędzie a
-
-Wracając do głównej metody As
-Z repozytorium Product wyszukujemy odpowiedni  obiekt klasy Product 
-Na tym obiekcie wywołujemy metodę
-Plan   backlog item( z parametrami o  typie vo) 
-Zwrócone agregaty backlog item  przekazujemy do repozytorium  backlog item,  metoda ADd
-
-Wracając do problemu transakcji i
-W nowym podejściu problem nie występuje
-Możemy tworzyć dowolną ilość  pod agregatów,  jednocześnie i równoległe
+c: w modelu 'large' mozna ustawic HBM/optimisticLock=false 
+- eliminuje to problem z konfliktami tx (przy dodawaniu new BI ..)
+- ale zostaly by inne problemu
 
 
-Bardzo ciekawe że w przypadku large agregat
-Moglibyśmy ustawić flagę hbm optimistic Lock= false
-i Zasadniczo nie byłoby problemów z transakcjami!!  bo nie byłoby konfliktów przy dodawaniu nowych PODobiektów typu  Release
-Według vv  Jedynym problemem byłby wzrost Product Bez kontroli
 
 ## 2 rule: model true invariants in consistency boundaries
 
-10 2 role model true..
+- zeby odkryć agregaty w BC musimy odkryć prawdziwe niezmienniki (invariant) modelu - musimy!!!
+- niezmienniki wyznaczaja zawartość agregatu
 
-Żeby odkryć agregaty W BC  musimy odkryć prawdziwe niezmienniki modelu,  Po prostu musimy.
-Bo tylko to wyznacza zawartość agregatu
+- inwariant = reguła biznesowa która musi być zawsze consistent/utrzymana
+- prosta i skuteczna definicja
 
-Inwariant  to reguła biznesowa która musi być zawsze consistent.   ważna Prosta i skuteczna definicja
-Mamy dwa rodzaje konsystencji
--  transactional consistency
--  eventual c.
-Inwariant dotyczy tylko transakcyjnej konsystencji
+typy konsystencji
+- transactional consistency TC
+- eventual consictency EC
 
-Przykład
-Mamy  inwariant c równa się a plus b
-Mamy klasę agregat1 z polami A B C  i jakimiś operacjami
-Cokolwiek się będzie działo, niezależnie jakie operacje będą wywołane  invariant zawsze musi być  spełniony
+inwariant dotyczy tylko TC
 
-Ciekawostka agregat jest synonimem transactional consystency Boundary
+przykład
+- inwariant c = a + b
+class Agg1 { 
+  // pola A, B, C
+  // operacje 
+- cokolwiek się dzieje, niezależnie jakie operacje sawywołane = invariant zawsze musi być spełniony
 
-Zwykle konsystencję zapewnia transakcja
-Wówczas podczas commit transakcji  wszystko wewnątrz granic musi być konsystentne
+c: agregat wyznacz TC boundary (obszar zawsze konsystentnych danych)
+- zatem E nested in Agg jest konsystentne
 
-Zauważ Że w stanach przejściowych inwariant nie musi być zachowany,  ważna  jest spójność inwariant  w momencie commit
+- zwykle C zapewnia TX
+- wowczas podczas commit wszystko wewn. granic agregatu musi byc C
+- czyli w "tmp states" inwariant nie musi byc zachowany (ale musi podczas commit)
 
-Zauważ że bc modyfikuje tylko  jeden agregat w transakcji ( teoretycznie tak powinien)
+- BC modyfikuje tylko 1 agg w tx
 
-Zauważ też że aby prawidłowo zaprojektować agregat,  należy wykonać analizę transakcji,  tak transakcji!  co kiedy ma być spójne
+- do zaproj. agg trzeba wykonac analize tx!!! co kiedy ma byc C
+- duzo zalezy od UI - ile aggs bedzie modyf. przy 1 use case, powinien modyf. 1 agg
 
-Zauważ że ui   powinien  być tak zaprojektowane że  modyfikujemy tylko jeden agregat w jednej operacji,
-Inaczej u i będzie modyfikował wiele agregatów,  a tego nie chcemy
-
-Ważny wniosek,  przede wszystkim wyznaczają granice konsystencji,  a nie tworzą graf obiektów
+- agg wyznaczaja granice consistency (a nie tworza graf obiektow)
 
 
 ## 3 rule: design small aggregates
 
-10 3 rule Design Small aggregates
+std problems with large aggs
+- tx conflicts
+- perfomrance
+- scalability
 
-Standardowe problemy dużych agregatów to( wspomniane wcześniej)
-Problemy Z konfliktami transakcji
-Wydajność
-Skalowalność
+another problem - sample
+- assume large agg Product with 1k of BIs, Sprints, Releases ...
+- jak chcesz dodac new BI
+- to musisz wczytac ALL BIs (mimo ze ich nie potrzebujesz)
+- to problem wydajnosci i pamieci
+- n: pozostale E (Release, Sprint ..) ustaw jako lazy-loading i nie sa one wczytywane
 
-Problem kolejny
-Załóżmy że Mamy  gruby agregat Product
-O po  roku pracy ma on 1000ce  backlog items,  releases sprints,... 
-Załóżmy że chcesz dodać kolejny  backlog item
-Musisz wczytać wszystkie historyczne  backlog item,  mimo że ich nie potrzebujesz,  żeby dodać nowy b item
-Mamy problem z wydajnością i pamięcią
-Ciekawostka,  pozostałe powiązane encje ( Release Sprint) można ustawić jako lazy-loading i nie muszą one być wczytywane
+- large agg tworza nieprawdziwe invariants
+- dla "pozornej" wygody tworza mega grafy obiektow
 
-Ważna ciekawostka
-Large aggregates mają problemy z
- nieprawdziwymi inwariantami
-  dla rzekomej wygody tworzą duże struktury, grafy obiektów
+small agg
+- only root entity with attrs (possibly as VO)
+
+przyklad "niejawnych invariants"
+- w Product attrs name and desc sa zwykle zmieniane razem - stad sa w 1 agg
+
+hint
+- przy projektowaniu modelu mysl czy dany koncept
+  - czy bedzie sie zmienial w czasie
+  - czy mozna go kompletnie wymienic
+.. if 2nd - project it as VO
+
+c: if you re-analyse your model - probably you'll see that many many E can be replaced with VO
+
+c: w avg projekcie biznesowym
+- 70% aggs ma 1 E (plus props as VO)
+- 30% aggs ma 2-3 E
+.. acz all zalezy od reqs
 
 
-Co to jest mały agregat, jak mały powinien być
-Nie jestem pewien, VV rekomenduje zrobienie jednego root entity i minimalnej ilości atrybutów które wymaga
-Jako przykład podaje Product z atrybutami name i description, chyba powinny być raczej zmienianew jednym agregacie, bo są zwykłe zmiany razem( Chyba że są jakieś korekty ale to nie jest problem)
 
-Podczas modelowania agregatu myśl czy dany element  modelu gdzie się zmieniał w czasie czy może być kompletnie wymieniony
-Jeśli może być wymienione Zaprojektuj go jako vo
-Ciekawostka,  jeśli przejdziesz Przeanalizuj sz model Case by Case  to zauważysz że wiele e  może być za modelowane jako vo
-
-Ciekawostka, w projekcie biznesowe typowo 70% agregatów ma tylko jedną  entity plus jakiś properties vo
-30% agregatów miał 2 lub 3 encje
-Przykład pokazuje  że większość agregatów  to są pojedyncze entity
+VVVVVVVVVVVV cont here
 
 ### 3.1  don't trust every use case
 

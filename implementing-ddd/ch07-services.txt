@@ -1,9 +1,10 @@
 # CH7 SERVICES
+
 - w DDD serwis = bezstanowa operacja wykonujaca zadanie z domeny
 - best recom "kiedy uzyc serwis": jak metoda nie pasuje do zadnego agregatu, encji, VO
 
 ## what a domain service is (but 1st what it isn't)
-- nazwe interfejsu/operacji - wez z jezyka domenowego
+- nazwe interfejsu/operacji - wez z UL
 - DS jest stateless
 - DS'y zwykle operuja na wielu obiektach domenowych - zmienianych w single, atomowej operacji
 - typowe powody uzycia DS
@@ -17,7 +18,7 @@
 - logike do DS wrzucac mega ostroznie, think twice!!!
 - jak za duzo wrzucisz do DS to dostaniesz 'anemic domain model'
 - w "typowym projekcie" wiekszosc logiki jest w E/VO
-- zwykle "wprost z UL" wynika czy logika jest w DO czy DS
+- zwykle "wprost z UL" wynika czy logika jest z DO czy DS
 
 - wiedza "szczegolowa" domeny nie powinna wyplywac na strone klienta
 - np: jak autentykujemy user'a to
@@ -25,7 +26,7 @@
   - wystawiamy 1 operacje np: AuthService.Authenticat(password, user):UserDesc
 
 c: UserDesc extends Serializable, nie "VOBase"
-- a jest z modelu
+- a jest z modelu (tz. z UL)
 - generalnie VO u VV extenduja
   - serializable, assertion-concern ...
   - IdentifiedValueObject (which extends IdentifiedDomainObject)
@@ -65,8 +66,6 @@ przyklad: jesli masz interfejs AuthenticationService i "klase ...Impl" - to lepi
   - czy rozdzielac interfejs od klasy (w przypadku pure UL)
 .. wiec nie ma co filozowac
 
-
-VVVVVVVVVVVVVVVVVVVVVVVVVVVV CONT. HERE VVVVVVVVVVVVVVVVVVVVVVVVVVVV
 
 ## a calculation process
 - przyklad: klasa BusinessPriorityCalculator
