@@ -43,8 +43,6 @@ n: poza fails of tx - large agg has other probs
 - skalowalność
 
 
-VVVVVVVV CONT. HERE
-
 ### 1.2 2nd attempt: multiple aggregates
 
 consider another model
@@ -161,57 +159,58 @@ c: w avg projekcie biznesowym
 .. acz all zalezy od reqs
 
 
-
-VVVVVVVVVVVV cont here
-
 ### 3.1  don't trust every use case
 
-10 3 1  dont Trust Every ....
+- typowa specyfikacja opisuje use cases
+- trzeba do niej dolaczyc decyzje o tworzeniu agg
 
-Analitycy dostarczają specyfikację use cases
-Jest detaliczna jest dobra ale w niej perspektywy  dewelopera
-Trzeba dołączyć do tego decyzję o tworzeniu agregatów
-Typowy problem który wymaga poprawki jest modyfikowanie wielu agregatów
-Musimy ustalić czy można zmiany na wiele transakcji czy musi być tylko jedna ( to trzeba być też sceptycznym to do rzeczywistych wymagań)
+- czesto specyfikaca wymaga modyfikacji wielu agg
+- nalezy ustalic czy
+  - mozna rozbic to na kilka mniejszych tx
+  - realnie potrzebna jest 1 big tx
 
-Ciekawostka,  jeśli próbujesz w jednej transakcji zmodyfikować wiele agregatów( czytaj,  próbujesz mieć konsystentne zmiany w nich razem)  możliwe że  źle zaprojektowałeś invariant
-Możliwe że trzeba połączyć kilka agregatów( tak trzeba zmodyfikować kilka agregatów)  i wymyślić nowy agregat z nowymi koncepcjami
+note
+- if you try to modify many aggs in 1 tx - to moze ze zle ustaliles invariant (zbyt szeroko)
+- moze trzeba polaczyc kilka aggs w nowy agg (z nowymi granicami spojonsci) - zaproj. nowy "koncept"
 
-Zauważ ,oczywista oczywistość,  że łączenie kilku agregatów jeden wymaga zmiany nazwy , zamodelowania nowego konceptu
-
-Inną opcją na modyfikacje,  optymalizację jest  użycie między agregatami eventual consistency
-Ale trzeba sprawdzić akceptowalny jest Delay w modyfikacji
+another option - use eventaul consistency
+- but check if delay is acceptable
 
 
 ## 4 rule: reference other aggregates by identity
 
-10 4 Rule,  reference other aggregates by identity
+- jak proj. obiekt to kusi wizja duzego grafu obiektow (compositional structure) z opcja dalekiej nawigacji
 
-Wiadomo że jak projektujesz obiekt To chciałbyś nawigować w grafie obiektów,
- kusi zastosowanie Composinal structure
+wazne
+- agg MOZE miec ref do root'a innego agregatu
+- ale ref'owany agg NIE lezy w consistency boundary tego agg
+- sample
+  class BacklogItem : ConcurrencySafeEntity {
+    Product product
+  }
 
-Bardzo ważne, agregat może przechowywanie referencja do roota innego agregatu
-Ale pamiętaj że  refereferowany agregat  absolutnie nie jest częścią consystency Boundary ( agregatu który trzyma ref)
 
-Koniecznie Dodaj przykład ze strony 360
-Backlog item  trzyma ref do Product
+if in 1 tx you must modify many agg - it's v strong info that there is 
+- bad consistency boundary
+- some UL notion wasn't discovered yet
 
-Implikacje
-.  w jednej transakcji Można modyfikować tylko 1 agregat z powyższych
-.  w przypadku jeśli musisz w jednej zmodyfikować kilka agregatów to bardzo mocny sygnał że jakaś koncepcja ul została nieodkryta,  że są złe granicę konsystencji
-.  Jeśli mimo powyższego jest problem,  to może trzeba użyć eventual consistency
+- jesli mimo dodatkowych analiz - problem pozostaje - moze trzeba uzyc eventual consistency
+
 
 ### 4.1 making aggregates work together through identity reference
 
-10 4 1  making  agregats work... 
+- prefer refing between aggs by their ID
+- sample
+  class BacklogItem : ConcurrencySafeEntity {
+    ProductId product
+  }
 
-preferuj refowanie do  innych agregatów agregatów  przez ich globalne Id
+- refing by ID avoids 'eager loading' refed aggs
+- model 
+  - is faster (less time take load to mem)
+  - consumes less mem
 
-Skopiuj przykłady ze strony 36 2
-Dokładnie ten sam element ale nowa technika co 360
-
-Refowanie przez IT pozwala uniknąć eager loading refs (to o dosyć oczywiste)
-Model działa lepiej bo wymaga mniej czasu na załadowanie i zabiera mniej pamięci
+VVVVVVVVVVVV cont here
 
 ### 4.2 model navigation
 
