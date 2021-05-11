@@ -214,98 +214,99 @@ VVVVVVVVVVVV cont here
 
 ### 4.2 model navigation
 
-10 4 2  model Navigation
+how to navigate with only ID
+- way 1 - "disconnected domain model"
+  - call repos from inside of agg - to fetch needed data
+  - form of lazy-loading
 
-Jak robić Nawigacje mając tylko id?
-Podejście 1
-Niektórzy używają repozytoria wołane ze środka,  tak ze środka, agregatu  żeby doczekać dane
-Nazywa się to 'disconnected domain model'
-Jest to forma lazy-loading,  ciekawe
+- way 2 (reced)
+  - use repo or DS to load 2nd agg data
+  - pass this data to 1st agg when needed
+sample
+- chcemy wywolac metode assignTeamMemberToTask(TeamMemberId, Team, TaskId) z agg BacklogItem
+- create AS.assignTeamMemberToTask
+- prepare params needed by agg's method
+- read agg Team
+  - here alter is having ref to Team
+- pass all to above method
 
-Podejście 2, rekomendowane,
-Użyj repository lub dService  do doczytania danych ( w zasadzie chodzić to może tylko o drugi agregat) przed  tym( tak przed)  jak będziesz w te dane potrzebował( potrzebował w tym pierwotnym agregacie)
+- way 2 frees agg from deping from repo (or DS)
+- way 1 is ok for complex domains
+  - pass to called method ref to repo (or DS) 
+    - yes, param, q: why not make repo field of class?
+  - agg robi double dispatch to dwl data
+  
+- remember: regardless of way - in 1 tx you modify 1 agg
 
-Przykład
-Na agregacie backlog item  chcemy wywołać metodę  jak na stronie 362
-Dane do metody Przygotowujemy wcześniej
-Wczytujemy agregat Team
-Alternatywą byłoby  posiadanie referencji do Team w agregacie  backlog item,
-Ale to byłoby problematyczne
+c: ui and navigations
+- using IDs for refing between aggs make hard navigation - useful in UI
+- in such case reading data reqs calls to few repos
+- it slow performance
+- in such cases: use "HBM theta joins" or CQRS
 
-To podejście uwalnia agregat od zależności od repozytorium lub DS
-Ale w przypadku bardzo skomplikowanych domen można,  warto przekazać  jako parametr metody ref do repo lub DS( tak jako parametr metody,  Ciekawe czemu nie jako pole klasy)
-Wówczas agregat robi Double dispatch żeby dociągnąć dane
+c: hbm and theta joinsu
+- it allows to read a few diff aggs in 1 query
+- it's hbm (not sql) querry which returns related (but diff) objects
 
-Pamiętaj że Jakkolwiek nie wyciągasz danych  w jednej transakcji modyfikujesz tylko jeden agregat
-
-
-Używanie id do robienia refów  utrudnia nawigowanie po stronie ui ( które czytają stan agregatu)
-Czasem Wymaga to użycia kilku repozytoriów żeby  pobrać pełne dane dla use Case
-Może to powodować problemy wydajnościowe Jeśli tak warto rozważyć theta joins  lub cqrs
-
-Ciekawostka hbm wspiera ww t-joins
-Pozwala to odczytać chyba kilka powiązanych agregatów w jednym zapytaniu
-T-joint to po prostu hbm zapytania które zwracają 2 różne ale powiązane obiekty, prosta sprawa, 
 
 ### 4.3 scalability and distribution
 
-10 4 3  scalability and Distribution
+- aggs ref themselves by ID
+- as amazon guy says: "almost infinity scalability" can be achieved
 
-Agregaty ryfują się nawzajem przez identity
-Z tego powodu mogą być używany w szerokiej skali
-Prawie Infiniti scalability można osiągnąć( Jak podaje gościu z Amazona) 
-Nie ma Problemu ze skalowalnośćia  Storage
+other plus
+- in app there are many BCs
+- as refs are done by ID then naturally can ref aggs from other BCs
+- it's especially useful if you
+  - modify local agg
+  - and send dEvent (with agg id) about this change
+- naturally: txes are divided between BCs, and eventual consistency is used
 
-Na kwestia
-Typowy projekt DDD zawiera wiele bc
-Ponieważ refy agregatami są  typu id  to możemy refować agregaty z  dalekich bc ( chyba jestem  pewny)
-W szczególności jeśli wysyłamy domain Events zawierające id agregatu,  i siejemy to na wiele bc
-Naturalnie w takim środowisku transakcje rozproszone są między systemy,  mamy   consistent State eventually
 
-## 5 rule: use eventual consistency outside the boundary
+## 5 rule: use eventual consistency (EC) outside the boundary
 
-10 5  role use eventual consistency...
+wg EE 
+- to keep consistency and modify many aggs in 1 request - use eventual consistency
+- this rule regards all cases
+  - with few aggs modified "in 1 req"
+  - with many aggs (eg. even during batch processing)
 
-ee Mówi  Co musi być zrobione żeby zachować modhel consistency  kiedy wiele agregatów musi być zmienionych przy jednym request
-W skrócie,  use eventual consistency
+- you must agree with domain experts is delay ok between modifying objects
 
-Ta zasada dotyczy się bardzo dużych skale( gdzie bardzo dużo agregatów ma być modyfikowanych' jednocześnie')  oraz małych skale z kilkoma agregatami
-Chyba ee ma na myśli nawet Case: batch processing( Kiedy rzeczywiście mnóstwo agregatów jest modyfikowanych)
+impling EC
+- there is agg with method BacklogItem.commitTo(Sprint s)
+- method is command
+- method at the end sends event BacklogItemCommited
+  - n: send is sync, but consumption on subsciber side is async
+- subers 
+  - exec in separated TX (keep rule: modify each agg in 1 tx)
+  - one of subers - will add info about new item to Sprint agg
 
-Uzgodnij z ekspertami domenowymi czy dopuszczalne jest  delay  pomiędzy modyfikacjami instancji
-
-Jak realizować eventual consistency
-Przykład na 365
-Masz agregat  backlog item
-Ma on metodę typu Command  na przykład comitTo
-Komenda na koniec wysyła event  który jest asynchronicznie konsumowany subscribers
-Each subscriber  execute in a separate transaction, keeping  the rule  of modifying one aggregate in one transaction
-Zauważ że metoda Command wysyła event  backlog item komitet
-Zauważ że backlog item ma ref do Sprint id,  backlog item nie jesteśmy zainteresowani  niczym więcej,  encja Sprint lub  inne subscriber  po evencie zmodyfikuje stan Sprint( Sprint Doda do siebie informacje o nowym item) 
-
-What if modification  fails  on subscriber side
-Modification can be retried  jeśli subskrajber nie potwierdzi sukcesu do mechanizmu messaging
-Message will be redelivered  do momentu aż osiągniemy consistency
-There Can Be many   prób  dopóki messaging nie otrzyma potwierdzenia
-Można ustawić limit prób
-Wówczas po failu  może trzeba będzie skompensować transakcje  albo przynajmniej zaraportować problem żeby  user mogły zareagować
-
-Ciekawostka, VV rekomenduje robienie  powtórzeń nieliniowo, znaczy każda następna próba jest robiona Z
- opóźnieniem jednej sekundy dwóch sekund 4, 8 i tak dalej
+what if modification fails on suber side
+- modification can be retried
+  - if no ack from suber that modification done -> event is redelivered
+    // q: how message infra gets info about 'event handled'?
+  - there can be many retries until
+    - app gets ack "message handled"
+    - and consistency is finally achieved
+- but there should be limit of tries - after this you should
+  - either compensate tx
+  - at least report problem to user/admin - to react
+    
+c: do retires non-linear
+- retry next redelivery with longer and longer delay
+- start with delay 1sec, then 2sec, then 4sec - until limit
  
 
 ### 5.1 ask whose job it is
 
-10 5 1   ask whose job it is
+- sometimes it's hard to guess what consistency to apply (tx or eventaul)
 
-Czasem trudno określić Czy można  transactional or eventual consistency
-Z powodów technicznych niektórzy ( zwykle ci używający cqrs) preferują eventual consistency,
-Inni( ci którzy używają klasycznego podejścia no cqrs)   transactional consistency
-Ale to bzdura
-
-Według e e Trzeba sprawdzić  czyim zadaniem  jest zapewnienie konsystencji   danych
-Jeśli to zadania Użytkownika który wykonuje use-case -  Wykonaj zadanie w transakcji 
-Jeśli to zadanie innego użytkownika lub systemu to Wykonaj zadanie w eventual consistency
+wg EE - to decide on method
+- assess whose responsibility is to assure consistency
+  - if user (who calls particular use-case) - do task in 1 tx
+  - if another user or system - do task in EC
+  
 
 ## 6 reason to break the rules
 
