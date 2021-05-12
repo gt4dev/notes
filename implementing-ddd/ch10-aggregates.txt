@@ -210,7 +210,6 @@ if in 1 tx you must modify many agg - it's v strong info that there is
   - is faster (less time take load to mem)
   - consumes less mem
 
-VVVVVVVVVVVV cont here
 
 ### 4.2 model navigation
 
@@ -308,55 +307,181 @@ wg EE - to decide on method
   - if another user or system - do task in EC
   
 
+
 ## 6 reason to break the rules
 
+- czasem można zapisać w kilka aggs w 1 tx
+- ponizej sa 4 powody (ale nie jedyne)
 
 
 ### 6.1 r1: user interface convinience
 
+- czasem user na 1 ekranie tworzy kilka np. nowych BacklogItems
+- taki UC obsługujemy w 1 metodzie  
+- np. AS.planBatchOfBacklogItems[productId, tenantId, BItemDesc[] seriaNowychDanych]
+- w/w metoda wewn. tworzy klika instancji BItems i dodaje je kolejno do BItemRepo, w 1 tx
 
+- nie ma tu problems z niezachowaniem invariants - bo tworzymy nowy BItems
+
+- n: chyba zachowanie inwariants jest kryterium czy mozna zlamac agg-rule
+
+
+VVVVVVVVVVVVV CONT. HERE 
 
 ### 6.2 r2: lack of technical mechanism
+
+Używanie eventual consistency  wymaga pewnych  mechanizmów  takich jak messaging, timers, backtround threads 
+niektóre Projekty takich rzeczy nie posiadają, dziwne ale się zdarza
+
+
+W takiej sytuacji możemy zakończyć z large aggregates ( bo nie będziemy mogli używać event, cons.)
+To obniży wydajność i skalowalność
+W Takiej sytuacji rozważy rozdrobnienie agregatów
+Problemem może być to opór biznesy do zmiany w specyfikacji
+W takiej sytuacji możemy zostać zmuszeni do modyfikacji Wielu agregatów z jednej transakcji
 
 
 
 ### 6.3 r3: global transacitons
 
+Konieczność dostosowania tak zwanych global,two-phase commit txes
+
+
+Chociaż sam wymóg stosowania powyższych transakcji nie zmusza nas do zapisów wielu agregatów w jednej
+Jeśli ci się uda spróbuj uniknąć się zapisów wielu agregatu[ mimo stosowania powyższego mechanizmu transakcji]
+
 
 
 ### 6.4 r4: query performance
+
+Czasami po prostu trzeba mieć referencje do innego agregatu w naszym agregacie
+Bo to ułatwia wydajność działania zapytanie w repozytoriach
+Da się to załatwić ale trzeba spojrzeć na wielkość podwojnego agregatu, ogólne problemy z wydajnością
 
 
 
 ### 6.5 adhering to the rules
 
+Możesz spotkać się z wieloma ograniczeniami które wymuszają złamanie zasad
+Tylko pamiętaj że w długim terminie trzymanie się tych zasad usprawni projekt
+Będziesz miał
+consistency dokładnie tam gdzie potrzeba
+Wydajność 
+skalowalność
+
 
 
 ## 7 gaining insight through discovery
 
+// w rozdziale głównie Staramy się zastosować zasady agregatów, i obserwujemy jak wpływają / przeprojektowuja one na model domeny
 
 
 ### 7.1 rethinking the design, again
 
 
+Aktualny model domeny jest na rysunku 10 7
+Agregaty podzielone są na małe elementy
+Agregaty refuja do siebie nawzajem przez Id
+
+
+ciekawe, specyfikacja wymaga By jesli task hours spadną do zera, to automatycznie bitem ustawić na zrobiony
+Jest to inwariant Dlatego bi oraz kask są trzymane w 1 ag
+
+
 
 ### 7.2 estimating aggregate cost
+
+Technika bote [back of the envelope] do estymowania ilosci obiektow bioracych udzial w UC
+Zgrubienie określę czas trwania Sprint,  ilość tasków w Sprint ... Ilość obiektów b item , Task  itd
+Wyszlo 144 obketky na pojedyncze BItem
 
 
 
 ### 7.3 common usage scenarios
 
+Ciekawostka jak jest zbudowane optimistic concurrency dla klasy task
+Musi być możliwość że dwóch użytkowników dodaje nowe taski,  i nie blokują sobie nawzajem będą bitem
+Każda encja ma swoją wersję[ pole klasy] z optymisty konkurencją
+Każda encja niezależnie modyfikuje wersję
+
+Jest problem
+Dodanie nowego Task większa wersję backlog item
+Zatem dodanie dwóch równoległe tasks  spowodujee konflikt
+
+Może trzeba zoptymalizować hbm wyłączyć optimistic lock
+Optimistic Lock w typowej konfiguracji równa się version,  teraz ustawimy False
+Prawdopodobnie   ustawiane jest to na bitem, <class>
+Ciekawe że dopuszczalna jest i opłacana taka modyfikacja
+
+W tym przypadku, dodawania task do b item,  Musimy wprowadzić mechanizm który pozwoli na równoległe dodawanie wielu tasks
+Optimistic locking=version nie sprawdzisie tu
+
+Widać to bardzo wyraźnie że strategia lockowania musi zależeć od konkretnego uc
+I stanowi to pewną heurystyke,  bo nigdy nie wiemy czy założenia okażą się słuszne,  Użytkownicy moga działać inaczej
+I w konsekwencji jednak będzie dużo failed tx
+Z drugiej strony Niedopuszczalne są nadpisywania danych  nawzajem przez użytkowników
+
 
 
 ### 7.4 memory consumption
+
+Nic specjalnego
+Ile obiektów jest ładowanych przy robieniu estymatów w bi
+
+Ciekawe że tasks sa ładowane  through lazy loading
+Inside dark that are vo [ estimation log entry] which are also lazy load
+
+Według VV przy jednym żądaniu ładowanych jest 25 obiektów [ w trakcie ładowania agregat bi]
+Według VV  25 to niedużo
+
+Ciekawe
+Nie do końca rozumiem
+Ale chyba podczas ładowania tematów  wykonywany jest podwójny lazy loading[ najpierw dlatask  potem dla log entry]
+Robione jest to [ lazy loading] podczas jednego żądania
+Według VV należy zrobić testy/ Analiza problemu czy jest to akceptowalne[ nie od razu optymalizować  być może nieistniejący problem]
 
 
 
 ### 7.5 exploring another alternative design
 
+Here are the tested alternative approaches to design  aggregates boundaries
+
+Można by zrobić agregat z klasy Task [ estimatuin log entry  zostawiamy jako vo]
+W rezultacie zaoszczędzimy pamięć[ mniej obiektów będzie ładowanych podczas rzadania tematów]
+Nie będzie tez Lazy loading
+
+Będzie problem z opóźnieniem ustawienia Bi  na status zrobione, jak  zadania będą miały czas 0.
+Biznes Akceptuję to opóźnienia,  więc w to idziemy
+
 
 
 ### 7.6 implememnting eventual consistency
+
+// q:   jak robione jest message redelivery,   in the case of failure
+
+Przykłady
+Klasa task [ agregat] ma metodę  estimated hours remaining[]
+Na końcu metody wysyłany jest  event task hours remaining estimated
+Event zawiera dane:  BItem ID,  Tusk ID, hours remaining...
+Subscriber  będzie słuchał tego eventu
+Jeśli spotka event to z deleguje do domain service zadanie
+.  z repozytorium bi  pobrać bi z eventu
+.  z repozytorium Task pobrać task eventu
+.  na metodzie Task ponoć komendę estimate task Hours remaining[hoursremaining, task] 
+.   dzięki temu Bi  może zmienić stan na zrobione
+
+Można zoptymalizować ten flow
+//  nie pasuje do przykładu  ale idea jest okej
+Zamiast czytać wszystkie Task i sprawdzać ich remaining Hours
+Specjalizowane querrey w Task repo -   na poziomie bazy Oblicz remaining Hours wszystkich Tasks w , bez czytania samych tasks w calosci do mem
+Umiesc Je w metodzie  hibernate.task  repo /  total backlog item dusk hours remaining[ tenantid, biid]
+
+
+To Trochę Komplikuje ui
+Bo co pokazać użytkownikowi,  Task  będzie  zmieniony szybko,  ale b i  z opóźnieniem
+I co pokazać użytkownikowi?
+Może najprościej pokazać aktualny status Bi jest nieznany że użytkownik musi odświeżyć screen za jakiś czas
+Question: you can apply await mechanism?
 
 
 
