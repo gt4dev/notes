@@ -326,75 +326,66 @@ wg EE - to decide on method
 - n: chyba zachowanie inwariants jest kryterium czy mozna zlamac agg-rule
 
 
-VVVVVVVVVVVVV CONT. HERE 
-
 ### 6.2 r2: lack of technical mechanism
 
-Używanie eventual consistency  wymaga pewnych  mechanizmów  takich jak messaging, timers, backtround threads 
-niektóre Projekty takich rzeczy nie posiadają, dziwne ale się zdarza
+- using eventual consistency reqs some infra (messaging, timers, backround threads ..)
+- some projs don't have access to it - sad but true
 
+- as we won't use EC -> proj p/b will have large aggregates
+- this will decrese performance/scalaebility
 
-W takiej sytuacji możemy zakończyć z large aggregates ( bo nie będziemy mogli używać event, cons.)
-To obniży wydajność i skalowalność
-W Takiej sytuacji rozważy rozdrobnienie agregatów
-Problemem może być to opór biznesy do zmiany w specyfikacji
-W takiej sytuacji możemy zostać zmuszeni do modyfikacji Wielu agregatów z jednej transakcji
-
+- thus: consider creating small aggs
+- if business doesn't allow to change spec --then--> no choice: you can modify many aggs in 1 tx
 
 
 ### 6.3 r3: global transacitons
 
-Konieczność dostosowania tak zwanych global,two-phase commit txes
-
-
-Chociaż sam wymóg stosowania powyższych transakcji nie zmusza nas do zapisów wielu agregatów w jednej
-Jeśli ci się uda spróbuj uniknąć się zapisów wielu agregatu[ mimo stosowania powyższego mechanizmu transakcji]
-
+- if you must global, 2-phase tx-es - then it looks natural to modify many aggs in 1 tx
+- but it DOESN'T directly force us to modify many aggs in 1 tx
+- thus: if possible - avoid even here modifying many aggs in 1 tx
 
 
 ### 6.4 r4: query performance
 
-Czasami po prostu trzeba mieć referencje do innego agregatu w naszym agregacie
-Bo to ułatwia wydajność działania zapytanie w repozytoriach
-Da się to załatwić ale trzeba spojrzeć na wielkość podwojnego agregatu, ogólne problemy z wydajnością
-
+- sometimes you must have "live" ref from agg1 to agg2
+  - cause eg it ease doing fetching data etc
+- you can do it but remember about "perfomrance etc." problems
 
 
 ### 6.5 adhering to the rules
 
-Możesz spotkać się z wieloma ograniczeniami które wymuszają złamanie zasad
-Tylko pamiętaj że w długim terminie trzymanie się tych zasad usprawni projekt
-Będziesz miał
-consistency dokładnie tam gdzie potrzeba
-Wydajność 
-skalowalność
-
+- there can be many reasons to break rules
+- but remember - in long term - keeping rules ease project, but breaking -> make proj. hard
+- if you keep rules you will have
+  - consistency where it's needed
+  - performance
+  - scaleability
 
 
 ## 7 gaining insight through discovery
 
-// w rozdziale głównie Staramy się zastosować zasady agregatów, i obserwujemy jak wpływają / przeprojektowuja one na model domeny
+// here agg rules are applied and checked how it influence model
 
 
 ### 7.1 rethinking the design, again
 
+current state
+- domain is divided on small elements
+- aggs ref each other by id
 
-Aktualny model domeny jest na rysunku 10 7
-Agregaty podzielone są na małe elementy
-Agregaty refuja do siebie nawzajem przez Id
-
-
-ciekawe, specyfikacja wymaga By jesli task hours spadną do zera, to automatycznie bitem ustawić na zrobiony
-Jest to inwariant Dlatego bi oraz kask są trzymane w 1 ag
-
+c
+- acc to spec: if hours in Tasks in BacklogItem == 0 -> auto set BI as done
+- it's invariant thus BI and Tasks are kept in 1 agg (BI)
 
 
 ### 7.2 estimating aggregate cost
 
-Technika bote [back of the envelope] do estymowania ilosci obiektow bioracych udzial w UC
-Zgrubienie określę czas trwania Sprint,  ilość tasków w Sprint ... Ilość obiektów b item , Task  itd
-Wyszlo 144 obketky na pojedyncze BItem
-
+technika BOTE [back of the envelope] 
+- estymuje ilosci obiektow bioracych udzial w danym UC (ale i ogolnie)
+- przyklad
+  - zgrubienie określ czas trwania Sprint, ilość Tasks in Sprint ... 
+  - zgrubnie policz ilosc obiektów BItem, Task ...
+  - wyszlo: np. 144 obiekty na zaladowanie 1 BI
 
 
 ### 7.3 common usage scenarios
@@ -425,64 +416,59 @@ Z drugiej strony Niedopuszczalne są nadpisywania danych  nawzajem przez użytko
 
 ### 7.4 memory consumption
 
-Nic specjalnego
-Ile obiektów jest ładowanych przy robieniu estymatów w bi
+// nothing special - just count objects loaded in UC
 
-Ciekawe że tasks sa ładowane  through lazy loading
-Inside dark that are vo [ estimation log entry] which are also lazy load
+c: double lazy load ;]
+- Tasks of BacklogItem are lazy-loaded
+- lazy-loaded are also EstimationLogEntry (part of Task)
+- wg VV podczas UC ladowanych jest 25 obiektow - wg VV to nieduzo
 
-Według VV przy jednym żądaniu ładowanych jest 25 obiektów [ w trakcie ładowania agregat bi]
-Według VV  25 to niedużo
-
-Ciekawe
-Nie do końca rozumiem
-Ale chyba podczas ładowania tematów  wykonywany jest podwójny lazy loading[ najpierw dlatask  potem dla log entry]
-Robione jest to [ lazy loading] podczas jednego żądania
-Według VV należy zrobić testy/ Analiza problemu czy jest to akceptowalne[ nie od razu optymalizować  być może nieistniejący problem]
-
+[not sure]
+- during single req is done 'double lazy-loading' (above Tasks, then Esitmates)
+- but wg VV 
+  - optimizing it - should be done after tests/analyses - is it real problem
+  - don't optimize it "now"
 
 
 ### 7.5 exploring another alternative design
 
-Here are the tested alternative approaches to design  aggregates boundaries
+// ch tests alter approaches to agg boundaries
 
-Można by zrobić agregat z klasy Task [ estimatuin log entry  zostawiamy jako vo]
-W rezultacie zaoszczędzimy pamięć[ mniej obiektów będzie ładowanych podczas rzadania tematów]
-Nie będzie tez Lazy loading
-
-Będzie problem z opóźnieniem ustawienia Bi  na status zrobione, jak  zadania będą miały czas 0.
-Biznes Akceptuję to opóźnienia,  więc w to idziemy
-
+idea: wydzielic Task jako osobny agg (wydzielic go poza BI)
+- pros
+  - we save memory (less objects are loaded)
+  - eliminate lazy loading
+- cons: delay in setting BI status to done (due to EC)
+- but business accept it -> idea is accepted
 
 
 ### 7.6 implememnting eventual consistency
 
-// q:   jak robione jest message redelivery,   in the case of failure
+// q: jak robione jest message redelivery (in the case of failure)
 
-Przykłady
-Klasa task [ agregat] ma metodę  estimated hours remaining[]
-Na końcu metody wysyłany jest  event task hours remaining estimated
-Event zawiera dane:  BItem ID,  Tusk ID, hours remaining...
-Subscriber  będzie słuchał tego eventu
-Jeśli spotka event to z deleguje do domain service zadanie
-.  z repozytorium bi  pobrać bi z eventu
-.  z repozytorium Task pobrać task eventu
-.  na metodzie Task ponoć komendę estimate task Hours remaining[hoursremaining, task] 
-.   dzięki temu Bi  może zmienić stan na zrobione
+example - use EC to set BI state
+- agg has method-command Task.estimatedHoursRemaining()
+- on method end event is sent EventTaskHoursRemainingEstimated
+- event has attrs BacklogItemID, TaskID, hoursRemaining, ...
+- suber of a/m event - on event - calls DS which
+  - get BI z repo (by ID from event)
+  - get Task ...
+  - calls BI.estimateTaskHoursRemaining(event.hoursRemaining, task)
+    - this call set BI state to done if no more hours remains
 
-Można zoptymalizować ten flow
-//  nie pasuje do przykładu  ale idea jest okej
-Zamiast czytać wszystkie Task i sprawdzać ich remaining Hours
-Specjalizowane querrey w Task repo -   na poziomie bazy Oblicz remaining Hours wszystkich Tasks w , bez czytania samych tasks w calosci do mem
-Umiesc Je w metodzie  hibernate.task  repo /  total backlog item dusk hours remaining[ tenantid, biid]
+optimalization
+- instead of reading all Tasks for BI (to calc remaining hours)
+- rather create specialized method in repo
+  TotalBacklogItemTaskHoursRemaining(tenantId, biId)
+- which on DB level calcs remaining hours of BI (w/o reading all Tasks to mem)
+- if repo create 
 
 
-To Trochę Komplikuje ui
-Bo co pokazać użytkownikowi,  Task  będzie  zmieniony szybko,  ale b i  z opóźnieniem
-I co pokazać użytkownikowi?
-Może najprościej pokazać aktualny status Bi jest nieznany że użytkownik musi odświeżyć screen za jakiś czas
-Question: you can apply await mechanism?
-
+waiting for EC and refresh UI
+- if you quickly update Task but BI with delay (due to EC)
+- then what to show on UI if task is already modified but BI not yet
+- reced approach: show on UI message (or sth like this): "BI state is calculated, refresh soon"
+- gt: a/m jest slabe, moze lepiej owrapowac calosc w await?
 
 
 ### 7.7 is it the team member's job?
@@ -513,4 +499,4 @@ Question: you can apply await mechanism?
 
 
 
-### 8.5 aboid dependency injection
+### 8.5 avoid dependency injection
