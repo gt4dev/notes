@@ -471,32 +471,154 @@ waiting for EC and refresh UI
 - gt: a/m jest slabe, moze lepiej owrapowac calosc w await?
 
 
+vvvvvvvvvvvvvvv here
+
 ### 7.7 is it the team member's job?
 
+vv-q: who is responsible for setting BS status on done [if all tasks finished]?
+- so far A = it will auto-set [by transactional or eventual consistency]
+- but reqs can change eg: Owner 1st check BI content and then manually close BI [no auto closing BI]
+- in such case
+  - create setting in app
+  - if auto-close = true -> no T/EC is needed [bot for 'true' -> pb use EC]
 
 
 ### 7.8 time to decision
 
+// nothing special
 
 
 ## 8 implementation
 
+// nothing special
 
 
 ### 8.1 create a rool entity with unique identity
 
+// nothing special
+
+N
+- class Product extends ConcurrencySafeEntity
+- CSE (layer SuperType) gives 
+  - surrogate identity
+  - optimistic concurrency versioning
+q: how works SId?
+
+C
+class Product has property Set<ProductBacklogItem>
+don't mistake it with BacklogItem
+it's used for sorting of BI
+
+C
+- Product ma id: domenowe i surrogate
+- w konstruktorze Product podajemy id domenowe
+- surrogate jest pp ustawione przez baze
 
 
 ### 8.2 favor value object parts
 
+- czesci agg staraj sie modelowac jako VO [a nie E]
+
+C
+- Product ma ref do Tenant przez TenantId
+- Tenant jest z innego bc niż Product
+- wiec musi być ref'owany przez Id
+  - to wazna regula = aggregaty z innych BC refuj sie przez Id
+- dodatkowo wewn. BC mama politykę refowania aggs przez Id
+
+C: intergr. BCs sample
+Product ma ref do ProductiveDiscussion [VO]
+ProductDiscussion represents Discussion [on product] agg from another bc
+n: PD jest eventually consistent względem zmian Discussion z BC
+  - zmiany sa propagowane do obiektu Product [do attr PD]
+    - za pomoca eventu
+    - w kolejnej transakcji
+
+MegaC
+- ProductBacklogItem is an E [but could be VO]
+- but as VO there'd be performance problems
+- casuse: in case of soritng change
+  - trzeba by wywalic old collection of VOs i wstawic nowa calo collection
+- as we use E - we set only attr 'ordering' [and quickly change sorting]
+
+- aspekt techniczny wplynac na model domenowy
+- pytanie czy "mocno wplynal" [czy user of Product widzi diff w API]
+- teroetycznie techs nie powinny wplywac na model
+- ale VV tutaj recoms this way
+
+C
+- use of key-value store 'd let use VO [instead of E]
+- thus as seen - tech highly influence details of model
+  - but is it publicly visible in domain [these tech details]?
 
 
 ### 8.3 using law of Demeter and tell, don't ask
 
+design principles:
+- law of demeter
+- tell, don't ask
+
+both promo hiding infos
+
+LOD
+- promotes rule of using 'least needed knowledge'
+- sample: 2x object = client, server
+- when client (c) calls server (s) - C should
+  - only know how to call command on server [but also querry]
+  - not know S internals [properties ...]
+- thus C should not call internal parts of S
+  - if such calls are needed then
+    - server expose method [which delegates to internal part]
+    - and C calls 'internal' only by this method
+
+LOD recap
+dana metoda obiektu moze wolac inne metody
+- tego obiektu
+- parametrow przekazanych metodzie
+- obiektu ktory stowrzyla
+- self-contained parts [obiekty zagregowane [w sensie UML] w this]
+
+
+TDA
+- regula: mowimy obiektowi co ma zrobic
+- C nie: pyta S jakies info, decyduje na tej bazie co zrobic, kaze S to zrobic
+- C mowi S co ma zrobic [mowi przez wolanie commands]
+
+- TDA/LOD są podobne
+- acz TDA prosciej szeroko stosowac
+
+
+sample: client calls
+
+void Product.reorderFrom(BacklogItemId anId, int anOrdering) {
+  // some internals, more details not visible to user
+}
+  - it's command
+  - client has "least knowledge" to perfom call
+    - params are "primitive", 100% needed types [no polution]
+    - internals of Product are not know to client]
+  
+Set<ProductBI> Product.backlogItems() { ... }
+  - it's querry
+  - n: it's return ProductBI [VO] not BI [E]
+    - PBI is small [least knowledge]
+    - it doesn't publish "internals" of P
+
+C
+- caly kod klasy 'd minimize knowlegde to minimum [needed to perform task]
+- w ten sposob klasa bedzie prostsza
+
+- LOD jest bardziej wymagające niz TDA
+- LOD zakazuje klientowmi nawigowac po grafie obiektow agg
+- TDA pozwala na nawigazje [nie zakazuje jej;]
+  - ale wymusza modyfikacje stanu agg przez commands
+
+C
+- czasem agg moze stosowac tylko TDA [bez LOD]
+- jest to ok
 
 
 ### 8.4 optimistic concurrency
-
 
 
 ### 8.5 avoid dependency injection
