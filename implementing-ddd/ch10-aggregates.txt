@@ -2,13 +2,14 @@
 
 - grupowanie encji i vo w agregaty to jeden z mniej zrozumiałych tematów DDD
 
-- typowy problem to robienie zbyt duzych agg (i zagniezdzanie full entities)
-- nie mozna tez pociac agg na 'zbyt male' bo to nie chroni invariants
+- typowy problemy - robienie aggs zbyt
+  - duzych agg (i zagniezdzanie full entities)
+  - malych - bo to nie chroni invariants
 
 
 ## 1 using aggregates in the scrum core domain
 
-- samples base on bc=apm
+- samples base on BC APM
 
 
 ### 1.1 1st attempt: large-cluster aggregate
@@ -560,58 +561,59 @@ design principles:
 
 both promo hiding infos
 
-LOD
-- promotes rule of using 'least needed knowledge'
-- sample: 2x object = client, server
-- when client (c) calls server (s) - C should
-  - only know how to call command on server [but also querry]
-  - not know S internals [properties ...]
-- thus C should not call internal parts of S
-  - if such calls are needed then
-    - server expose method [which delegates to internal part]
-    - and C calls 'internal' only by this method
 
-LOD recap
-dana metoda obiektu moze wolac inne metody
-- tego obiektu
-- parametrow przekazanych metodzie
-- obiektu ktory stowrzyla
-- self-contained parts [obiekty zagregowane [w sensie UML] w this]
+LOD
+- promotes using 'least needed knowledge'
+- sample: objects = client (C), server (S)
+- when C calls S - C should
+  - only know how to call command/querry on server
+  - NOT know S internals [properties ...]
+- C should not call internal parts of S
+- if such calls are needed then
+  - S exposes method [which delegates to internal part]
+  - and C calls 'internal' only by this method
+- metoda obiektu moze wolac inne metody
+  - nalezace do tego obiektu
+  - parametrow przekazanych tej metodzie
+  - obiektu ktory stworzyla
+  - of self-contained parts [obiektow zagregowane [w sensie UML] w "this"]
 
 
 TDA
 - regula: mowimy obiektowi co ma zrobic
-- C nie: pyta S jakies info, decyduje na tej bazie co zrobic, kaze S to zrobic
-- C mowi S co ma zrobic [mowi przez wolanie commands]
+- przyklad
+- bad: C pyta S o dane, decyduje co robic, kaze S to robic
+- good: C "mowi" S co ma zrobic [C wola command on S]
+
 
 - TDA/LOD są podobne
 - acz TDA prosciej szeroko stosowac
 
 
-sample: client calls
 
-void Product.reorderFrom(BacklogItemId anId, int anOrdering) {
-  // some internals, more details not visible to user
-}
-  - it's command
-  - client has "least knowledge" to perfom call
-    - params are "primitive", 100% needed types [no polution]
-    - internals of Product are not know to client]
+SAMPLE
+- client calls
+    void Product.reorderFrom(BacklogItemId anId, int anOrdering) { ... }
+- it's command
+- client has "least knowledge" to perfom call
+  - params are "primitive", 100% needed [no polution]
+  - internals of Product are not know to client]
   
-Set<ProductBI> Product.backlogItems() { ... }
-  - it's querry
-  - n: it's return ProductBI [VO] not BI [E]
-    - PBI is small [least knowledge]
-    - it doesn't publish "internals" of P
+- client calls
+    Set<ProductBI> Product.backlogItems() { ... }
+- it's querry
+- n: it's return ProductBI [VO] not BI [E]
+  - PBI is small [least knowledge]
+  - it doesn't publish "internals" of P
 
-C
-- caly kod klasy 'd minimize knowlegde to minimum [needed to perform task]
-- w ten sposob klasa bedzie prostsza
+
+- caly kod w klasie powinen minimize knowlegde [minimun to perform task]
 
 - LOD jest bardziej wymagające niz TDA
-- LOD zakazuje klientowmi nawigowac po grafie obiektow agg
-- TDA pozwala na nawigazje [nie zakazuje jej;]
-  - ale wymusza modyfikacje stanu agg przez commands
+- LOD zakazuje klientowmi nawigowac po grafie obiektow (eg. agg)
+- TDA 
+  - pozwala na nawigacje [nie zakazuje jej ;]
+  - wymusza modyfikacje stanu agg przez commands
 
 C
 - czasem agg moze stosowac tylko TDA [bez LOD]
@@ -620,5 +622,72 @@ C
 
 ### 8.4 optimistic concurrency
 
+- musimy ustalic gdzie ustawic attr. version z mech. OC
+- wydaje sie ze best jest v tylko root entity of agg
+- wowczas zwiekszamy ver of root przy kazdej zmianie w graniach agg [nawet w sum-E]
+- zapobiegnie to modyf. 1 attr przez wieli klientow
+- ale to "srednio-fajne" [brudzi kod agg] i jest czesto niepotrzebne
+// q: to jak chronimy invariants - skoro sub-E maja own versions
+
+- z: uzywamy hbm
+- kiedy w agg Product zmieniamy name/desc/.. - to podbijamy version of root
+- to ok (and easy) bo to direct elems of root
+- ale jak zmieniac ver kiedy zmienia sie order of BacklogItems [
+- modyf. ProductBacklogItem nie jest widziana przez HBM jako zmiana Product [przez mech. version'owania]
+- teor. mozna obejsc w/w przez sztuczne podbijanie agg/Product przy zmianie PBI
+Product.reorderFrom(..) {
+  // read ProductBacklogItem
+  // modify PBI
+  version(version() + 1) // sztucznie podbij Product.version
+}
+
+probs with w/w
+- Product.version zmienia sie takze jesli call to reorderFrom(..) nie zmienia kolejnosci
+- wyciek infra do modelu
+  
+fix
+- przy modyf PBI nie musimy podbijac P.version
+- PBI moga miec own OC
+- OC bedzie chronic modyf. single PBI przez wielu users
+
+mega-c
+- PBI sluzy tylko i wylacznie do sortowanie BIs
+- jest sub-E a ma ref do TenantId, ProductId ... -> hence
+  - sub-E moga refowac do innych E/aggs - ale tylko przez ID [p/p]
+  - zakaz jest refowania z sub-E do innych aggs po 'ref' [p/p]
+
+- versioning all E parts doesn't work in every case
+- sometimes [to protect invariants] we must modify root version
+- best do it by modifying properties of root e
+  - wowczas root ver is auto increased
+- this strategy can work also for modifying deeper parts of agg
+  - zmien wowczas property na root [hmm? sth wrong..]
+  
+alter way
+- use hooks provided by hbm
+- wowczas
+  - cfg root jako dirty
+  - a hbm auto informs us that some inner part was changed 
+  - and then auto set root as dirty
+- ale: trzeba uzyc bidirectional relation
+  - co EE bardzo odradza
+  - mozna bi uzyc ale w rzadkich, uzasadnionych cases
+    - na pewno nie dla mech. dirty i OptimisticConcurreny
+    
+alter way
+- podziel agg na mniejsze i uzywaj std OC
+- niezalecane - bo domene ksztaltuje infra
+- ale moze byc uzasadnione wielkosci, wydajnoscia root'a
+
+- wg VV problemu nie ma w techs gdzie agg zapisujemy jako calosc [mongo, riak ..]
+- gt: ale pewnie sa problemy z brakiem OC ;]
+
 
 ### 8.5 avoid dependency injection
+
+- injecting repos or DS to aggs - is bad
+- bo aggs moga przez to robic look-up'y/dociagaja inne aggs
+- reced way: find all aggs before calling command on agg (which needs these pre-loaded aggs)
+- 'disconnected domain model' is not reced
+
+- racze wstrzykuj Repos, DS do AS etc.
