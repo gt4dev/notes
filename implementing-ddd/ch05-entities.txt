@@ -2,8 +2,8 @@
 
 - devs mają tendencję do skupiania się na danych a nie domenie
   - nie buduja "rich behaviors" 
-  - skupiaja sie tylko na danych, atrybutach, asocjacjach
-- to bez sensu - bo sa tool'e do generowania kodu z modelu db
+  - buduja struktury, atrybuty, asocjacje
+- to bez sensu - sa tool'e do generowania kodu z modelu db
 
 
 ## Why We Use Entities
@@ -11,16 +11,16 @@
 - use entity 
   - to express individuality of object
   - when you want distinguish object from others
-- entity is identified and can change (even heavely!) in long time
+- entity is identified and can change (even heavely) in long time
   - final E can be totally diff from 'start version'
   - but still has the same identity
 
-that diffs E from VO
+that diffs E from VO:
 - unique identity
 - mutability
 
-n: devs often overuse Es, where VO would be better than E
-if you "overuse E" then maybe you need CRUD not DDD?
+n: devs often overuse Es, where VO would be better
+if you "overuse E" then maybe you need CRUD not DDD
 
 
 ## Unique Identity (UI)
@@ -31,10 +31,11 @@ n: on start of projecting E
 - focus on
   - defining identity
   - ways of finding, matching Es
-- maybe add important behaviours for E (and attrs required by it)
+- add important behaviours for E (and attrs required by it)
 - forget about rest (other attrs/behaviours)
 
 - human readable identities can be used for ease finding/matching Es
+- but it's not oblig. for finding Es
 
 use VO as holders for I
 - VO is immutable = assure I stability
@@ -46,14 +47,14 @@ typical strategies of creating I (in order: easy -> hard)
 - user provides vaules which create UI (app assure that values are ok)
 - aplikacja generuje identity
 - persistence store zapewnia identity
-- inny BC już mam entity z UI i my je używamy
-
+- inny BC mam entity z UI i my je używamy
 
 
 ### User Provides Identity
 
 user ustala wartosci I
-- albo sam wprowadza (n: human readable)
+- albo sam wprowadza
+  - so it's human readable
 - albo wybiera z listy
 
 problem
@@ -61,14 +62,13 @@ problem
 - a identity musi być niezmienne
 - choc czasem można pozwolić user'owi na zmiane
 
-chyba lepiej dane od user'a zapisać w zwykłych properties
+- chyba lepiej dane od user'a zapisać w zwykłych properties
 - nie rob z nich UI
-
 
 
 ### Application Generates Identity
 
-to quite reliable sposoby generowanie unikalnych identity
+quite reliable way of generating unique identity
 trzeba uważać w klastrach i rozproszonych węzłach
 
 zwykle do wyliczenie ID używane są
@@ -82,32 +82,31 @@ zwykle do wyliczenie ID używane są
 
 c: w Java UUID mozna generowac na 4 sposoby (random, z "input text" ..)
 
-- czasem (rzadko) problemem jest rozmiar ID pamięci
-- stosuj wowczas ID'y z bazy (8B Long, 4B int)
+- czasem (rzadko) problemem jest rozmiar ID w pamięci
+- stosuj wowczas ID'y z bazy (8B long, 4B int)
 
 - dla lokalnych (w ramach Agg) entity można skrócić identity do kilku bajtów
 - acz "aggregat root" wymaga global unique identity
-
 
 custom/combined identity - example
 - join in ID a few element, np: "APM-20210324-123abc" gdzie np
   - APM = TLS nazwy BC'a
   - data utworzenie ID
   - krotkie UI
-- takie ID moze byc HumanReadable
-  - co jest wazne przy komunikacji z klientem/czlowiekem
-- ID takie trzymaj w VO (z pomocniczymi metodami eg MyId.GetDate():MyDate
+- takie ID jest HumanReadable
+  - a to jest wazne przy komunikacji z klientem/czlowiekem
+- ID takie trzymaj w VO 
+  - z ew. metodami MyId.GetDate():MyDate
 
-
-- kod tworzenie UI umiesc w repo np
+- tworzenie UI wrzuc do repo
   MyAggRepo.NextIdentity():MyAggId
-- q: gdzie metoda do gener ID dla non-agg/local?
-  - a: pewnie w repo 'root/owning aggregatu'
+// q: gdzie metoda do gener ID dla non-agg/local?
+// a: pewnie w repo 'root/owning aggregatu'
 
 
 ### Persistence Mechanism Generates Identity
 
-- c: unique values = f(type)
+- c: amount of unique values = f(type of field)
   int =  4B = 2*10^9
   long = 8B = 9*10^18
 
@@ -128,30 +127,26 @@ impl late ID - typical way
 impl early IDs
 - yes, early is possible for "DB src"
 - create in repo method NextIdentity():ProductId
-- NextIdentity can create and return "next value" from DB sequence/cache/...
+- NextIdentity can create and return "next value" using DB sequence/cache/...
 
 
 ### Another Bounded Context Assigns Identity
 
-- n: see integration details are in chapters: 3-ctx-maps, 14-integr-bcs
-
 flow
 - 1st: find partucular identity in BC2 by
-  - API exposed by BC2
-    - searching, fetching data matching criterias (email, tax id ..)
-  - show this data (if many rows) to user
-  - user picks 1 "row" - get identity from it
-- use this identity locally!!! in your BC1
+  - BC2 exposes API, use it to search data [IDs] matching criterias (email, tax id ..)
+  - if many rows: show this data to user
+  - user picks 1 "row" -> you get identity from it
+- use this (exactly copied!) identity locally!!! in your BC1
 
 problems
-- data in BC2 can heavily change and maybe these changes must visible in BC1?
-- BC1 should listen for Domain Events from BC2 (so changes can be updated)
+- data in BC2 can heavily change and maybe these changes must visible in BC1
+  - BC1 should listen for Domain Events from BC2 (so changes can be updated)
 - sometimes BC1 modify "imported data" and must send (by DEvents) to BC2
 
-- it's hardes way of generating identity
-  - out entity (its identity) depends on outer system
+- it's the hardes way of generating identity
+- our entity (its identity) depends on outer system
 - pick as last way
-
 
 
 ### When the Timing of Identity Generation Matters
@@ -168,10 +163,10 @@ flow for late ID
   - creates object (w/o ID)
   - add it to repo
 - repo persist obj
-- ID is generated (by DB, but not only)
+- ID is generated (by DB etc)
 - ID is assigned to entity object
 
-"late ID" is problematic 
+"late ID" is problematic
 - with domain events
   - when obj is created - we want to generate event
   - but ID is not yet assigned
@@ -184,16 +179,16 @@ flow for late ID
 
 
 ### Surrogate Identity (SI)
-- identyfikator zastepczy
 
-- typowy ORM (eg: HBM) preferuje natywnych primer identity z baz danych
-- on DB side it can be: numeric, sequence; 
-- on VM side: long, int
+- typowy ORM (HBM) preferuje natywne primer identity [z DB]
+- this identity on 
+  - DB side it can be: numeric, sequence
+  - VM side: long, int
 - domena czesto wymaga innego identity np: guid, user-name ...
-  
-easy solution solution - use 2 identities
-- 1st - from domain (and fulfilling domain reqs)
-- 2nd - surrogate identity - spelnia ORM reqs
+
+solution - use 2 identities
+- 1st - domain - fulfil domain reqs
+- 2nd - surrogate identity - fulfil ORM reqs
 
 impl
 - add to MyEntity field: "long id" (or int ..)
@@ -203,23 +198,24 @@ impl
 hide & optimize SI
 - hide SI on client/model side
 - create "abstract class IdentifiedDomainObject" with field "private long id"
-c: it's LaterSuperType pattern (from EAA)
-n: in CH10-Agg VV creates "EntityBase" with a above + optimistic concurency
+- it's LayerSuperType pattern (from EAA)
+
+c: in CH10-Agg VV creates "EntityBase" with a above + optimistic concurency
 
 c: VV ustawia db constranins w table
-- SI - primary na kolumnie: id
-- domain identity - unique na: tenant_id_id, username
-n: DI tez jest zamodelowane w DB
+- surrogate indetity - "primary" na col: id
+- domain identity - "unique" na cols: tenant_id_id, username
 
 n: przykladzie User
-- identyfikator domenowy składa się z dwóch pol (TenantId, username)
-- pola te nie wyrozniaja sie z kodu klasy User (ok, poza uzyciem ich w equals)
-- conc: client E (na bazie jej API) "musi zgadnac" co jest jej ID
-- w DB jest zalozony unique key - ale more to protect data than identify
+- domain ID constis of TenantId + username
+- pola te w kodzie Java sa zwyklymi polami + sa uzyte equals/hashCode
+- w DB jest zalozony unique key
 
 - SI w DB can be used to keep referential integrity miedzy tabelami
-- q: tez miedzy agregatami?
+// q: tez miedzy agregatami?
 
+
+vvvvv cont. here
 
 ### Identity Stability
 
