@@ -9,10 +9,12 @@
 
 ## 1 using aggregates in the scrum core domain
 
+
 - samples base on BC APM
 
 
 ### 1.1 1st attempt: large-cluster aggregate
+
 
 - assume Product is very large agg
 - contains objects: BacklogItem, Release, Sprint ..
@@ -44,6 +46,7 @@ n: poza fails of tx - large agg has other probs
 
 
 ### 1.2 2nd attempt: multiple aggregates
+
 
 consider another model
 - 4 aggs: Product, BacklogItem, Release, Sprint
@@ -87,6 +90,7 @@ c: w modelu 'large' mozna ustawic HBM/optimisticLock=false
 
 ## 2 rule: model true invariants in consistency boundaries
 
+
 - zeby odkryć agregaty (w BC) musimy odkryć true invariants modelu - musimy!!!
 - niezmienniki wyznaczaja zawartość/granice agg
 
@@ -128,6 +132,7 @@ n
 
 ## 3 rule: design small aggregates
 
+
 std problems with large aggs
 - tx conflicts
 - performance
@@ -165,6 +170,7 @@ c: w avg projekcie biznesowym
 
 ### 3.1  don't trust every use case
 
+
 - typowa specyfikacja opisuje use cases
 - trzeba do niej dolaczyc decyzje o tworzeniu agg
 
@@ -181,6 +187,7 @@ n
 
 
 ## 4 rule: reference other aggregates by identity
+
 
 - kuszaca jest wizja duzego grafu obiektow (compositional structure) z opcja dalekiej nawigacji
 
@@ -202,6 +209,7 @@ if in 1 tx you must modify many agg - it's strong info that there is
 
 ### 4.1 making aggregates work together through identity reference
 
+
 - prefer refing between aggs by IDs
 - sample
   class BacklogItem : ConcurrencySafeEntity {
@@ -214,6 +222,7 @@ if in 1 tx you must modify many agg - it's strong info that there is
 
 
 ### 4.2 model navigation
+
 
 how to navigate with only ID
 - way 1 - "disconnected domain model"
@@ -253,6 +262,7 @@ c: hbm and theta joins
 
 ### 4.3 scalability and distribution
 
+
 - aggs ref themselves by ID
 - amazon guy says: "almost infinity scalability can be achieved"
 
@@ -268,6 +278,7 @@ other plus
 
 
 ## 5 rule: use eventual consistency (EC) outside the boundary
+
 
 wg EE 
 - to keep consistency and modify many aggs in 1 request - use eventual consistency
@@ -301,6 +312,7 @@ c: do non-linear retires
 
 ### 5.1 ask whose job it is
 
+
 - sometimes it's hard to guess which consistency to apply (tx / eventual)
 - wg EE - assess whose responsibility is to assure consistency
   - if user (who calls particular use-case) - do task in 1 tx
@@ -309,11 +321,13 @@ c: do non-linear retires
 
 ## 6 reason to break the rules
 
+
 - czasem można zapisać w kilka aggs w 1 tx
 - ponizej 4 powody nie sa jedyne
 
 
 ### 6.1 r1: user interface convinience
+
 
 - user na 1 ekranie tworzy kilka nowych aggs np. BacklogItems
 - taki UC obsługujemy w 1 metodzie  
@@ -326,6 +340,7 @@ c: do non-linear retires
 
 
 ### 6.2 r2: lack of technical mechanism
+
 
 - using eventual consistency reqs some infra (messaging, timers, background threads ..)
 - some projs don't have it - sad but true
@@ -340,6 +355,7 @@ way2
 
 ### 6.3 r3: global transacitons
 
+
 - if you must use global, 2-phase TX-es - then it looks ok to modify many aggs in 1 tx
 - but it DOESN'T directly force us to so
 - if possible - avoid even here modifying many aggs in 1 tx
@@ -347,12 +363,14 @@ way2
 
 ### 6.4 r4: query performance
 
+
 - sometimes you must have "live" ref from agg1 to agg2
   - due to ease doing fetching data ...
 - you can do it but remember about "perfomrance etc." problems
 
 
 ### 6.5 adhering to the rules
+
 
 - there can be many reasons to break rules
 - in long term 
@@ -366,10 +384,12 @@ way2
 
 ## 7 gaining insight through discovery
 
+
 // apply agg rules and check influence on model
 
 
 ### 7.1 rethinking the design, again
+
 
 current state
 - domain is divided on small elements
@@ -382,6 +402,7 @@ sample
 
 ### 7.2 estimating aggregate cost
 
+
 technika BOTE [back of the envelope]
 - estymuje ilosci obiektow bioracych udzial w danym UC/...
 - przyklad
@@ -391,6 +412,7 @@ technika BOTE [back of the envelope]
 
 
 ### 7.3 common usage scenarios
+
 
 problem z optimistic concurrency
 - musi być możliwość że dwóch użytkowników users dodaje nowe taski i nie blokują nawzajem BI [bo Task to ok, niech blokuja]
@@ -411,6 +433,7 @@ c:
 
 ### 7.4 memory consumption
 
+
 // just count objects created in UC
 
 c: double lazy load ;]
@@ -427,6 +450,7 @@ c: double lazy load ;]
 
 ### 7.5 exploring another alternative design
 
+
 // ch tests alter approaches to agg boundaries
 
 idea: wydzielic Task jako osobny agg (poza agg BI)
@@ -438,6 +462,7 @@ idea: wydzielic Task jako osobny agg (poza agg BI)
 
 
 ### 7.6 implememnting eventual consistency
+
 
 // q: jak robione jest message redelivery (after failure)
 
@@ -465,6 +490,7 @@ waiting for EC and refresh UI
 
 ### 7.7 is it the team member's job?
 
+
 b. need can change
 - setting BI to done can be done automatically [in tx or EC]
 - but this feat can be off [eg. another user manually ack change to done]
@@ -475,15 +501,18 @@ b. need can change
 
 ### 7.8 time to decision
 
+
 // nothing special
 
 
 ## 8 implementation
 
+
 // nothing special
 
 
 ### 8.1 create a rool entity with unique identity
+
 
 // nothing special
 
@@ -504,6 +533,7 @@ C
 
 
 ### 8.2 favor value object parts
+
 
 - parts of agg try to model as VO [not E]
 
@@ -540,6 +570,7 @@ C
 
 
 ### 8.3 using law of Demeter and tell, don't ask
+
 
 design principles:
 - law of demeter
@@ -606,6 +637,7 @@ C
 
 
 ### 8.4 optimistic concurrency
+
 
 - gdzie ustawic attr. version OC?
 - assume set it only on root entity of agg

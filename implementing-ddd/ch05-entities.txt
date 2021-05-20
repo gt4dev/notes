@@ -215,65 +215,72 @@ n: przykladzie User
 // q: tez miedzy agregatami?
 
 
-vvvvv cont. here
-
 ### Identity Stability
 
-- in most cases: identity must be stable through the whole entity life
+- in most cases: identity must be stable through E life time
 
 protect identity
-- make setters, fields protected/private (so client can't change it)
-- set identity fields - only by (private) setters 
-  - which checks is it 1st field init or 2nd
+- make setters, fields - protected/private (so client can't change it)
+- set identity fields - setters which
+  - checks is it 1st field init
   - if 2nd - throws excep
 
 
 ## Discovering Entities and Thier Intrinsic Ch-cs
 
-- UL z BC daje slownictwo do projektowania modelu
+- UL daje slownictwo do projektowania modelu
 - UL musi być wypracowany z ekspertami i przez analize wymagań
-- finalnie caly zepol porozumiewa sie "uzywajac UL"
-- c: mapowanie nouns/verbs na klasy/metody to ZBYT DUZE uproszczenie projektowania modelu
+- finalnie caly zepol porozumiewa sie uzywajac UL
+- c: mapowanie nouns/verbs na klasy/metody to ZBYT DUZE uproszczenie przy projektowania modelu
 
 - on start: mozna zapisać UL jako słownik pojęć i zbiór prostych przypadków użycia
-- finalnie: UL jest wyrazany TYLKO przez kod (bo trudno trzymać sync miedzy docs i kodem)
+- finalnie: UL jest wyrazany TYLKO przez kod (trudno trzymać sync miedzy docs i kodem)
 
 
 ### Unconvering Entities and Properties
 
-sposoby zmiany wartosc E:
-- primitive property is changed
-- whole VO is replaced
+zmiany wartosc E:
+- set primitive property
+- replace whole VO
 
-przyklad: w encji User
-- UnId jest stale (tu: TenantId, username)
-- all other data is changing 'in time' (Person, ..)
+przyklad: entity User
+- id jest stale (tu: TenantId, username)
+- all other data is changing (Person, ..)
 
+c
 - VV uzywa primitive string to keep username 
-- cause here is no any special behavious
+- cause here is no additional behaviour
 - Alex uses VOs here (to limit string lenght etc.)
 
-- klasa Tenant ma prop TenandId (jako V)
-- but TenantId is not "owned" by Tenand only
-- equally well it can be (and is) used by other classes: User ...
+c
+- Tenant ma prop TenandId (jako V)
+- but TenantId is
+  - not "owned" by Tenand only
+  - used "globally" (by User ..)
 
 c: User in many BCs
-- UI = username, tenantId
-- inne BC (inne niz bc:identiy) moga zbierac inne dane zw. z User: adres, kontakt, billing info, location...
-- n: acz jak jest business need to "bc:identity" tez moze zbierac te dane (i w sumie zawiera: Person ...)
-- p/p inne BC powinny - w celu refowania do User - uzywac UnId z bc:identity
-- n: pp normalnie raczej nie kopiujesz danych miedzi BC ("1 src of truth") ale "username" to klucz i trzeba
-- q: jak VV refuje do User'a z innych BC, bo mamy to UnId z 2 pol
+- id = username, tenantId
+- native BC = identiy
+- inne BC moga zbierac dodatkowe dane o User: adres, kontakt, billing info, location...
+  - acz (jak jest justified business need) to w/w dane mozna zbierac i w BC:Identity 
+  - identity w sumie zawiera: Person ...
+- p/p inne BC musze refowac User przy uzycie full ID z bc:identity (tenantId + username)
+- p/p normalnie nie kopiujesz danych miedzi BC ("1 src of truth") ale 
+  - "username" to klucz i trzeba
+  - w momencie uzycie jako czesc ID stal sie niezmienny
+// q: jak VV refuje do User'a z innych BC, bo mamy to UnId z 2 pol
 
 
 ### Digging for Essential Behavior
 
-- raczej nie uzywaj setters/getter (ani w E, ani w VO)
-- chyba ze wynika to z UL - wtedy ok
+
+- raczej nie uzywaj setters/getter (ani w E, ani w VO) - tylko UL property names
+  - chyba ze wynika to wprost z UL
 - jak w 1 req wolasz kilka setters - to jest to bardzo podejrzane
 
-przyklad - aktywacja tenant
+przyklad
 - wystaw metody activate/deactivate
+  - a nie setActive(true)
 - to zgodne z zasada EE: "intention revealing interface"
 
 c: VV worked out 2 patts for security:
@@ -281,32 +288,36 @@ c: VV worked out 2 patts for security:
 - Fundamental Identity
 
 sample E:
-- User zawiera Person (both extends ConcurrencySafeEntity)
+- User zawiera Person (tez E, both extends ConcurrencySafeEntity)
 - Person zawiera VO: ContactInfo and name (string)
 
-c: E User ma metody
-- change password - normalne
-- change "personal contact information" - ciekawe
-  - modyfikuje nested entity "contact information"
-  - a nie samego User'a
+sample methods: E User
+- changePassword - normalny flow plus LOGIKA [a nie anemia]
+  - spr. nowe password
+  - on end: publish event UserPasswordChanged
+    - c: w DE jest full id (uname + tenandId)
+- changePersonalContactInformation - ciekaw
+  - replaces field of nested entity "contact information"
+  - pp User is root, Person is nested - thus modifying is done by root
 
-c: ukrywanie detali
+sample: ukrywanie detali
 - User ma property 'password' ale niedostepne publicznie
 - publicznie dostepna jest met: 'change password'
 
 c: ukrywanie detali
 - obiekt User wystawia publicznie obiekt Person
 - ale pp to sie zmieni - bo nie kazdy user jest person
-- wowczas publicznie trzeba bedzie wystawic pole z interfact Principal
+- wowczas publicznie bedzie wystawione attr Principal Principal
 
 
 ### Roles And Responsibilities
 
-- ogolnie odkrywanie roles & resps to wazny element modelowania
+
+- odkrywanie roles & resps to wazny element modelowania
 
 - w OO interfejs zwykle okresla role obiektu
-- klasa może implementować wiele interfejsów / roles
-- c: jesli klasa nie implementuje interfejsów - to ma rolę reprezentowaną przez publiczne metody
+- klasa może implementować wiele interfejsów = roles
+- jesli klasa nie implementuje interfejsów - to ma rolę reprezentowaną przez publiczne metody
 
 przyklady
 - klasa User (bez interfejsów) ma rolę user'a
@@ -314,7 +325,7 @@ przyklady
 
 p/p best use case for "role interfaces" is 
 - hiding some methods from client
-- and exposing only these which are needed
+- exposing only needed
 
 
 ### Construction
@@ -323,94 +334,95 @@ constr of E musi zebrac:
 - infa potrzebne do identyfikacji E
   - p/p to dotyczy tylko "early entity generation"
   - bo w late nie ma takiej mozliwosci
-
-- jesli E nie jest wyszukiwana przez UI
-  - to const zbiera infa uzywane do wyszukania E
+- jesli E nie jest wyszukiwana przez ID
+  - to constructor zbiera infa uzywane do wyszukania E
   - np: name, desc ...
 
 - c: constr of User takes Person
 
 niezmienniki
 - E can contain 1 or more invariants
-- if calcing/assuring invariant reqs 
-  - setting some state/fields
-  - assuring some prop != null
-.. then all req infos must be provided in constr
+- constructor gets all data required to assure/check E invariants
+- et
+  - set states/fields
+  - make prop != null
 
 self-encapsulation
-- prefered VV pattern
-- w const wolaj setter'y (ktore sa protected/private)
+- VV reced pattern
+- w constr wolaj setter'y (ktore sa protected/private)
 - settery: waliduja wartosc i ustawiaja property
-- c: nie trzeba wrapować "stringi w VO" (as Alex does) - settery zapewniaja walidacje
+
+- nie trzeba wrapować "strings w VO" (as Alex does)
+- settery zapewniaja walidacje
+- chyba ze chcesz dodatkowe behaviour
 
 
 ### Validation
 
-zakres sprawdzenia poprawności
-- pojedynczy atrybuty
-- cały obiektu
+
+zakres walidacji
+- 1 atrybut
+- cały obiekt
 - kompozycja obiektów
 
 
 n: attr/obiekt/kompozycja moga miec "temporary invalid/incomplete state"
-- jest to ok w sensie technicznym/biznesowym
+- jest to ok (technicznie/biznesowo)
 - walidacja tylko sprawdza poprawnosc stanu
-
 
 
 WALIDOWANIE ATRYBUTÓW
 
-- ch6-vo desc how to protect single attrs
+- ch6-vo descs more how to protect single attrs
 
 - ustawianie wartosci attr i walidowanie - to dwie różne sprawy
-- do ustawiania attr use self-encapsulation (VV mocno to recomenduje)
+- to set attr use self-encapsulation (VV recoms)
 
 self-encapsulation (SE)
 - do attr'ow klasy dostajesz sie przez setter'y/gettery
-  - nawet "class-owner of attrs" ich uzywa
+- nawet "class-owner of attrs" ich uzywa
 - zaleta
   - abstrakcja od zmiennych (gt: isn't too abstr?)
   - prosta "walidacja" przy setter'ach
 
 c: SE to nie jest walidacja
 - walidacje robia walidatory, a nie obiekty domenowe
-- SE to bardziej: asercja, design by contract
+- SE to bardziej asercja, design by contract
 
-przykład - klasa VO EmailAddress 
+przykład - klasa VO EmailAddress
 - w konstruktorze pobiera string:adres
-- constr calls setAddress(a)
+- constr calls setAddress(string)
 - setter robi
   - walidacje (czy null, czy ok length, czy RegExp email ...) 
-  - finalne ustawienie zmiennej
+  - finalne ustawienia attr
 
-c: podczas przypisania obiektu VO jako zmienna E 
+n: podczas przypisania obiektu VO do E 
 - E nie moze zwalidowac wewn. stanu VO
 - E moze spr. tylko czy obiekt != null
 - VO musi samo zagwaranotwac spojnosc
 
 c: gdzie sprawdzic "limit dlugosci string" etc
-- niektorzy sprawdzenie limitu string zostawiaja bazie
-  - rzuci excep jesli string przekracza limit np. 100 znakow
-- wg VV modelu moze sprawdzac takie niskie detale
+- niektorzy zostawiaja to DB
+  - rzuci excep jesli string przekraczy limit np. 100 znakow
+- wg VV modelu moze to tez sprawdzac
 - dodatkowo model rzuci dokladny excep "ktora wartosc jest zla"
   - baza rzuci general exception (bez info ktory string jest too long)
 
 
-
 VALIDATE WHOLE OBJECTS
 
-- w celu walidacji: musisz miec dostęp do wszystkich atrybutów obiektu
+- walidacja wymaga dostęp do wszystkich atrybutów obiektu
 - use patterns: specification (EE), strategy (Gamma)
 
-deferred validation pattern (by Cunningham)
+Deferred Validation Pattern (by Cunningham)
 - sprawdzenie wykonujemy w "ostatnim możliwym momencie"
 - szczegółowo sprawdzamy obiekt
 - DVP można użyć do 1 obiektu i kompozycji
 
-- walidowanie E wymaga dostępu do calego stanu
-- dodanie walidacji do E jest zle bo
-  - W często sie zmienia (częściej niż E)
-  - responsibility of E to trzymanie stanu (SRP)
+- walidowanie (W) E wymaga dostępu do calego stanu
+- dodanie W do E jest zle bo
+  - W często sie ona zmienia (częściej niż E)
+  - responsibility of E to trzymanie stanu (SRP) a nie W
 
 - walidator buduj jako osobna klase
 - W umieść w tym samym pakiecie co E
@@ -423,7 +435,7 @@ deferred validation pattern (by Cunningham)
 - W przypadku wykrycia problemu W
   - notyfikuje klienta 
   - lub zapisuje informacje do odczytania później
-- ważne żeby walidacja robic "do konca" (a nie rzucac excep on 1st problem)
+- rob walidacje "do konca" (nie rzucac excep on 1st problem)
 
 impl
 - create abstract class Validator
@@ -431,42 +443,41 @@ impl
 - validate() zwyczajnie sprawdza stan obiektu
 - w przypadku problemów zgłasza błędy do NotificationHandler 
   - który jest zdef. w abstract Validator
-- NotiHandler
-  - moze byc uniwersalny: zbiera info o problemach w postaci string
+- NH moze byc
+  - uniwersalny: zbiera info o problemach w postaci string
     nh.NotifyProblem("field A incorrect");
-    nt.NotifyProblem("field X bad");
-  - mozemy specjalizowany: "E1NotiHandler : NotiHandler" i zglaszac problemy jako
-    nh.NotiIncorrectX()
-    nh.NotiBadY()
+    nh.NotifyProblem("field X bad");
+  - specjalizowany: "E1NotiHandler : NotiHandler" i zglaszac problemy jako
+    nh.NotiIncorrectA()
+    nh.NotiBadX()
 
-- n: walidowana encja jest param. constr. Walidatora
+- n: walidowana encja podaj do W jako param constr
 
 - client calls W by:
-  MyE1.validate(ValidationNotificationHandler vnh){
-    (new MyE1Validator(this, vnh)).validate();
+  MyEntity.validate(ValidationNotificationHandler vnh){
+    (new MyEnityValidator(this, vnh)).validate();
   }
 - E nie wie jak robic walidacje
-- acz ma metode validate wiec wie o mozliwosc 'samo-walidacji'
-
+- ale ma metode validate() wiec wie o mozliwosc walidacji
 
 
 VALIDATING OBJECT COMPOSITIONS
+
 
 - use deferred validation
 
 flow
 - create walidator object
-- pass to it set/composition of objects
+- pass to it composition [set/"big" graph]
 
-- possibly do validation in DomainService
+- do validation (V) in DomainService [dep on reqs]
   - DS reads set of objects from Repo
-  - then DS does V
+  - DS does V - by validator
     - single object
     - composition
 
-when to validate
-- listen DEvents which can trigger validation and do validation
-
+when to start to V?
+- listen DEvents which trigger validation
 
 
 ### Change Tracking

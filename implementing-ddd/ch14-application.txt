@@ -5,7 +5,10 @@
   
 ## user interface
 
+
 ### rendering domain objects
+
+
 - sa spory jak renderowac domenowe obiekty na UI
 - na UI czesto trzeba 
   - pokazac dane z wielu agregatow
@@ -13,6 +16,8 @@
 
 
 ### Render DTO from Aggreagte Instances
+
+
 - popularne podejscie
 - mozemy pokazac na view stan z wielu roznych agregatow
 - DTO ma atrybuty ktore sa "bezposrednio" potrzebne na widoku
@@ -36,6 +41,8 @@
 
 
 ### use a mediator to publish aggregate internal state
+
+
 - c: mediator - inne nazwy: double dispatch, callback
 - patt. rozwiazuje problem tight couplingu miedzy modelem domenowym (As) a klientami
 - klient (AS, DtoAssembler) nie powinien grzebac wewn. A - bo to tight coupling
@@ -58,6 +65,8 @@ class BacklogItem {
 
 
 ### render aggregate instance from a domain payload object
+
+
 - c: to pattern od VV
 - use it gdy klient z modelem dziala na tej samej VM
 - dzialanie
@@ -67,19 +76,23 @@ class BacklogItem {
   - AS zwraca DPO
   - VM/P sam odpytuje A o dane dla widoku
 - ryzyka
-  - V jest mocno zbindowany sie do A - dlatego warto uzyc tu mediator
+  - V jest mocno zbindowany do A - dlatego warto tu uzyc mediator
 - c: jak DPO oposzcza AS - to przestaje dzialac lazy-loading (bo call opuscil tx)
   - ale mozna uzyc tzw. eager-loading
 - c: tx zwracajacy dane ustaw na 'ready-only'
 
   
 ### state representations of aggregate instances
+
+
 - wazne jesli app wystawia uslugi REST'owe
 - dosc podobne do DTO - tylko tu wystawiamy REST'y
 - n: REST'y sa projektowane pod potrzeby konkretnych use-case'ow
 
 
 ### use case optimal repository queries
+
+
 - zamiast z agregatu wyciagac pelne agregaty - czasem lepiej uzyc tzw. use case optimal query
 - do Repo dodajesz query metody, zwracajace VO - pokazujace stan agregatow
 - VO sa pisane pod dany UC'a (jak w tytule) ale chyba nadal musza byc domain specific
@@ -94,6 +107,8 @@ class BacklogItem {
 
 
 ### dealing with multiple, disparate clients
+
+
 - useful gdy masz roznych klientow do jednego AS, np: http, rest, xml ...
 - idea
   - pisz AS niezalezne od typu klientow
@@ -107,6 +122,8 @@ class BacklogItem {
 
 
 ### rendition adapters and handling user edits
+
+
 - czasem masz case ze pokazujesz user'ow domenowe dane, user je edytuje i zapisuje
 - jak to zakodowac - mocno zalezy od fmwk uzytych w UI
 - VV zaleca uzycie PresentationModel
@@ -131,6 +148,8 @@ class BacklogItem {
 
 
 ## Application services
+
+
 - czasem UI prezentuje dane z wielu BC'ow uzywajac niezaleznych PM's
 - AS sa bezposrednimi klientami domain modelu
 - AS koordynuja serie zadan wewn. use case (1 metody AS)
@@ -140,6 +159,8 @@ class BacklogItem {
 
 
 ### sample AS
+
+
 - VV w AS czasem rozdziela interfejs od impl. a czasem nie
 - przyklad: interface TenantIdentiyService
 - all metody dotycza tylko zmian/czytania tenant'a 
