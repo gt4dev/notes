@@ -1,0 +1,34 @@
+# associations
+
+
+# entities
+
+
+## modeling entities
+
+
+## designing the identity operations
+
+
+# value objects
+
+
+## designing vo
+
+
+## deigning associations that involve vos
+
+
+# services
+
+
+### services and isolated domain layoer
+
+
+### granularity
+
+
+### access to services
+
+
+# [tbd ... few chapters more]

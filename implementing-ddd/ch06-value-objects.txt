@@ -180,27 +180,32 @@ czy vo może modyfikować e przekazana jako parametr metody vo
 - very very very rare ale czasem vo jest modyfikowalne!
 - acz raczej buduj vo z sefb
 
-vvvvv cont. here
 
 ## 6.2 integrate with minimalism
 
 
-- kazdy projekt ddd ma wiele bc
-- (if possible) model concepts from remote bc (server, upstream) as vo on local bc (client, downstream)
-- it minimizes amount of "problems" during integration
+- projekty ddd maja zwykle wiele bc
+- (if possible) model concepts 
+  - from remote bc (server, upstream) 
+  - as vo on local bc (client, downstream)
+- it minimizes amount of "inytegration problems"
 
 przyklad
-- w remote bc-R sa agregaty: User, Role
-- local bc-L uses data from w/w aggrs
+- w remote bc-r sa aggs: User, Role
+- local bc-l uses data from w/w aggs
 - bc-L keeps this data in VOs: Moderator, Owner, Participant
-- it simplifies case a lot (in bc-L we have only needed data)
-  - strive to use this case
+- it simplifies case a lot - in bc-L we have only_only needed data
 
 problem: integration is static
-- if bc-R changes data, bc-L doesn't know about it
-- bc-L moze zachowac 'eventual consistency'
-  - nasluchiwac events z bc-R i aktualizowac sie
-- ale wowczas dane sie zmieniaja - nie mozna uzyc VO - trzeba je trzymac w E
+- if bc-r changes data -> bc-l doesn't know about it
+- bc-l uzyc 'eventual consistency'
+  - nasluchiwac events z bc-r i aktualizowac sie
+- ale wowczas dane sie zmieniaja!!!
+  - nie mozna uzyc vo - trzeba dane trzymac w e
+// q: a co z replacing vo?
+
+
+vvvvvv
 
 
 ## 6.3 standard types expressed as values
