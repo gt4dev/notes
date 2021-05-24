@@ -205,9 +205,6 @@ problem: integration is static
 // q: a co z replacing vo?
 
 
-vvvvvv
-
-
 ## 6.3 standard types expressed as values
 
 
@@ -218,16 +215,16 @@ ST
 sample 1
 - UL defs phone number
 - phone moze byc dla cell, home, work, ...
-- tworzymy VO dla phone number i rozowzniamy przez ST
+- tworzymy 1 VO do reprezentacji phone number i rozorozniamy przez ST
 
 sample 2
-- UL defs currency and app defs explicitly: usd, jpy, eur, pln
+- UL defs currency of: usd, jpy, eur, pln
 
 - ST are similar to enums "but" are "instantiated"
 
 STs can be defined on diff levels
 - single BC, app
-- corpration
+- corporation
 - international stds
 
 freq STs are managed in specialized BCs, usually
@@ -235,15 +232,14 @@ freq STs are managed in specialized BCs, usually
   - identity
   - name
   - description
-  .. but can be more
+  .. and more
 - you consume them as VO, usually with 1 (yes, 1) attr
   
 samples (on enums)
-"enum GroupMemberType {Grup, User "and some overrides"}"
-  - yes, literally enum: used as enum 
-  - no magic, no single vo instances, just plain enum!!!
-enum  BacklogItemStatus {Planed Scheduled Commited...}
-
+enum GroupMemberType {Grup, User, "some overrides"}
+enum  BacklogItemStatus {Planed, Scheduled, Commited...}
+- yes, used std enum 
+- no magic, no single vo instances, just plain enum!!!
 
 U: instead enum you can create unique VO for each ST
 
@@ -252,62 +248,63 @@ ST from Agg
 - but think twice
 
 c: ST (raczej) nie powinny byc utrzymywane w BC który ich używa
-- q: why, bo to overloading "BC resp"?
+// - q: why?
 
 - widly used ST should be def in specialized BC
-- problem can be modifying such STs
-- expose Aggs (changable!!)
-  - on consument side as VO (immutable)
-  - maybe globally expose as immutable VO?
+- problem can be late modifying such STs (late = after publishing to clients)
+- expose Aggs
+  - on client side as VO (immutable)
+  - or globally as immutable VO(?)
 
-shared immutable ST
+shared, immutable ST
 - create service (DS) or factory for each shared ST
   - it reads data from shared database
 - sample services are for PhoneNumber, PostalAddressType, CurrencyType
 - service (or factory) returns then VO eg: Currency
 
-acz use simplest approach = enums
+acz strive to use simplest approach = enums
 
-VV recoms "enums based ST" also expose from service/factory
-code for enum must be "generated" from DB
+- VV recoms "enums based ST" also exposed from service/factory
+- src code of enum must be "generated" basing on "DB content"
 
 
 
 ## 6.4 testing value objects
 
 
-// quite regular infos
+// regular infos
 - tests write in a way that non-technical expert can understand id = use only UL
 
 
 ## 6.5 implementation
 
 
-- BusinessPriority to super przyklad vo 
-- pokazuje nawet uzycie jako strategy pattern (aka policy)
+- BusinessPriority to super przyklad vo
+- pokazuje nawet uzycie strategy pattern (aka policy)
 
-BP jest serializable
-- to wazne przy vo remote calls, persisting object
+- BP jest serializable
+- to wazne przy remote calls, persisting object
 
 VV daje 2 konstruktory do vo
-- 1st - do initu obiektu (it calls self delegation methods)
-- 2nd - create copy
-  - c: robimy shallow copy, nie kopiujemy nested objects but ref to them (beside primitives, but string?)
-    - w VO deep copy nie ma sensu (typowo), acz czasem jest potrzebne
+- 1st - do initu obiektu (calls self-delegate methods)
+- 2nd - creates copy
+  - c: robimy shallow copy
+    - nie kopiujemy nested objects but ref to them
+    - typowo w VO deep copy nie ma sensu, acz czasem jest potrzebne
   - 2nd const - useful for testing immutability, like
     - create vo0
     - create copy vo1
     - call methods of vo1 (try to "modify it")
-    - compare both vo
+    - compare vo0 vo1
 - u: 3th const - bez params, na potrzeby hbm, schowany (protected)
 
 pattern strategy/policy
 - vo (BP) ma publiczne metody, eg: TotalValue():float
 - metoda 
-  - nie dziala bezposrednio na attrs v0
+  - nie dziala bezposrednio na attrs vo
   - internally calls other methods (self-delegatino and others)
   - operates on result from a/m methods
-- strategy bo 
+- to "strategy" bo
   - at any time you can override any of these methods
   - docelowo BP bedzie miec wiele implementacji i sie to przyda
 
@@ -317,15 +314,15 @@ nazwy getterow
 - it's more human-readable, UL-friendly
 
 c: bad Java Beans specification
-- it had bad influence on projects of object
-- good old example: String
-  - good methods: chartAt,  indexOf, length ..
+- it have had bad influence on code style
+- pre JB good example: String
+  - good methods: chartAt, indexOf, length ..
   - ale sa bad getSth ...
 
 c: encapsulation
 - masz setter setRatings (private, calles in constr)
 - masz "getter" "public ratings()" - just returns attr value
-- conc: w ten sposob mozesz "upubliczniac" private attr (choc to pewnie uzasadnione)
+- conc: w ten sposob mozesz "upubliczniac" private attr (to pewnie uzasadnione)
 
 remember to impl
 - equals
@@ -333,12 +330,11 @@ remember to impl
 - toString
 
 
-
 ## 6.6 persisting value objects
 
 
-- zwykle VO persystujemy razem z A (do ktorego jest przypiete VO)
-- n: all dalsze przyklady zakladaja ze VO jest czescia A
+- zwykle VO persystujemy razem z A (do ktorego jest przypiete)
+- dalsze przyklady zakladaja ze VO jest czescia A
 - typowo A (razem z VO) jest read/write by repo
 
 - zwykle pers. robimy z orm
@@ -351,8 +347,8 @@ remember to impl
 ### 6.6.1 reject undue influence of data model leakage
 
 
-- typowo VO is stored in DB in denormalized form (in the same table/row what hosting E)
-- easy and convient way
+- typowo VO is stored in DB in denormalized form (in the same table/row as hosting E)
+- easy way
 
 - czasem VO is stored as DB entity (own table, primary key ..)
 - it's mainly for E with nested VOs collections
@@ -361,27 +357,30 @@ remember to impl
 - more - it should be reverse: domain model drives data model
 - although as always - there are exceptions
 
-- sometimes particular data model structure is needed (keep ref integritiy, indexes, keys, support raporting, queries ...)
-- many claim that raporting should: not work on prod DB, has own data stucture
+- sometimes particular db model structure is needed (keep ref integritiy, indexes, keys, support raporting, queries ...)
+- many claim that raporting should: not work on prod DB, but has own data stucture
 
 
 ### 6.6.2 orm and single value objects
 
 
 - easy case
-- idea: store VO in the table & row of E but own columns (each attr in own column)
+- idea: store VO in the table & row of E but in own columns (each attr in own column)
 
-column naming (distinguish all E cols)
+column naming
 - path of objects: businessPriority.ratings.benefit
 - map to column: business_priority_ratings_benefit
 
 - in hbm use <component>
 
 c
-- VV's sample nestes 1 VO in another
+- VV's sample nests 1 VO in another
 - in hbm cfg it by nesting <component> in another <component>
 
 - n: domain model (vo) doesn't have any stuff from DB model
+
+
+vvvvv
 
 
 ### 6.6.3 orm and many values serialized into a single column
