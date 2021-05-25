@@ -13,6 +13,7 @@ c: jesne zdef. czym jest E, VO ...
 
 # ASSOCIATIONS
 
+
 - przejscie z modelu do impl jest szczegolnie tricky dla asocjacji
 
 - kazda asocjacja z modelu - w programie jest odzwieciecdona properties'ami
@@ -105,31 +106,51 @@ usuniecie multiplicity miedzy BroAcc - Investment
 # ENTITIES
 
 
+
+
 ## MODELING ENTITIES
+
+
 
 
 ## DESIGNING THE IDENTITY OPERATIONS
 
 
+
+
 # VALUE OBJECTS
+
+
 
 
 ## DESIGNING VO
 
 
+
+
 ## DEIGNING ASSOCIATIONS THAT INVOLVE VOS
+
+
 
 
 # SERVICES
 
 
+
+
 ### SERVICES AND ISOLATED DOMAIN LAYOER
+
+
 
 
 ### GRANULARITY
 
 
+
+
 ### ACCESS TO SERVICES
+
+
 
 
 # [TBD ... FEW CHAPTERS MORE]

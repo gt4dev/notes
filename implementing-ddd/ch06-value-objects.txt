@@ -380,42 +380,38 @@ c
 - n: domain model (vo) doesn't have any stuff from DB model
 
 
-vvvvv
-
-
 ### 6.6.3 orm and many values serialized into a single column
 
 
-- list of VO is viewed in E as Set or List
+- list of VO is represented in E as Set or List
 - serialize collection to text and store in 1 column
 
 wady
-- col width - sometimes we don't know 
-  - size of collection (can be long)
-  - size of single object (some strings can be looooong)
-  c: w MySQL max table/column width = 65k chars    
-  c: w Oracle varchar2 max = 4k chars
+- col width - sometimes we don't know
+  - size of collection (can be long as text)
+  - size of single object (strings can be looooooong)
+  - c: w MySQL max table/column width = 65k chars    
+  - c: w Oracle varchar2 max = 4k chars
 - queries
-  - can use VO in Q (cause are srings)
+  - can't use VO in Q (cause are srings)
   - but it's rather rare need
 - need to impl custom hbm type (no big issue)
-
 
 
 ### 6.6.4 ORM and many values backed by database entity
 
 
-- najprostszy sposob na zapisanie kolekcji values w bazie przez ORM (esp. HBM) 
-- traktujemy VOs jako encje bazy danych
+- najprostszy sposob na zapisanie kolekcji VO w bazie przez ORM (esp. HBM) 
+- traktujemy VO jako encje bazy danych
 - VO z "model PoV" musi byc wolny od technikaliow bazy, ORM, ...
 - pomaga tu pattern Layer SuperType (LST)
 - VV wprowadza klase LST IdentifiedDomainObject
 - przechowuje ona pole "klucz encji"
-   - niewidoczny "w domenie" bo jest private/protected
+   - niewidoczny "w domenie", bo private/protected
 - VV dodatkowo wprowadza klase "IdentifiedValueObject (extends IdentifiedDomainObject)"
   - klasa nie dodaje zadnego kodu
-  - ma znaczenie tylko jako dokumentacja - explicite wyraza intencje modelowania VO
-  - n: IDO ma tez wersje dla encji (see CH5, Entity extends IdentifiedDomainObject)
+  - ma znaczenie jako dokumentacja - explicite wyraza intencje modelowania VO
+  - n: IDO ma tez odpowiednik dla encji (see CH5, "Entity extends IdentifiedDomainObject")
 
 przyklad
 - agregat Group zawiera kolekcje VOs typu "GroupMember : IdentifiedValueObject"
@@ -438,7 +434,8 @@ przyklad
 ### 6.6.5 ORM and many values backed by join table
 
 
-- HBM zapisuje kolekcje w join table (what is hbm-join-table?)
+- HBM zapisuje kolekcje w join table 
+// q: what is hbm-join-table?
 - VO-s sa zapisane w dedykowanej tabeli
 - VO nie potrzebuje wlasnego klucz
 - kluczem obcym jest ID "parent encji"

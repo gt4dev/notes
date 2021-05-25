@@ -1,4 +1,7 @@
+vvvv cont here
+
 # CH14 Application
+
 
 - application - set of components (model, ui, infrastructure ..) assembled to support domain (business)
 
