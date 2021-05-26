@@ -11,7 +11,7 @@ c: jesne zdef. czym jest E, VO ...
 - moduly/namespace'y - musza pochodzic z UL
 
 
-# ASSOCIATIONS
+# 1 ASSOCIATIONS
 
 
 - przejscie z modelu do impl jest szczegolnie tricky dla asocjacji
@@ -103,17 +103,71 @@ usuniecie multiplicity miedzy BroAcc - Investment
   }
 
 
-# ENTITIES
+# 2 ENTITIES
+
+- Es aka 'reference objects'
+// q: ciekawe skad ta nazwa
+
+many objects are defined by
+- thread of continueity
+- identity
+a nie przez attrs
+
+example: Person
+- has identity that streches from birth to death [and beyond ;]
+- zasadniczo all attrs of person mozna zmienic w ciagu zycia [i poza nim ;]
+  - phisycal attrs are changing all the time [ultimatelly disappear ;]
+  - nazwisko, relacje z biznesami, edukacja ...
+- ale to caly czas ta sama osoba
+- thus: the most most most imporatant is identity
+
+example: customer
+- w app do 
+  - do sledzenia "dlugow" beda informacje rachunkach, platnosciach ...
+  - sprzedazowym: osoba prowadzaca, ...
+- good done identity allows to identity customer in both w/w systems
+
+- w/w apps moga byc mega rozne [rozne langs, bazy ...]
+- ale maja wspolne identity - ktore laczy customers w obu/all apps
+
+- e to obiekt zdef. przede wszyskim przez identity
+- e moga sie kompletnie-totalnie sie zmieniac w LC
+- ale musze utrzymywac
+  - thread of continiuty
+  - "constant" identity [tz. takie po ktorym mozna obiekt "sledzic"]
+  
+- e = anything that has 
+  - continuity through a life cycle
+  - [vvvv imp] distinction independent from attrs
+- zatem e rozrozniasz przez id, not attrs
+
+example: 2 transfers on the same: account, day; and the same cash
+- to sa osobne tx'y
+- maja diff identity [sa e]
+- wewn. e mozna re-use attrs [obiekt reprezent. day, cash ...]
+  - ale attrs nie maja identity
+  
+vvv c
+- teoret. w app mozesz miec 2 diff classes [z totalnie diff attrs]
+- ale jesli beda uzywac TEGO SAMEGO identity [do identyfikacji]
+- to opisuja one "ten sam obiekt" [abstract]
+
+- samo identity [jako abstrakt/obiekt] moze miec wazne znaczenie poza app
+// g: pewnie do 'rozszerzania' identyf. encji
+
+[bolded def]
+- if object is distinguished by id [not attrs]
+- klase zrob prosta, focused on 'thread of continuity', identity
+- dodaj mozliwosc rozroznienia each object - niezaleznie od jego formy/histori
+- n: alert if matching E is done by attrs - it's very suspected
+
+
+## 2.1 MODELING ENTITIES
 
 
 
 
-## MODELING ENTITIES
-
-
-
-
-## DESIGNING THE IDENTITY OPERATIONS
+## 2.2 DESIGNING THE IDENTITY OPERATIONS
 
 
 
