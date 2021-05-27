@@ -165,11 +165,56 @@ vvv c
 ## 2.1 MODELING ENTITIES
 
 
+- podczas projektowania obiektu wielu mysli sie o attrs i zachowaniach
+- ale najwazniejsze w e jest ustanowienie 'continuity'
+- wowczas reszta [attrs/zachowania] moga byc "czystsze"
+- najlepiej jesli e ma malo attrs/zachowan
+- zostaw w e "tylko" the most important attr - esp. these which
+  - identify e [g: chodzi o klucz naturalny?]
+  - sluza do odnajdywania/match'owanie konkretnych e
+- reszte attrs/zachowan - TRY to move to associated with e-s / vo-s
+
+- e-s also coordinate operations on objects nested/associated with these e-s
+
+sample
+- model on init
+  | customer |<>--------| sales contact |
+- both classes have "some attrs"
+- redesign a/m attrs to follow a/m rules
+- model refined
+  | customer |<>--------| sales contact |
+  |          |<>--------| business line |
+  - do klasy customer wrzucilismy attrs ktore pozwola na wyszukania/match'owania customer - by
+    - contact name
+    - ...     phone
+    - ...     address
+    [wczesniej te attrs byly w customer & sales contact]
+  - acz to mega zalezy od reqs - np. customer moze miec wiele phone numbers [owner, ksiegowosc, ..]
+    - wowczas jakis phone number bedzie w klasie 'sales contact', inny w ...
 
 
 ## 2.2 DESIGNING THE IDENTITY OPERATIONS
 
 
+- identity musi dawac mozliwosc "zident" danej e - niezaleznie od sytuacji [eg. system rozproszony, data archived ..]
+- definicja identity wymaga zrozumienia domeny
+
+- czasem set of attrs can guarantee uniqeness of e in app
+- mozna ten set uzyc jako unique id
+
+- czasem nie mamy takiego set
+- wowczas dodajemy do e jakies pole z unique cyfra/string/...
+
+// <cut/> troche inf o innych aspektach id-ow
+
+- czasem id musi byc uspojnione miedzy wieloma systemami
+- np. medical records exchanged between hospitals [with diff soft]
+- w perfect case - pacjenci maja to samo ID w kazdym systemie 
+- w realu kazda app ma swoje id's
+- wowczas match'owanie diff IDs - mozna zrobic uzywajac 3th ID - wydanych przez nadrzedna instytucje rzadowa
+- acz moga byc problems [nie wyszyscy maja common id [dzieci, rezydenci], nie wszyscy chca miec - bo privacy, ...]
+
+// <cut/>
 
 
 # VALUE OBJECTS
