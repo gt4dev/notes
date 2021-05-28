@@ -217,9 +217,56 @@ sample
 // <cut/>
 
 
-# VALUE OBJECTS
+# 3 VALUE OBJECTS
 
+- wiele obiektow nie posiada identity
+- obiekty te opisuja rzeczy
 
+- tracking the identity of entities is essential
+- ale niepotrzebne id - make soft more complex - nie chcemy tego
+
+- vo to NIE jest "e bez identity"
+- vo to obiekty ktore opisuja rzeczy
+
+sample
+- color can be are vo
+- uzycie color vo moze byc proste [it's simple object]
+- but internals of vo moga byc complex [alg. mieszania kolorow]
+- ale result to colors mixing = another simple vo object
+
+- vo-s moga zawierac inne vo-s [i to sporo]
+- vo-s moga ref'owac entities
+- np. map service 
+  - moze zwrocic vo reprezentujacy trase (Route)
+  - a Route moze ref'owac e-sy reprezentujace miasta: startowe, koncowe, posrednie
+  
+- vo-s sa czesto przekazywane jako params w komunikatach miedzy objects
+- zyja wtedy b. krotko - w czasie wolania operacji
+
+- vo-s sa uzywane jako attrs of: e-s, innych vo-s
+
+- when you care only about attrs of element - make it vo
+- don't give it any identity
+- treat vo as immutable
+
+conceptual whole [co]
+- attrs wewnatrz vo - powinny tworzyc CO [ward cunnigham pattern]
+- sample: 
+  - masz klase Customer z mieszanka attrs: id, name, phone, street, city ...
+  - attrs: street, city ... wydzielamy do osobnej klasy Address = co
+  - nowy model | Cusomter |<>------- | Address |
+
+czy Address to VO czy E
+- ZALEZY: OD SYSTEMU, "kto pyta"
+- przyklady [ale duuuuzo zalezy od reqs]
+- jako vo
+  - adres jest 'prosta' inf o miejscu dostarczeniu paczki
+  - nie ma znaczenia ze wiele diff objects ma te same attrs ...
+- jako e
+  - adresy tworza hierarchie, kolejne elementy hierarchi uszczegulawiaja adres
+  - sledzimy zmiany adresu etc.
+- czasem e plus dodatkowo e skonwertowane na vo
+  - system laczy all w/w case'y
 
 
 ## DESIGNING VO
