@@ -269,14 +269,52 @@ czy Address to VO czy E
   - system laczy all w/w case'y
 
 
-## DESIGNING VO
+## 3.1 DESIGNING VO
+
+- vo-s musza byc immutable
+- immutability 
+  - simplify much
+  - perfectly fits "value idea"
+
+- vo-s mozna uzywac jako 
+  - attrs encji
+  - methods
+    - params 
+    - rezultat
+  .. wywolania metod i masz pewnosc ze nikt nic nie pozmienia
+  
+- istotna jest wydajnosc
+- vo-s zwykle jest b. duzo
+- sa immutable = moga byc dowolnie share'owane
+
+when to allow mutablility
+- reasons [mainly performance]
+  - value changes frequently
+  - vo creation/deletion is expensive
+  - if replacement disturb clastering/other tech limits 
+  - not sharing vo-s
+vvvi: if vo is mutable = DON'T SHARE IT
+
+c: DB speed up
+- DB wczytuje dane w "page'ach" [czy jakos tak]
+- 1 mechanical read = 1 page
+- zeby przyspieszyc query - all dane powinny byc w 1 page = kolo siebie
+- zrobisz to przez denormalizacje
+  - e/agg refuje do lokalnych kopii vo-s [a nie e-s kept in separated tables]
+  - jako ze vo sa immutable [replaced] - it's not problem!!!
 
 
+## 3.2 DEIGNING ASSOCIATIONS THAT INVOLVE VOS
 
 
-## DEIGNING ASSOCIATIONS THAT INVOLVE VOS
+- fewer associations -> better
 
-
+c: bidirect. associations between vo-s make no sense
+- between lang objects [in model is ok]
+- bad: vo0 refs vo1, vo1 refs vo0
+- ok:  vo0 refs vo1, vo1 refs vo2 with identical attrs like vo0
+- if anyway masz bidirect - pp 1 z vo-s jest e
+- bidrect between e-s = ok, but hard to maintain
 
 
 # SERVICES
