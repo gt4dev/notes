@@ -317,24 +317,128 @@ c: bidirect. associations between vo-s make no sense
 - bidrect between e-s = ok, but hard to maintain
 
 
-# SERVICES
+vvvv cont. here
 
 
+# 4 SERVICES
 
 
-### SERVICES AND ISOLATED DOMAIN LAYOER
+- sometimes it isn't a thing
+- operations don't belong to any object
+- it's service
+
+- common mistake: too fast putting operations in services
+- ale bledem jest tez pchanie metod do obiektow ktore nie naleza do nich
+
+- do service'a pasuja operacje ktore dzialaja na wielu obiektach
+- typowa met. obiektu operuje tylko na nim [?]
+- g: service sa bezstanowe [bo nie sa hooked do obiektu]
+
+- service nie ma stanu
+- nazwa service's to raczej activity [niz noun]
+- operacje to nazwy z UL
+- params and results are domain objects [tez z UL]
+
+ch-cs of good service
+- operacje sa czescia domeny [ktore nie sa czescia e lub vo]
+- interface is defined with elements of domain model
+- operation is stateless
 
 
+### 4.1 SERVICES AND ISOLATED DOMAIN LAYOER
 
 
-### GRANULARITY
+mamy service'y [all cooperating in app]
+- domenowe
+- aplikacyjne
+- infrastruktury
+
+- tech services should lack any business logic
+
+sample: transfer pieniedzy
+- transfer realizuje domain service
+- bo oper. robiona jest na 2 obiektach: kontach
 
 
+### 4.2 GRANULARITY
 
 
-### ACCESS TO SERVICES
+- glowne zastosowanie s = modelowanie zachowan
+- dodatkowe = hiding details, decoupling clients from domain [e,vo ..]
+
+- medium-grained service - hides complex flow behind simple method
+- fine-grained access to domain - leaks knowlege to caller side
 
 
+### 4.3 ACCESS TO SERVICES
 
 
-# [TBD ... FEW CHAPTERS MORE]
+- s to proste obiekty: interfaces and implementations
+- nie trzeba corba, j2ee ...
+
+
+# 5 MODULES [AKA PACKAGES]
+
+
+- c: cognitive overload is primary reason for modularing
+- it's easier to understand
+  - modul details [w/o worrying ab. outer modules]
+  - modules interactions [w/o worrying ab. each m details]
+- there is a limit - how many things person can understand at once [hence low couping]
+
+- keep
+  - low coupling between m-s
+  - high cohesion inside m
+- it's important on m-s level
+- on class level - it's 2nd-ary problem / but "nice to have"
+
+- podzial na m-s wynika wprost z UL
+- inside m - keep elems highly coupled together
+- nazwa m wynika z UL [np 'customer']
+
+
+## 5.1 AGILE MODULES
+
+
+- rzadko refactoruje sie m-s = to blad
+- m-s trzeba refaktorowac each time it's needed
+- acz jest to troche trudniejsze niz refactor metody ...
+- acz czesto podzial na moduly jest staly od poczatku projektu
+
+- brak refactora prowadzi do
+  - high coupling between m-s
+  - low cohesion inside m
+
+
+EXAMPLE: PACKAGE CODING CONV. IN JAVA
+
+- EE recoms imports like
+  "import some.another.pack.*"
+- NOT
+  "import some.specific.Klazz"
+- to chyba ulatwia refactor potem
+
+
+## 5.2 THE PITFALLS OF INFRASTRUCTURE DRIVEN DESIGN
+
+
+trzymaj osobno each layer [layered architecture]:
+- infrastructure
+- user interface
+- domain layer 
+
+- g: old j2ee spec was "totally against MDA/DDD"
+
+
+# 6 MODELING PARADIGMS
+
+- obecnie dominuje OO paradigm
+- niezaleznie od paradygmatu = wspolnym elementem jest UL
+  - opisuje jak dziala business
+  - technikalia to implementuja
+
+vin: don't fight the impl. paradigm
+- w przypadku problemow z impl. modelu w danym paradygmacie -> przemodeluj domene
+- zawsze znajdzie sie inny model ktory lepiej pasuje do danego paradygmatu
+- acz zmiana modelu nie zmienia UL [chyba?]
+
