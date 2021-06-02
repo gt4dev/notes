@@ -1,6 +1,6 @@
 # MODELING PARADIGMS
 
-- obecnie dominuje OO paradigm
+- dominuje OO paradigm
 - niezaleznie od paradygmatu = wspolnym elementem jest UL
   - opisuje jak dziala business
   - technikalia to implementuja

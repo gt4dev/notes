@@ -1,1 +1,43 @@
 # AGGREGATES
+
+- w business
+  - objects are far/deeply interconnected
+  - ciezko znalezc ostre granice
+  
+przyklad
+- usuwasz z bazy Person [plus imie, wiek ..]
+- q: co z Address - tez usunac?
+- inne Persons are assigned to this Address
+- problem powieksza dostep do tych obiektow przez wielu klientow app
+
+- trzeba zapobiec jednoczesenmyu zmienianiu tych samych obiektow
+
+- trudno zagwarantowac consistency zmian w modelu z many associations
+- invariants must be kept for closely related objects [not only in single objects]
+
+rozw. tych probs wymaga 
+- glebokiego zrozumienia domeny
+- non-funct. reqs: frequency of changes in model
+
+model musi trzymac invarianty, keep loose high contention elems [aggs/entities]
+
+chociaz wyglada to na tech trudnosci [z tx]
+ale realnie to problemy zakorzenione w modelu
+dokladnie = w braku zdef. granic
+
+- zdef. rozw. na poziomie modelu
+- m. bedzie clearer/easier
+
+c: pattern agg p/b comes from pattern 'onwership relation'
+in short: tx-es modify only object and owner
+
+agg def
+- agg = zestaw danych, ktore traktujemy jako single unit z PoV of changing data
+- agg ma root i granice [i ew. dodatkowe e-s]
+- root is the only class of agg which others can ref
+// g: ale chyba mozna widziec encje nested in agg, acz moze lepiej wysawiac ich dane jako vo-s
+- acz inside agg - each can keep each
+- nested e-s can have local [no global] id-s, root has to have global id
+
+
+snd: 523
