@@ -1,0 +1,92 @@
+# ASSOCIATIONS
+
+
+- przejscie z modelu do impl jest szczegolnie tricky dla asocjacji
+
+- kazda asocjacja z modelu - w programie jest odzwieciecdona properties'ami
+
+asocjacje moge byc oparte na diff mechs
+- klasyczne refs [do pojo-s]
+- zwracanie obiektu zbudowanego obiektu podczas wolania 'property-get' [look-up do db, ...]
+
+z punktu widzenia modelu 
+- widzimy tylko property
+- "nie interesuje nas" skad asocjacja pobiera dane/obiekty
+
+w real-life mamy najwiecej relacji jest typu:
+- many to many
+- bidirectional
+
+- 1st sketches of doain model - tez maja duzo w/w relacji
+- ale to b. czesto
+  - niepotrzebnie komplikuje model
+  - nic nie mowi o rzeczysistej semantyce relacji
+  
+metody upraszczania asocjacji
+- imposing traversal direction
+- dodaj kwalifikator [eliminacja multplicity/wielosci/*]
+- usun nieistotne asocjacje
+
+- upraszczanie wymaga zrozumienia domeny
+
+- wazne: ogranicz relacje tak mocno jak to mozliwe
+
+c: asocjacja bidirectional - oznacza ze 2 obiekty moga byc zrozumiane tylko razem
+
+sample 
+- usa mialo wielu prezydentow
+- mamy relacje: 1 to many, bidirect
+- ale "nikt" nie startuje od G.Washington'a i pytania "czyim prezedentem byl GW"
+- stad mozemy uprosc relacje, zrobic unidirect. 
+  | Country | ------[president]-*-> | Person |
+- teraz klasa Person nie zalezy od idei "president", klasy Country ..
+- n: zeby upraszczac musisz znac model domenowy, sposob jego uzycia
+
+sample - kwalifikowana relacja
+- jest tylko 1 prezydent w danym momencie
+- uzycie kwalifikatora redukuje relacje do "1 to 1"!!!
+- dodatkowo widzimy na modelu wazna regule biznesowa
+
+  | Country |[period] --------[president]--> | Person |
+             ^^^^^^^^ kwalif.
+             
+mega-c
+- narzucajac traversal na relacje many-to-many
+- robisz z niej relacje 1-to-many
+- ktora jest znacznie prostsza w implementacji
+
+- jesli relacja nie wnosi istotnej wartosi do modelu - usun ja
+
+
+EXAMPLE - ASSOCIATIONS IN A BROKERAGE ACCOUNT
+
+- model
+  - brokerage account -----*--> investment
+  - ................. --------- customer
+- kod
+  class BrokerageAccount {
+    Set getInvestments() {...}
+    Customer getCustomer() {...} 
+  }
+- c: EE uzywa getter'y, a VV odradza ;]
+- w impl. POJO of BrokerageAccount
+    Customer getCustomer() {return customer;} // <-- zwroc zainicjowane pole klasy
+- w impl. SQL of BrokerageAccount
+    Customer getCustomer() {
+      zapytaj w RT baze, stworz obiekt Customer, return it // to tylko przyklad, not clean code
+    }
+- n: z client PoV - nie ma roznicy miedzy w/w impls [pojo, sql]
+
+usuniecie multiplicity miedzy BroAcc - Investment
+- z: z b.needs wynika ze BroAcc moze miec tylko jedna (!!!) Inv dla danego stock'a [kij z semantyka]
+- nowy model
+  - | brokerage account |[stock] -------> | investment |
+- nowy kod
+  class BorkerageAccount {
+    Investment getInvestments(string stock) { // n: zwraca 1 obiekt, ograniczenie jest parametrem w metodzie!!!
+      return investments.get(stock); // inv. to mapa, ale to impl. detal, w sql bedzie inaczej, niewazne ;]
+    } 
+    ...
+  }
+
+

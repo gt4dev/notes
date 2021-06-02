@@ -1,0 +1,52 @@
+# MODULES [AKA PACKAGES]
+
+
+- c: cognitive overload is primary reason for modularing
+- it's easier to understand
+  - modul details [w/o worrying ab. outer modules]
+  - modules interactions [w/o worrying ab. each m details]
+- there is a limit - how many things person can understand at once [hence low couping]
+
+- keep
+  - low coupling between m-s
+  - high cohesion inside m
+- it's important on m-s level
+- on class level - it's 2nd-ary problem / but "nice to have"
+
+- podzial na m-s wynika wprost z UL
+- inside m - keep elems highly coupled together
+- nazwa m wynika z UL [np 'customer']
+
+
+## 1 AGILE MODULES
+
+
+- rzadko refactoruje sie m-s = to blad
+- m-s trzeba refaktorowac each time it's needed
+- acz jest to troche trudniejsze niz refactor metody ...
+- acz czesto podzial na moduly jest staly od poczatku projektu
+
+- brak refactora prowadzi do
+  - high coupling between m-s
+  - low cohesion inside m
+
+
+EXAMPLE: PACKAGE CODING CONV. IN JAVA
+
+
+- EE recoms imports like
+  "import some.another.pack.*"
+- NOT
+  "import some.specific.Klazz"
+- to chyba ulatwia refactor potem
+
+
+## 2 THE PITFALLS OF INFRASTRUCTURE DRIVEN DESIGN
+
+
+trzymaj osobno each layer [layered architecture]:
+- infrastructure
+- user interface
+- domain layer 
+
+- g: old j2ee spec was "totally against MDA/DDD"

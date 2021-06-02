@@ -1,0 +1,57 @@
+vvvv cont. here
+
+# SERVICES
+
+
+- sometimes it isn't a thing
+- operations don't belong to any object
+- it's service
+
+- common mistake: too fast putting operations in services
+- ale bledem jest tez pchanie metod do obiektow ktore nie naleza do nich
+
+- do service'a pasuja operacje ktore dzialaja na wielu obiektach
+- typowa met. obiektu operuje tylko na nim [?]
+- g: service sa bezstanowe [bo nie sa hooked do obiektu]
+
+- service nie ma stanu
+- nazwa service's to raczej activity [niz noun]
+- operacje to nazwy z UL
+- params and results are domain objects [tez z UL]
+
+ch-cs of good service
+- operacje sa czescia domeny [ktore nie sa czescia e lub vo]
+- interface is defined with elements of domain model
+- operation is stateless
+
+
+## 1 SERVICES AND ISOLATED DOMAIN LAYOER
+
+
+mamy service'y [all cooperating in app]
+- domenowe
+- aplikacyjne
+- infrastruktury
+
+- tech services should lack any business logic
+
+sample: transfer pieniedzy
+- transfer realizuje domain service
+- bo oper. robiona jest na 2 obiektach: kontach
+
+
+## 2 GRANULARITY
+
+
+- glowne zastosowanie s = modelowanie zachowan
+- dodatkowe = hiding details, decoupling clients from domain [e,vo ..]
+
+- medium-grained service - hides complex flow behind simple method
+- fine-grained access to domain - leaks knowlege to caller side
+
+
+## 3 ACCESS TO SERVICES
+
+
+- s to proste obiekty: interfaces and implementations
+- nie trzeba corba, j2ee ...

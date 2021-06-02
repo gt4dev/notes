@@ -1,0 +1,12 @@
+# MODELING PARADIGMS
+
+- obecnie dominuje OO paradigm
+- niezaleznie od paradygmatu = wspolnym elementem jest UL
+  - opisuje jak dziala business
+  - technikalia to implementuja
+
+vin: don't fight the impl. paradigm
+- w przypadku problemow z impl. modelu w danym paradygmacie -> przemodeluj domene
+- zawsze znajdzie sie inny model ktory lepiej pasuje do danego paradygmatu
+- acz zmiana modelu nie zmienia UL [chyba?]
+
