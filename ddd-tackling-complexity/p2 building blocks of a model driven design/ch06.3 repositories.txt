@@ -1,16 +1,113 @@
 # REPOSITORIES
 
+- r allows to read e-s/vo-s in the middle of their LC
+- zeby miec obiekt
+  - albo go wyszukujesz
+  - albo robisz travers po asocjacji [z innego obj]
+- ktora w/w opcje wybrac - jest dycyzja designer'a
+  - cmp tradeoffs obu rozwiazan
+- from tech PoV - retrieval of obj is subset of creation
+
+niezaleznie gdzie i w jakiej postaci masz e [ale i vo]
+[row w db, encje rozisne po kilku vm-s ...]
+to reprez. one all te same e
+// g: masz wiele 'stanow' tego samego e w wielu miejscach
+// g: jako single point of truth - use db z sync stanu by tx'y
+
+- klient nie moze miec 
+  - zbyt duzej mozliwosci traversowania po assocjacjach - bo to muddle the model
+  - direct db access [bo nie bedzie uzywal aggs to read data]
+  
+- vi: internal objs of agg can be accessed only by travers from the root
+- eg: e/vo hooked to agg
+
+- main repos resp = remove from model techs regarding reading/saving data
+- w modelu mamy tylko interface
+- klient szuka wg params [obiekty modelu]
+- result jest obiektem modelu
+
+- client search data in repo by passing attrs to search method
+
+- repo moze zwrocic
+  - particular object[s]
+  - summary information [eg. recap data from few objects]
+  - calculations on objects
+  - ...
+
+factory vs repo
+- f tworzy obiekty - ktore sa w mem [nie sa z automatu stored]
+- r zapisuje obiekty z pamieci do store'a lub czyta ze store do pamieci [reconstitute]
+
+- vi: provide repos to access only agg roots [which can't be accessed by traversal]
+
+- btw: repos ulatwiaja testowanie kodu [bo latwo w miejsce heavy infra wstawic mock]
+
 
 ## 1 QUERYING A REPO
 
+- metoda searching by 
+  - id - zwroci 1 obj
+  - attr - moze zwrocic many objs
+  
+- if repo returns calculations - then usually these are calcs done by underlying db
+
+- repos can search by
+  - simple attrs
+  - specifacation based queries 
+    eg. TradeOrderRepo.matching(Criteria c)
+  - ...
+
 
 ## 2 CLIENT CODE INGORES REPO IMPL; DEVS DO NOT
+
+// big cut
+- in short: devs should understand how repos work - to use it optimally
+- eg: to not fetch all objs from db by repo and iterate through
 
 
 ## 3 IMPL A REPO
 
 
+- impl will heavy vary deping on underlying tech [store is in mem, db, file ..]
+- many possibilities of impling repos
+
+recoms
+- leave tx control to the client [don't commit after save to repo ...]
+- only clients do commits
+  - client can do may repo operations
+  - do commit for all of them
+- NIE KODUJ tx w repo
+  - repo bedzie prostsze
+  - tx'y tez beda prostsze
+
+
 ## 4 WORKING WITH YOUR FRAMEWORK
 
 
+- fmwk - moze juz wspierac tworzenie repos
+- a moze byc kompletnie w kontrze do idei tworzenia repos
+
+c: e z old ejb != e from ddd
+c: ejb home z old j2ee wyglada jak repo = ale to kompletnie nie to
+
+- DON'T FIGHT YOUR FRAMEWORKS!!!!!!!
+  - te moze dotyczyc proby zrobienie immutable w Realm [tego tam nie ma i sie nie da]
+
+
 ## 5 THE RELATIONSHIP WITH FACTORIES
+
+- f handles beginning of objects L
+- r ...     middle/end ...
+
+- r during reconstituting creates object -> many consider r as kind of f
+- from tech PoV it's ok
+- from model PoV - reconstitution is NOT creation [conceptualy 1 is existing, 1is completely new obj]
+
+- teoretycznie r moglo by uzywac f do reconst. obiektow - ale to rzadka praktyka
+
+- rozdzielenie r and f - separuje responsibilities
+  - f - tylko tworzy nowe obiekty
+  - r - zapisuje/czytuje store'a
+  
+- c: some are mixing f and r to achieve method 'findOrCreate'
+- ale to absurdalne, niepotrzebne przy uzywaniu e-s/vo-s
