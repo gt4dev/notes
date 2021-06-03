@@ -40,4 +40,63 @@ agg def
 - nested e-s can have local [no global] id-s, root has to have global id
 
 
-snd: 523
+sample
+- agg roots: car, engine
+- car contains e-s: wheel, position, tire
+- n
+  - w realu wydaje sie ze engine jest "nested in car"
+  - ale w modelu sa to rownoprawne e-s, associated
+
+- zmiany w wielu aggs - sa wykonywane w kilku tx, korkach
+
+podsumowanie cech agg
+- root has global id
+- root is resp for checking invariants
+- e-s inside agg can have local id
+- outside [for agg] objects - can ref only root of agg
+- inside agg
+  - root can keep refs to internal e-s, vo-s
+  - others - can ref other internals - only transiently
+- tylko root moze byc wczytany z db
+  - internals are read by associations traversal [eager,lazy loadeded]
+- internals can ref other roots
+- delete of agg - removes all its internals
+- on changes commit - all invariants must be satisfied
+
+- control whole access to agg boundary - through the root
+- root must know about changes of inside objects
+- thus internals of agg can ref to each other 
+  - only temporary
+  - in sigle operation [of root]
+  
+  
+EXAMPLE
+PURCHASE ORDER INTEGRITY
+
+
+sample
+- init model
+  | purchase order | -----*-> | po line item | ----- | part |
+    limit                       quantity               price
+- invariant: suma zamowienia w po nie moze przekraczac limitu
+- wielu users bedzie update'owac: po, po-line-item, part
+  
+approach 1: each e is agg
+- w 1 tx chronimy zmiany na 1 e
+- nie chronimy inveriantu
+
+fix: 
+- close in agg
+  - po + po-line-item
+  - copy price to po-line-item
+  
+  | <root>                                           |  
+  | | purchase order | <>-----*-> | po line item | --|-----> | part |
+      limit                         quantity                   price
+                                    price
+- invariant jest chroniony przez lock'owanie whole po
+- wiec wielu users pracuja na 1 po - to sie wzajemnie lock'uja
+- cudow nie ma - jesli inv. ma byc utrzymany to modyfikacje musza byc lock'owane
+- optimistic conc. 
+  - nie zmieni problemu rownoleglej modyfikacji danych przez many users
+  - ulatwi ready
