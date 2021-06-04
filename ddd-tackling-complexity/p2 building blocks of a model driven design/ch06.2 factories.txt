@@ -1,79 +1,79 @@
-vvv cont here
-
 # FACTORIES
 
-- use f to create object or agg - when it's complex or reveal too much internals
+- use f to create agg [or any other complex object]
 
 analogia
-- jest silnik samochodu i fabryka go tworzaca
+- jest silnik samochodu i fabryka silnikow
 - silnik siebie nie tworzy - ma inne zadanie
 - identycznie w OO - sa obiekty i fabryki
+- resps of
+  - creating object
+  - object 'logic' 
+  .. are diff -> can't be mixed
 
-- nawet tytlko wywolanie contrs przez klienta
-- powoduje ze klient jest 'przyspawany' do danego obiektu
-- trudno potem zmieniac kod bez zmiany klienta
+- yet only call of obj constr by client
+- makes client hard dependent to object
+- trudno potem zmieniac object bez zmiany klienta
 
-klient 
+klient
 - nie powien tworzyc obiektow
 - powinien ich tylko uzywac
 
-- creating object can be big operation
-- resp of creating obj and resp of object itself = are diff -> can't be mixed
+- creation in in domain layer
+- but [usually] it's not strictly expressed in UL/domain
 
-- creating objects is resp. of domain layer
-- but it's [usually] not strictly defined in UL/domain
-
-many pattersn of factories
+factory patterns
 - f method
 - abstract f
-- builder [tu da sie rozbic budowe na etapy]
+- builder [da sie tu rozbic budowe na etapy]
+- ...
 
 reqs for good f
 - creation is atomic
 - after creation
   - all invariants are satisfied
   - state is consistent
-- f returns [rather] abstract than particular type
+- f returns [rather] abstract type
 
 
 ## 1 CHOOSING FACTORIES AND THEIR SITES
 
 
-- typowo f jest przypiete do jakiegos domain object
-  - do ma typowo jakies dane do initu nowego obiektu
-- [rzadziej?] tworzy sie sandalone f
-  - to glownie gdy tworzony object jest veery complex
+- zwykle f jest przypiete do domain object
+  - ma wtedy dostep do init data for new object
+- [rzadziej?] f jest sandalone
+  - glownie gdy tworzony jest veery complex object
 
 
-place f on object which owns created object
-
-sample
-- if you need to add element to existing agg
-- add f method on the root of agg
-// g: root ma f method!!!
-- tnx of it 
-  - client does't know agg internals
-  - agg is resp. for assuring consistency of 
-    - new object
-    - agg itself after adding new object
+wayA: place f on object which owns created object
 
 sample
-<root>        <f method>                   <agg internal e>
+- you need to add element to existing agg
+- add f method on the root
+- client does't know agg internals
+- agg is resp. for assuring consistency of 
+  - new object
+  - agg itself after adding new object
+
+sample
+
+<root>        <f method>                     <agg internal e>
 purchaseOrder.newItem(productNumber,quantity):PurchaseItem
-- almost identical like in ch about aggs
+
+- sample "identical" like in chapter:aggs
   PurchaseOrder ----> LineItem -----> Product
 - f na root tworzy internal e
-- klient [pewnie AS] dostaje PI i pewnie sam dodaje do PO
+- klient [pewnie AS] dostaje new object i (chyba) sam dodaje go do PO
   - bo f tylko tworzy new object - not adds it to root
-// g: seems ze client ma access to internal e of agg
-- PI ma local id [local for particular agg] thus f 'must' be on agg
+- PI ma local id [relative to agg] thus f is part of agg
 
 
-place f on object spawning another object
-- although it doesn't own created object
-- pozwala to zaoszczedzic "przepychaniu danych" miedzy obiektami
+wayB: place f on object spawning new object
+- "object with f" doesn't own created object
+- lokalizacja pozwala to zaoszczedzic "przepychaniu danych" miedzy obiektami
 
 sample
+
 <root>           <f method>                 <root>
 brokerageAccount.newBuy(stockSymbol,amount):TradeOrder
 accNumb = a123                              brokerAccoundId = a123
@@ -86,12 +86,12 @@ customer = 'john'                           stockSymbol = sthFromParam
 ## 2 WHEN CONSTR IS ALL YOU NEED
 
 
-- zwykle prefs f
-- ale czasem best jest wywolanie bezposrednie constr
+- zwykle chcemy f-s
+- ale czasem best jest direct constr call
 
 cases
-- o nie jest czescia hierarchi, nie uzywa polimorfizow, interface'ow ...
-- dla client'a wazna jest impl [byc moze w patt. strategy]
+- obj nie jest czescia hierarchi, nie uzywa polimorfizow, interface'ow ...
+- dla client'a wazna jest impl [gdzies w strategy patt]
 
 - vi: avoid calling constrs inside constrs of other classes
 
@@ -105,21 +105,21 @@ cases
 ## 4 WHERE DOES INVARIANT LOGIC GO
 
 
-- f jest odpowiedzalna za stworzenie o z od razu satisfied invariants
+- f jest odpowiedzalna za stworzenie obj z invariants staisfied from init
 
 
 ## 5 ENTITY FACTORIES VS VO FACTORIES
 
 
-- vo f - od razu tworzy finalna wersje o [bo vo jest immutable]
+- vo f - od razu tworzy finalna wersje obj [bo vo jest immutable]
 - vo e - raczej tworzy e w minimalnej wersji
 
 
 ## 6 RECONSTITUTING STORED OBJECT
 
 
-- chodzi o case'y odtowrzenia obiektu wczytanego z sieci, bazy ...
-// chyba to samo co repo
-- czasem trzeba handle case: ze init data sa incorrect
+- use case'y: odtworzenie obiektu wczytanego z sieci, bazy ...
+// g: jaka diff z repo? chyba rzadki case?
+- czasem jest case: init data sa incorrect - then
   - obj. can't be re-created
-  - moze trzeba usunac invalid data [in db, file ..]
+  - i moze trzeba usunac invalid init data [in db, file ..]
