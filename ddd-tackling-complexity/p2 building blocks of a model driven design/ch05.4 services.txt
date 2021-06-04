@@ -1,51 +1,46 @@
-vvvv cont. here
-
 # SERVICES
 
-
 - sometimes it isn't a thing
-- operations don't belong to any object
-- it's service
+- some operations don't belong to any object
 
 - common mistake: too fast putting operations in services
-- ale bledem jest tez pchanie metod do obiektow ktore nie naleza do nich
+- bladem jest tez pchanie metod do obiektow ktore nie naleza do nich
 
-- do service'a pasuja operacje ktore dzialaja na wielu obiektach
-- typowa met. obiektu operuje tylko na nim [?]
-- g: service sa bezstanowe [bo nie sa hooked do obiektu]
+- service dzialaja zwykle na wielu obiektach
+- g: met. obiektu pracuje w jego ctx
 
 - service nie ma stanu
-- nazwa service's to raczej activity [niz noun]
-- operacje to nazwy z UL
-- params and results are domain objects [tez z UL]
+- g: bo nie sa przypisane do obiektu
 
-ch-cs of good service
-- operacje sa czescia domeny [ktore nie sa czescia e lub vo]
-- interface is defined with elements of domain model
-- operation is stateless
+- nazwa klasy/operations - pochodza z UL
+- service name to raczej activity [nie noun]
+- params and results use domain objects
+- operacje sa elementem domeny
 
 
 ## 1 SERVICES AND ISOLATED DOMAIN LAYOER
 
 
-mamy service'y [all cooperating in app]
+sa rozne service [in app]
 - domenowe
-- aplikacyjne
-- infrastruktury
+- tech
+  - aplikacyjne
+  - infrastruktury
 
-- tech services should lack any business logic
+- technical services can't have any business logic
 
 sample: transfer pieniedzy
-- transfer realizuje domain service
-- bo oper. robiona jest na 2 obiektach: kontach
+- transfer to oper robiona na 2 obiektach [kontach]
+- stad impl. w domain service
 
 
 ## 2 GRANULARITY
 
 
 - glowne zastosowanie s = modelowanie zachowan
-- dodatkowe = hiding details, decoupling clients from domain [e,vo ..]
+- dodatkowe = hiding details, decoupling clients from domain details [e,vo ..]
 
+'graining levels'
 - medium-grained service - hides complex flow behind simple method
 - fine-grained access to domain - leaks knowlege to caller side
 

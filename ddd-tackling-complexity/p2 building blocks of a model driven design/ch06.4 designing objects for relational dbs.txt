@@ -16,4 +16,6 @@ c: uzywanie relacyjnej db i oo w app - to mieszanie paradgims
 - z czasem - oba modele sie rozjada [to naturalne]
 - more - migracje schematow sa czesto dosc trudne i to zniecheca do zmian
 
-- moze warto trzymac czysty/spojny ale rozdzielny model schematu db i domany
+- moze warto trzymac
+  - spojny model db i domany
+  - i jednoczesnie ROZDZIELNY 

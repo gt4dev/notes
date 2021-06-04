@@ -1,20 +1,22 @@
 # MODULES [AKA PACKAGES]
 
 
-- c: cognitive overload is primary reason for modularing
+- cognitive overload is primary reason for creating modules
 - it's easier to understand
-  - modul details [w/o worrying ab. outer modules]
+  - modul details [w/o worrying ab. outer m-s]
   - modules interactions [w/o worrying ab. each m details]
-- there is a limit - how many things person can understand at once [hence low couping]
+- human has limit how many things can understand at once 
+  - hence m-s low couping
 
-- keep
+- keep rules
   - low coupling between m-s
   - high cohesion inside m
-- it's important on m-s level
-- on class level - it's 2nd-ary problem / but "nice to have"
+- rules are
+  - important on m-s level
+  - on class level - it's 2nd-ary need/ but "nice to have"
 
-- podzial na m-s wynika wprost z UL
-- inside m - keep elems highly coupled together
+- podzial / nazwy m-s [eg customer] - wynikaja wprost z UL
+- group in m elems highly coupled together
 - nazwa m wynika z UL [np 'customer']
 
 
@@ -22,9 +24,10 @@
 
 
 - rzadko refactoruje sie m-s = to blad
-- m-s trzeba refaktorowac each time it's needed
-- acz jest to troche trudniejsze niz refactor metody ...
-- acz czesto podzial na moduly jest staly od poczatku projektu
+- m-s refaktoryzuj on each need
+- acz jest to trudniejsze niz refactor class, metody ...
+
+- c: czesto podzial na moduly jest staly od poczatku projektu
 
 - brak refactora prowadzi do
   - high coupling between m-s
@@ -33,12 +36,9 @@
 
 EXAMPLE: PACKAGE CODING CONV. IN JAVA
 
-
-- EE recoms imports like
-  "import some.another.pack.*"
-- NOT
-  "import some.specific.Klazz"
-- to chyba ulatwia refactor potem
+EE 
+- recoms imports like "import some.pack.*"
+- NOT "import some.specific.Klazz"
 
 
 ## 2 THE PITFALLS OF INFRASTRUCTURE DRIVEN DESIGN
@@ -49,4 +49,4 @@ trzymaj osobno each layer [layered architecture]:
 - user interface
 - domain layer 
 
-- g: old j2ee spec was "totally against MDA/DDD"
+- g: old j2ee is totally against "MDA/DDD"
