@@ -1,0 +1,168 @@
+# CH12 REPOSITIORIES
+
+wg EE
+- provide repos only for aggs, that needs global access
+- provide illusion of access from 'in-memory'
+- set up access through interface
+
+- czasem jak kilka aggs ma wspolna hierarchie - to all sa wyciagane z 1 repo
+
+c: to idea vv zeby podzielic repos na collection/persistance oriented
+
+
+## 1 COLLECTION ORIENTED REPOS
+
+
+- to tradycyjne podejscie z DDD
+- repo nasladuje zachowanie [kontrakt] klasycznej kolekcji
+- avoid here any notion of saving data
+
+- pers. mech. musi wspierac pewne mechanizmy zeby to dzialalo
+
+standardowe zachowanie kolekcji to
+- po dodaniu obj do kolekcji - jest on tam caly czas, nic nie trzeba wiecej robic
+- jak zmieniasz obj z kolekcji - to kol NIC o tym nie musi wiedziec
+  - wyciagasz go, modyfikujesz i ready
+  
+przyklad
+public interface Collection
+  add
+  addAll
+  remove
+  removeAll
+
+jak dodajesz cos do HashSet po raz drugi - to old obj. jest nadpisywany, nie leci rzaden excep etc
+jak cos wyciagasz a tego nie ma - to dostajesz null a nie leci excep
+dokladnie to ma robic repo
+rzucaj excep tylko jesli params sa "poza zakresem" a tak - return null, takze dla GetEntity(eId)
+encja moze byc usunieta whatever ...
+
+you don't need to 'save' objs already held by repo
+jak wyciagasz obj. z repo, modyf - nie wstawiaj go 'back' do repo
+
+c: vv troche sp*l - zakodowal
+class MyRepo extends HashSet<Calendar> <<< po kiego to rozszerzal????
+  add(Calendar c) {..}
+}
+
+
+backing persisting mech - musi umiec rozpoznac ze obj zostal zmieniony
+many possible impls - below onbly 2
+oba podejscia maja rozne implikacje na wydajnosc
+w obu cases - sledzenie zmian jest niezauwazalne dla klienta
+
+1 implicit copy on read
+- poczas reconstituting object [from store]
+  - private copy is created
+  - returns to client oryginal
+- on commit [called by client]
+  - mech cmp both objs
+- jak mech. finds diffs -> changed objs are flushed to store
+- c: przy lazy loading - cmp'ed are only [lazy] loaded objects
+
+2 implicit copy on write
+- mech pers zarzadza all reconst. data through proxy
+- przy reconst. object wrapowany jest 'cieniutkim porxy' i przekazywany klientowi
+- klient wola methods na proxy
+  - dowiaduje sie o tym mech pers
+  - realne/docelowe metody tez sa wolane
+- on 1st method call - proxy robi kopie obiektu i oznacza obiekt jako dirty
+- on commit - all dirty objects are flushed to db
+
+
+use doesn't call anything [beside commit] to store changed objects
+
+
+### 1.1 HIBERNATE IMPL
+
+
+- z hbm tworzyc collection oriented repos
+- repo has interface which mimics collection behaviour
+
+typowy interf has methods like
+interface CalendarRepository {
+  void addCalendar(Calendar cal);
+  void addAll(Collection<Cal> cals);
+  void remove(Cal cal)
+  void removeAll(Collection<Cal> cals)
+}
+
+- jak usuwasz - to dajesz cala encje
+- jak dodajesz to zwracany jest void [a nie id]
+  - a std kolekcja zwraca boolean
+  - VV zwraca void
+    - bo zwracanie true [jako ack sukcesu] jest pozorne
+    - real success of add/remove/.. mozna oglosic dopiero po commit
+- lekko dyskusyjne jest posiadania metod add/remove[All]
+  - bo aggs najczesciej zmieniamy pojedynczo
+
+
+usuwanie aggs
+- jak pobierzesz cos z repo i ktos ma do tego ref - to nie mozesz tego obiektu 'od tak usunac'
+- ale jesli musisz miec taki feat - to oznacz te encje flaga 'removed' etc
+
+finder methods
+interface CalendarRepositrory {
+  Calendar calendarOfId(CalId)
+
+
+}
+- w przypadku gdy finder szuka po id i nie znajduje nic - powienin zwrocic null a nie excep
+- bo to naturalne w kolekcjach
+
+
+impl czasem znajduje sie w podkatalogu domain.model!!!
+    ... domain.model.calendar.impl
+i w tym pakiecie - kod hbm'a
+co normalnie chcemy miec model bez technikaliow!!
+  ale sam model jest nadal czysty od techs
+ale "typowo" impl. interfejsu jest w pakiecie infrastruckury
+podpakiet impl jest popularny w java world
+g: moze da sie tak robic dla innych 'tech impls' [klient poczty, swerwisu ..]
+  - ns root - logika [wolna od techs]
+  - nt impl - technikalia
+
+- metoda remove(Calendar c) pobiera pelny obiekt a nie tylko id
+- bo wewn. jest call session().delete(wholeObject)
+- ale to zalezy od impl [bo id tez da sie uzyc]
+
+cascade deleting
+- albo przez config
+- albo recznie w repo.remove(X x) {
+  session.delete(child)
+  session.delete(parend)
+}
+
+n: troszke trick'ow jest z tym hbm - trzeba sie douczyc
+  hql, uzywanie full objects w hql [jak to dziala, co hbm match'uje?]
+
+
+### 1.2 CONSIDERTIONS TO TOP-LINK
+
+nt: wav 112
+
+## 2 PERSISTENCE ORIENTED REPOS
+
+
+### 2.1 COHERENCE IMPL
+
+
+### 2.2 MONGO-DB IMPL
+
+
+## 3 ADDITIONAL BEHAVIOUR
+
+
+## 4 MANAGING TRANSACTIONS
+
+
+### 4.1 A WARNING
+
+
+## 5 TYPE HIERARCHIES
+
+
+## 6 REPO VS DATA ACCESS OBJECT
+
+
+## 7 TESTING REPOS
