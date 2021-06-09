@@ -3,8 +3,8 @@
 - tworzenie aggs z encji i vo to jeden z mniej zrozumiałych tematów DDD
 
 - typowy problemy - robienie aggs zbyt
-  - duzych agg (i zagniezdzanie full entities)
-  - malych - bo to nie chroni invariants
+  - duzych (za wiele e-s)
+  - malych (to nie chroni invariants)
 
 
 ## 1 using aggregates in the scrum core domain
@@ -16,24 +16,23 @@
 ### 1.1 1st attempt: large-cluster aggregate
 
 
-- assume Product is very large agg
-- contains objects: BacklogItem, Release, Sprint ..
+- Product is large agg with e-s:: BacklogItem, Release, Sprint ..
 - struktura jest prosta
-- ale tworzy duzo problems
+- ale tworzy duzo problemow
   - many tx will fail (due to conflicts)
-// q: czyli w "1 user app" to ok podejcie?
+// g: p/p w "1 user app" to ok
 
 optimistic concurrency
 - class Product extends ConcurencySafeEntity (CSE)
 - CSE impls optimistic concurrency
 dzialanie OC
-- CSE zawiera pole concurrencyVersion (tabel ma kolumne concurrency_version)
-- podczas zapisu E - jesli numer wersji w obiekcie jest starszy niz juz w bazie -> update jest odrzucany
-- hbm uzywa elem <version> do cfg OC i wskazania pola
+- CSE zawiera pole concurrencyVersion (tabela ma kolumne concurrency_version)
+- podczas zapisu E - jesli numer wersji w obiekcie jest starszy niz w bazie -> update jest odrzucany
+- hbm uzywa elem <version> do cfg OC (i wskazania pola)
 sample
 - user A i B pracuja na tym samym obiekcie Product,ver=1
-- A dodaj BacklogItem i robi commit, teraz ver=2
-- B dodaje Release i probuje zrobic commit - tx fails bo ma stara ver
+- A dodaj BacklogItem i robi commit, teraz P.ver=2
+- B dodaje Release i probuje zrobic commit - tx fails bo ma stale ver
 
 c: nadpisywanie zmian w key-value stores
 - przy kazdym zapisie agg - zapisywana jest jego CALA zawartosc
@@ -48,42 +47,41 @@ n: poza fails of tx - large agg has other probs
 ### 1.2 2nd attempt: multiple aggregates
 
 
-consider another model
-- 4 aggs: Product, BacklogItem, Release, Sprint
+consider model
+- 4 small aggs: Product, BacklogItem, Release, Sprint
 - each refs Product by ProductId (identity of Product)
 
-comparing to prev. model
+comparing to "large model"
 - signature of Product methods will change
   large agg
     Product { void ScheduleSprint("params desc sprint, w/o any IDs")
   small agg
     Product { Sprint ScheduleSprint("params identyczne")
-- mega zmiana
+- mega zmiany
   - w large jest command
-  - w small jest querry
-    - dziala jak factory (tworzy i zwraca agg)
+  - w small jest querry [factory: tworzy i zwraca agg]
 
 uzycie w AS [small agg ver]
-  MyAS : public void planProductBacklogItem(
+- class MyAppService / public void planProductBacklogItem(
     aTenantID, aProductID 
     aSummary, aCategory, aBacklogItemType, aStoryPoint) 
-- all params as primitives / strings
-  - g: i taka postac maja tez czesto w DB
-- AS konwertuje primitives/strings w VO
+- all params = primitives / strings
+  - g: analog. postac jest w DB
+- AS konwertuje primitives/strings do VO
   - ID'kie przez "new TenantId(tenandId)"
   - reszta przez "static methods/factorie" w VO
     BacklogItemType.valueOf(backlogItemType):BacklogItemType
-- z repo wyszukujemy agg Product and call
-    product.planBacklogItem("params juz jako VO"):BacklogItem
-- zwrocony agg BI dajemy do
+- z repo wyszukujemy agg Product and do call
+    product.planBacklogItem("params jako VO"):BacklogItem
+- stworzony agg BI dajemy do repo
     biRepo.Add(bi)
     
 c: VV prefix'uje params metody przez 'a': aProductID, aBacklogItemType
 
-c: w 'small agg ver' nie ma problemu tx-konfliktow
+- w 'small agg' nie ma problemu konfliktow tx-es
 - mozna rownolegle tworzyc dowolna ilosc aggs
 
-c: w modelu 'large' mozna ustawic HBM/optimisticLock=false 
+- w modelu 'large' mozna ustawic HBM/optimisticLock=false 
 - eliminuje to problem z konfliktami tx (przy wersjonowaniu)
 - ale zostaja inne problems
 
@@ -99,33 +97,33 @@ c: w modelu 'large' mozna ustawic HBM/optimisticLock=false
 
 typy konsystencji
 - transactional consistency TC
-- eventual consictency EC
+- eventual consistency EC
 
 - inwariant dotyczy tylko TC
 
 przykład
 - class Agg1 { 
-  // pola A, B, C
+  // pola a, b, c
   // operacje 
   }
 - inwariant c = a + b
-- cokolwiek się dzieje, niezależnie jakie operacje sa wywołane = invariant zawsze musi być spełniony
+- cokolwiek się dzieje, niezależnie jakie operacje sa wywołane = invariant zawsze jest spełniony
 
-- agregat wyznacz TC boundary (obszar zawsze konsystentnych danych)
-- n: E nested in agg jest konsystentne z calym agg
+- agregat wyznacza TC boundary (obszar zawsze konsystentnych danych)
 
-- C zwykle zapewnia TX
-- wowczas podczas commit wszystko wewn. granic agregatu musi byc C
-- n: czyli w "tmp states" inwariant nie musi byc zachowany (musi podczas commit)
+- consistency zwykle zapewnia TX
+- podczas commit wszystko wewn. granic agregatu musi byc consistent
+- czyli w "temporary state" inwariant nie musi byc zachowany
+  - ale raczej powinien
 
-- BC modyfikuje tylko 1 agg w tx
+- BC modyfikuje tylko 1 agg w 1 tx
 
-- n: do zaproj. agg trzeba wykonac analize tx - co kiedy ma byc C!!!
-- duzo zalezy od UI
-  - ile aggs bedzie modyf. przy 1 use case
-  - powinien modyfikowac 1 agg
+- do zaproj. agg trzeba wykonac analize tx-es - co kiedy ma byc consistent
 
-n
+duzo zalezy od UI
+- ile aggs modyf. przy 1 use case
+- powinien modyfikowac 1 agg
+
 - agg wyznaczaja granice consistency
 - a nie tworza graf obiektow "do nawigacji"!!!
 
@@ -133,55 +131,54 @@ n
 ## 3 rule: design small aggregates
 
 
-std problems with large aggs
+std problems of large aggs
 - tx conflicts
 - performance
 - scalability
 
-sample perf. problem [1 of]
+sample perfoarmance problem [1 of many]
 - assume >large< agg Product with 1k of BIs, Sprints, Releases ...
 - chcesz dodac new BI
 - musisz wczytac ALL BIs (mimo ze ich nie potrzebujesz)
 - to problem wydajnosci i pamieci
-- c: pozostale E (Release, Sprint ..) ustaw jako lazy-loading [nie beda wczytywane]
+- n: pozostale E (Release, Sprint ..) sa lazy-loading [nie beda wczytywane]
 
 another probs of >large agg<
-- tworza nieprawdziwe invariants
-- dla "pozornej" wygody nawigacji - tworza mega grafy obiektow
+- maja zle invariants
+- dla "pozornej" wygody nawigacji - tworza duze grafy obiektow
 
-- small agg = root entity with attrs (possibly as VO), czasem dodatkowe sub-E
-
-c: "niejawne invariants"
+niejawne invariants
 - w Product attrs name and desc sa zwykle zmieniane razem - stad sa w 1 agg
 
 hint
-- przy modelowaniu mysl czy dany koncept
-  - czy bedzie sie zmienial w czasie
-  - czy mozna go kompletnie wymienic
+- przy modelowaniu mysl czy dany element
+  - bedzie sie zmienial w czasie
+  - mozna go kompletnie wymienic
 .. if 2nd - project it as VO
 
-c: if you'd re-analyse your model - probably you'll find many Es which can be replaced with VO
+- if you'd re-analyse your model 
+- probably you'll find many Es which can be replaced with VO
 
-c: w avg projekcie biznesowym
+c: w "avg" projekcie biznesowym
 - 70% aggs ma 1 E (plus props as VO)
 - 30% aggs ma 2-3 E
-.. acz all zalezy od reqs
+.. acz to zalezy od reqs
 
 
 ### 3.1  don't trust every use case
 
 
-- typowa specyfikacja opisuje use cases
-- trzeba do niej dolaczyc decyzje o tworzeniu agg
+- typowa specyfikacja opisuje tylko use cases
+- trzeba dodac decyzje o tworzeniu aggs
 
-- czesto specyfikacja wymaga modyfikacji wielu agg/request
+- czesto specyfikacja wymaga modyfikacji wielu agg w 1 req
 - nalezy ustalic czy
   - mozna rozbic 1 tx na kilka mniejszych
   - realnie potrzeba 1 big tx
 
 n
 - if you modify many aggs in 1 tx - to moze ze zle ustaliles invariant
-- moze trzeba polaczyc kilka aggs w 1 nowy -> zaproj. nowy "koncept" w modelu (z nowymi granicami)
+  - moze trzeba przemodelowac kilka aggs w nowy "koncept" (z nowymi granicami)
 - or use eventual consistency
   - but check if delay is acceptable
 
@@ -189,7 +186,7 @@ n
 ## 4 rule: reference other aggregates by identity
 
 
-- kuszaca jest wizja duzego grafu obiektow (compositional structure) z opcja dalekiej nawigacji
+- kuszaca jest wizja grafu obiektow z opcja deep navigation
 
 wazne
 - agg MOZE miec ref do root'a innego agregatu
@@ -200,7 +197,7 @@ wazne
   }
 
 
-if in 1 tx you must modify many agg - it's strong info that there is 
+if in 1 tx you modify many aggs - it's strong info that there is 
 - bad consistency boundary
 - some UL notion wasn't discovered yet
 
@@ -210,13 +207,13 @@ if in 1 tx you must modify many agg - it's strong info that there is
 ### 4.1 making aggregates work together through identity reference
 
 
-- prefer refing between aggs by IDs
+- prefer refing between aggs by ID
 - sample
   class BacklogItem : ConcurrencySafeEntity {
     ProductId product
   }
 - refing by ID avoids 'eager loading'
-- plus model
+- and model
   - is faster (less time take load to mem)
   - consumes less mem
 
@@ -224,39 +221,38 @@ if in 1 tx you must modify many agg - it's strong info that there is
 ### 4.2 model navigation
 
 
-how to navigate with only ID
+how to navigate with ID
 - way 1 - "disconnected domain model"
-  - call repos from inside of agg - to fetch needed data
+  - call repos from inside of agg - to fetch needed agg data
   - form of lazy-loading
-- way 2 (reced)
+- way 2 - recommended
   - use repo or DS to load 2nd agg data
-  - pass this data to 1st agg when you call its methods
+  - pass this agg data to 1st agg on calling its methods
 
-sample
-- let's call agg BacklogItem.assignTeamMemberToTask(TeamMemberId, Team, TaskId)
-- create assignTeamMemberToTask in AS!!!
-- in AS method
+sample: call of agg method BacklogItem.assignTeamMemberToTask(TeamMemberId, Team, TaskId)
+- create method MyAppService.assignTeamMemberToTask(..) which
   - prepare params needed by agg's method
   - read agg Team from repo
-  - do call with a/m objects
+  - call BI agg with fetched Team agg
+    - nie wnikam - ale pp BI potrzebuje calego Team zeby cos wyliczyc?
 
-- way 2 frees agg from deping on repo/DS
 - way 1 is ok for complex domains
   - pass to called method ref to repo/DS 
     // q: why not make repo field of class?
   - agg robi double dispatch to dwl needed data
+- way 2 frees agg from deping on repo/DS
 
 - but in each way - modify 1 agg in 1 tx
 
 c: ui and navigations
-- using IDs for refing between aggs make navigation hard 
-- but it's useful in UI
-- in such case 
+- using IDs for refing between aggs make navigation hard
+- but navigation is useful in UI
+- in such case
   - either: read data req on UI from few repos [but it's slow]
   - or: use "HBM theta joins" or CQRS
 
 c: hbm and theta joins
-- it allows to read a few diff aggs in 1 hbm (not sql) query
+- it allows to read a few diff aggs in 1 hbm query
 - hbm then returns related (but diff type) objects
 
 
@@ -271,8 +267,8 @@ other plus
 - as refs are done by ID then you easy ref aggs from other BCs
 - useful if you
   - modify agg and send DEvent
-  - DEvent has IDs of parties/agg involved in this change
-- naturally: 
+  - DEvent has IDs of parties involved in this change
+- naturally
   - txes are divided between BCs
   - eventual consistency is used
 
@@ -282,14 +278,14 @@ other plus
 
 wg EE 
 - to keep consistency and modify many aggs in 1 request - use eventual consistency
-- this rule regards all cases, eg:
+- this rule regards all 'modify aggs cases', eg:
   - few aggs modified "in 1 req"
-  - many aggs (during batch processing)
+  - many aggs modified in batch processing
 
-- you must agree with domain experts that delay between modifying objects is ok
+- you must agree with domain experts that delayed txes / changes are ok
 
 EC sample
-- agg has method/command BacklogItem.commitTo(Sprint s)
+- agg has command BacklogItem.commitTo(Sprint s)
 - method at the end sends event BacklogItemCommited
   - n: send is sync, but consumption on subsciber side is async
 - subers
@@ -298,7 +294,7 @@ EC sample
 
 what if modification fails on suber side
 - modification can be retried
-  - if suber doesn't ack that modification is done [or fail] -> event is redelivered
+  - if suber doesn't ack that modification is done [or failed] -> event is redelivered
     // q: how queue gets info that event handled/failed?
 - try many times until 'event is handled' [and consistency achieved]
 - there should be limit of retries - after it app should
@@ -306,14 +302,14 @@ what if modification fails on suber side
   - or at least report problem to user/admin - to react - cause state in inconsistent!!!
     
 c: do non-linear retires
-- next delivery tries do with longer and longer delay
+- each next delivery do with longer and longer delay
 - start with delay 1s, then 2s, then 4s - until limit
  
 
 ### 5.1 ask whose job it is
 
 
-- sometimes it's hard to guess which consistency to apply (tx / eventual)
+- sometimes it's hard to guess which consistency to apply (tx \/ eventual)
 - wg EE - assess whose responsibility is to assure consistency
   - if user (who calls particular use-case) - do task in 1 tx
   - if another user or system - do task in EC
@@ -322,8 +318,8 @@ c: do non-linear retires
 ## 6 reason to break the rules
 
 
-- czasem można zapisać w kilka aggs w 1 tx
-- ponizej 4 powody nie sa jedyne
+- czasem można zapisać kilka aggs w 1 tx
+- ponizsze 4 powody nie sa jedyne ;]
 
 
 ### 6.1 r1: user interface convinience
@@ -334,9 +330,9 @@ c: do non-linear retires
 - np. AS.planBatchOfBacklogItems[productId, tenantId, BItemDesc[] newItems]
 - AS.plan... tworzy klika instancji agg: BItems i dodaje je kolejno do BItemRepo, >w 1 tx<
 
-- nie ma tu problems z niezachowaniem invariants - bo tworzymy nowy BItems
+- nie ma problemu z niezachowaniem invariants - bo tworzymy nowe BItems
 
-- n: p/p zachowanie inwariants jest kryterium czy mozna zlamac dana agg-rule
+- n: zachowanie inwariants jest kryterium czy mozna zlamac "agg-rule"
 
 
 ### 6.2 r2: lack of technical mechanism
@@ -346,7 +342,7 @@ c: do non-linear retires
 - some projs don't have it - sad but true
 
 way1
-- as we can't use EC -> proj p/b will end with large aggregates
+- as we can't use EC -> proj p/b will end with large aggs
 - this will decrese performance/scalaebility
 way2
 - strive to create small aggs 
@@ -356,8 +352,8 @@ way2
 ### 6.3 r3: global transacitons
 
 
-- if you must use global, 2-phase TX-es - then it looks ok to modify many aggs in 1 tx
-- but it DOESN'T directly force us to so
+- if you use global, 2-phase TX-es - then it looks ok to modify many aggs in 1 tx
+  - although it DOESN'T force us to do so
 - if possible - avoid even here modifying many aggs in 1 tx
 
 
@@ -366,20 +362,16 @@ way2
 
 - sometimes you must have "live" ref from agg1 to agg2
   - due to ease doing fetching data ...
-- you can do it but remember about "perfomrance etc." problems
+- you can do it but remember about "performance" [etc.] problems
 
 
 ### 6.5 adhering to the rules
 
 
 - there can be many reasons to break rules
-- in long term 
-  - keeping rules ease project, 
-  - breaking -> make it hard
-- if you keep rules you will have
-  - consistency where it's needed
-  - performance
-  - scaleability
+- in long term
+  - keeping rules - ease project
+  - breaking - make it hard
 
 
 ## 7 gaining insight through discovery
@@ -408,44 +400,40 @@ technika BOTE [back of the envelope]
 - przyklad
   - zgrubienie określ czas trwania Sprint, ilość Tasks in Sprint ... 
   - zgrubnie policz ilosc obiektów BItem, Task ...
-  - wyszlo: np. 144 obiekty na zaladowanie 1 BI
+  - wyszlo: np. 144 obiekty na zaladowanie 1 BI w typowym use case
 
 
 ### 7.3 common usage scenarios
 
 
 problem z optimistic concurrency
-- musi być możliwość że dwóch użytkowników users dodaje nowe taski i nie blokują nawzajem BI [bo Task to ok, niech blokuja]
-- nie moze byc ze dodanie Task do BI zwieksza wersje OC BI
-- trzeba wyłączyć hbm optimistic lock
+- umozliw 2+ userom dodawanie nowych task, bez wzajemnej blokady BI [sam Task niech blokuja]
+- nie moze byc ze dodanie Task do BI zwieksza wersje OC na BI
+- trzeba wyłączyć hbm optimistic lock [p/p na BI]
 - default OC = version, ustaw OC = false
   - OC=version sie nie sprawdzi
-  - modyikujemy wiele tasks by many users
-- ustawione na BI [p/p]
+  - modyfikujemy wiele diff tasks by wielu users
 
-c: 
-- dopuszczala jest taka LL zmiana mimo ze ustawiamy cechy "domain model"
-- widac ze ustawienie OC zalezy od konkretnego UC 
-  - stanowi heurystyke ["przypuszczenia" co sie bedzie sprawdzac]
-  - zakladamy jak userzy beda sie zachowywac - a to wcale nie musi byc true [i w rezultacie moze byc many 'failed tx']
-- acz niedopuszczalne jest nadpisywanie danych by users
+- ustawienie mech. OC zalezy od konkretnego UC 
+- ustawiamy na bazie heurystyki ["przypuszczenia" jakie ustawienie bedzie dzialac w danym zestawie UCes]
+- zakladamy jak userzy beda sie zachowywac - co wcale nie musi sie sprawdzic i w realu strategia moze byc zla
+- acz zawsze niedopuszczalne jest nadpisywanie danych by users ;]
 
 
 ### 7.4 memory consumption
 
 
-// just count objects created in UC
+// just count objects created during UC
 
-c: double lazy load ;]
+sample of "double lazy load"
 - Tasks from BacklogItem are lazy-loaded
 - lazy-loaded are also EstimationLogEntry (part of Task)
+
 - wg VV podczas UC ladowanych jest 25 obiektow - "to nieduzo"
 
-[not sure]
-- during single req is done 'double lazy-loading' (Tasks, then Esitmates)
-- but wg VV
-  - optimizing it - should be done after tests/analyses - is it real problem
-  - don't optimize it "now"
+although 'double lazy ..' but wg VV
+- optimizing it - should be done after tests/analyses - is it real problem
+- not "now", hmm .. strange
 
 
 ### 7.5 exploring another alternative design
@@ -458,7 +446,8 @@ idea: wydzielic Task jako osobny agg (poza agg BI)
   - save memory (less objects are loaded)
   - eliminate lazy loading
 - cons: delay in setting BI status to done (due to EC)
-- but business accept it -> idea is accepted
+- but if business accept it -> idea is accepted
+- naturalnie invariant 'auto-set BI to done' znika
 
 
 ### 7.6 implememnting eventual consistency
@@ -467,8 +456,8 @@ idea: wydzielic Task jako osobny agg (poza agg BI)
 // q: jak robione jest message redelivery (after failure)
 
 example - use EC to set BI 'done'
-- agg has method-command Task.estimatedHoursRemaining()
-- a/m method on end sends event EventTaskHoursRemainingEstimated
+- agg has command Task.estimatedHoursRemaining()
+- on end it sends event EventTaskHoursRemainingEstimated
 - event has attrs BacklogItemID, TaskID, hoursRemaining, ...
 - suber of a/m event - calls DS which
   - get BI, Task z repo (by IDs from event)
@@ -478,25 +467,20 @@ example - use EC to set BI 'done'
 optimalization
 - instead of reading all Tasks for BI (to calc remaining hours)
 - rather create specialized method in repo
-    TotalBacklogItemTaskHoursRemaining(tenantId, biId)
-- which on DB level calcs remaining hours of BI (w/o reading all Tasks to mem)
+  - TotalBacklogItemTaskHoursRemaining(tenantId, biId)
+  - which on DB level calcs remaining hours of BI (w/o loading objs to mem)
 
 waiting for EC and refresh UI
 - app quickly update Task but BI with delay (due to EC)
-- then problem: what to show on UI: task is modified but BI not yet
-- maybe show message (or sth like this): "BI state is being calculated, refresh soon"
-- gt: a/m jest slabe, moze lepiej owrapowac calosc w await?
+- problem: what to show on UI: task is modified but BI not yet
+- maybe message: "BI state is being calculated, refresh soon"
+- gt: slabe, lepiej owrapowac calosc w await
 
 
 ### 7.7 is it the team member's job?
 
 
-b. need can change
-- setting BI to done can be done automatically [in tx or EC]
-- but this feat can be off [eg. another user manually ack change to done]
-- in such case
-  - create setting in app
-  - if auto-close = true -> no T/EC is needed [bot for 'true' -> pb use EC]
+// nothing special
 
 
 ### 7.8 time to decision
@@ -521,12 +505,10 @@ b. need can change
   - surrogate identity
   - optimistic concurrency versioning
 
-c
 - class Product has property Set<ProductBacklogItem>
 - don't mistake it with BacklogItem
-- it's used for sorting of BI
+- it's represents sorting of BIs
 
-C
 - Product ma id: domenowe i surrogate
 - w konstruktorze Product jest tylko id domenowe
 - surrogate jest pp ustawione przez db
@@ -535,38 +517,36 @@ C
 ### 8.2 favor value object parts
 
 
-- parts of agg try to model as VO [not E]
+- parts of agg try to model as VO
 
-C
 - Product ma ref do Tenant przez TenantId
 - Product i Tenant sa z diff BC
 - wiec musza być ref'owane przez Id
-  - VI: aggs z innych BC refuj przez Id
-- acz wewn. BC tez refujemy przez Id
+- aggs z innych BC refuj tylko przez Id
+- acz wewnatrz BC tez refujemy przez Id
 
-C: intergrate BCs
+integrate BCs
 - Product ma ref do ProductDiscussion [VO]
 - VO ProductDiscussion represents agg Discussion from another BC
-- PD jest eventually consistent względem zmian w Discussion
-- zmiany sa propagowane do obiektu Product [do attr PD]
+- PD jest eventually consistent względem zmian w Discussion BC
+- update'y sa propagowane do obiektu Product [do attr PD]
   - za pomoca eventu
   - w "delayed" tx
 
-C
 - ProductBacklogItem is an E [could be VO]
 - as VO there'd be performance problem
   - in case of sorting change
   - trzeba by wywalic old collection of VOs i wstawic nowa collection
 - as we use E - we set only attr 'ordering' [and quickly change sorting]
 
-- w w/w - tech wplynal na model domenowy
-- acz pp niewiele - bo z client PoV nie widzimy diff miedzy vo/e
-
-C
-- use of key-value store lets use VO [instead of E]
-  - but will client see diff? pp
-- anyway - seems techs highly influence details of model
-  - but is it publicly visible in domain [these tech details]?
+- w w/w case: tech wplynal na model domenowy
+- acz pp niewiele - bo z client PoV nie widzimy duzej diff miedzy vo/e
+  - w e ustawiamy attr "sorting"
+  - w vo byla by zamiana calej kolekcji [?]
+- if we'd use key-value store then we'd use VO [not E]
+- anyway 
+  - seems techs highly influence impl details of model
+  - but semantic of model stays the same [?]
 
 
 ### 8.3 using law of Demeter and tell, don't ask
@@ -581,14 +561,14 @@ both promo hiding infos
 
 LOD
 - promotes using 'least needed knowledge'
-- sample: objects = client (C), server (S)
+- sample: client (C), server (S)
 - when C calls S - C should
   - only know how to call command/querry on S
   - NOT know S internals [properties ...]
 - esp: C should not call internal parts of S
 - if such call is needed then
-  - S exposes method [which delegates to internal part]
-  - and C calls a/m method
+  - S exposes method which delegates to internal part
+  - and C calls exposed method
 - recap: metoda obiektu moze wolac inne metody
   - nalezace do tego obiektu
   - parametrow przekazanych tej metodzie
@@ -601,11 +581,6 @@ TDA
 przyklad
 - bad: C pyta S o dane, decyduje co robic, kaze S to robic
 - good: C "mowi" S co ma zrobic [C wola command on S]
-
-
-- TDA/LOD są podobne
-- acz TDA prosciej szeroko stosowac
-
 
 SAMPLES
 - client calls
@@ -622,18 +597,20 @@ SAMPLES
   - PBI is small [least knowledge]
   - it doesn't publish "internals" of P
 
+- caly kod w klasie should minimize keeping knowlegde [use minimun to perform task]
 
-- caly kod w klasie should minimize knowlegde [use minimun to perform task]
+- TDA/LOD są podobne
+- TDA prosciej stosowac
 
-- LOD jest bardziej wymagające niz TDA
 - LOD zakazuje klientowmi nawigowac po grafie obiektow (eg. agg)
 - TDA
   - pozwala na nawigacje [nie zakazuje jej ;]
   - wymusza modyfikacje stanu agg przez commands
 
-C
 - czasem proj agg moze stosowac tylko TDA [bez LOD]
-- jest to ok
+
+
+vvvv cont. here
 
 
 ### 8.4 optimistic concurrency
