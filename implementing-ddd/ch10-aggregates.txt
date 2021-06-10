@@ -610,44 +610,37 @@ SAMPLES
 - czasem proj agg moze stosowac tylko TDA [bez LOD]
 
 
-vvvv cont. here
-
-
 ### 8.4 optimistic concurrency
 
 
-- gdzie ustawic attr. version OC?
-- assume set it only on root entity of agg
-  - and increas it on ANY change agg boundries [even in sub-E]
-- ale to "srednie": brudzi kod logiki [technikalmiali], jest czesto niepotrzebne ...
-// q: to jak chronimy invariants - gdy sub-E maja own versions
+assume 
+- set OC only on root entity
+- increas on ANY change in agg boundries
 
-- z: uzywamy hbm
-- kiedy w agg Product zmieniamy name/desc/.. -> podbijamy version of root
-- it's ok/easy
-- ale prob: jak zmieniac ver kiedy zmienia sie order of BacklogItems
-  - bo modyf. ProductBacklogItem nie jest widziana przez HBM jako zmiana Product [przez mech. version'owania]
-- teor. mozna to obejsc przez sztuczne podbijanie agg/Product przy zmianie PBI
+// q: jak chronimy invariants - gdy sub-E maja own versions
+
+sample [hbm]
+- kiedy w Product zmieniamy name/desc/.. -> podbijamy version of root - it's ok
+- prob: jak zmieniac ver kiedy zmienia sie order of BacklogItems [reprez. przez e ProductBacklogItem]
+- modyf. ProductBacklogItem nie jest widziana przez HBM jako zmiana Product [przez mech. version'owania]
+
+- PBI sluzy tylko i wylacznie do sortowanie BIs wewn. Product
+- c: jest sub-E, ma ref do TenantId, ProductId [koszernie, po ID ;]
+
+avg fix: sztuczne podbijanie Product przy zmianie PBI
 Product.reorderFrom(..) {
   // read ProductBacklogItem
   // modify PBI
-  version(version() + 1) // sztucznie podbij Product.version
+  version(version() + 1)
 }
-- probs with w/w
-  - Product.version zmienia sie takze jesli call to reorderFrom(..) nie zmienia kolejnosci
-  - wyciek infra do modelu
+probs here
+- Product.version zmienia sie takze jesli call to reorderFrom(..) nie zmienia kolejnosci
+- wyciek infra do modelu
   
-fix
-- przy modyf PBI nie musimy podbijac P.version
-- PBI moga miec own OC
-- OC bedzie chronic modyf. single PBI przez wielu users
-
-c
-- PBI sluzy tylko i wylacznie do sortowanie BIs wewn. Product
-- jest sub-E, ma ref do TenantId, ProductId ... -> hence
-- hance VIN
-  - sub-E moga refowac do innych E/aggs - ale tylko przez ID [p/p]
-  - a zakaz jest refowania z sub-E do innych aggs po 'ref' [p/p]
+good fix
+- przy modyf PBI nie podbijaj P.version
+- PBI maja own OC
+- OC chroni single PBI przed nadpisywaniem przez wielu users
 
 - versioning all E parts doesn't work in every case
 - sometimes [to protect invariants] we must modify root version
@@ -655,24 +648,21 @@ c
 alter way
 - use hooks provided by hbm
 - cfg root version-ing as dirty and manually handle OC
-- ale trzeba uzyc bidirectional relation - co EE bardzo odradza
-  - mozna uzyc w rzadkich cases
-  - ale nie dla mech. potrzeb OptimisticConcurreny
+- trzeba uzyc bidirectional relation - co EE mega mega odradza
     
 alter way
-- podziel agg na mniejsze i uzywaj std OC
-- niezalecane - bo domene ksztaltuje infra
-- ale moze byc uzasadnione wielkoscia, wydajnoscia root'a
+- podziel agg na mniejsze i uzywaj std OC [if ok from invariants PoV]
+- niezalecane - bo model ksztaltuje infra
+- ale moze uzasadnione
 
 - wg VV problemu nie ma w techs gdzie agg zapisujemy jako calosc [mongo, riak ..]
-- gt: ale pewnie sa problemy z brakiem OC ;]
+- gt: pewnie sa problemy z brakiem OC ;]
 
 
 ### 8.5 avoid dependency injection
 
-- injecting repos or DS to aggs - is bad
-- bo aggs moga przez to robic look-up'y/dociagaja inne aggs
-- reced way: find all aggs before calling command on agg (which needs these pre-loaded aggs)
-- 'disconnected domain model' is not reced
 
-- racze wstrzykuj Repos, DS do AS etc.
+- injecting repos or DS to aggs is bad
+- bo aggs moga robic dociagaja inne aggs
+- reced way: load all data/aggs before calling method on agg
+- btw. wstrzykuj Repos, DS do AS etc.
