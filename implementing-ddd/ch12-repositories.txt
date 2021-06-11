@@ -217,13 +217,97 @@ c
 ### 2.2 MONGO-DB IMPL
 
 
+// cut, nothing special
+
+
+
+vvvvv cont here
+
 
 ## 3 ADDITIONAL BEHAVIOUR
 
 
+sample: liczenie instancji agregatu
+
+zeby byc zgodnym z namingiem java's Collection - name it size() not count()
+
+interface CalendarRepository {
+  int size();
+}
+
+naturalnie - w impl. size() uzywasz wewn. mech. store'a [select count ;]
+nieczego nie ladujesz to mem
+
+czasem w repo warto doczytywac tylko fragment agg
+to zaprzecza idei ze repo zwraca tylko agg - nie zwraca: czasem zwroci w/w frag, czasem cos wyliczy ...
+it's useful if there are lot of frags [or are big] and loading these frags with agg - would be bad
+performance is in practice only reason to do so
+
+n1: w/w pokazuje ze z zewn. agg mozemy czytac inner e-s - jesli sa publiczne [w ramach agg]
+n2: w/w jest mozliwe tylko jesli agg udistepnia na zewn. swoje e-s [upublicznia je] 
+
+use case optimal query
+czasem w 1 tx chcesz wyjac more data niz ma single agg [or list of aggs]
+chcesz wyjac poszczegolne dane z roznych typow i instancji aggs
+wyciaganie aggs i skladanie z nich dto moze byc bad
+dodaj do repo UCOQ
+zwraca ono vo-sy designed to address UC needs
+
+g
+- create repo UCOQ
+- calosc siedzi w modelu (i zwraca modelowe vo-sy zaprojektowane pod UC)
+
+- ale jesli w wielu repos tworzysz UCOQ - to jest to pp smell
+- mozliwe z 
+  - zle podzieliles model na aggs
+  - all is ok -> wtedy potrzebujesz cqrs
+
 
 ## 4 MANAGING TRANSACTIONS
 
+
+- domain model and domain layer is NEVER good place to manage tx-es
+- zwykle operacje zw. z modelem sa 'fine grained' i nie powinny byc swiadome tx-ow
+- chociaz pewnie sa wyjatki
+
+- zwykle tx-y sa zarzadzane na poziomie application layer
+- AS zarzadza tez security [transforms input/output to domain objects]
+- AS tworzy facade pattern
+- AS po wykonaniu all calls to domain layer
+  - if all was ok - commits tx
+  - else - rollbacks tx
+  
+- tx mozna kodowac
+  - deklaratywnie 
+  - recznie
+- logicznie efekt jest identyczny [ale eliminuje boilerplate]
+
+sample
+myAppServiceUseCase {
+  Transaction tx = null;
+  try {
+    tx = session().beginTransaction();
+    // CALL DOMAIN ...
+    tx.commit()
+  }
+  catch {
+    tx.rollback()
+  }
+}
+
+- repo musisz miec dostep do session [jak w/w] or unit-of-work ktora wystartowal AS
+
+- zwykle tx'ami zarzadzaja containers/IoC
+- many ways/patterns are possible [Spring ..]
+
+@Transactional
+myAppServiceUseCase {
+  // CALL DOMAIN ...
+}
+
+n diffs
+- mega uproszczenie z deklaratywnym podejsciem
+- wywalenie boilerplate code'a
 
 
 ### 4.1 A WARNING
