@@ -310,16 +310,26 @@ n diffs
 - wywalenie boilerplate code'a
 
 
-### 4.1 A WARNING
-
-
-
 ## 5 TYPE HIERARCHIES
 
+
+// big shortcut
+
+- can be that there is 'base agg' from which other aggs are derived
+- dla calej hierarchii tworz 1 repo dla all types
+  - to repo raczej zwraca on base agg
+- wazne by po stronie klient nie budowac logiki typu "if agg typeA then do x, if typeB then do ..."
+- taka logika powinna byc schowana po stornie modelu
 
 
 ## 6 REPO VS DATA ACCESS OBJECT
 
+
+- DAO uzywa names z db tables
+- DAO daje CRUD do tablic z DB
+
+- Fowler w EAA (pp) opisuje ref CRUD arch
+- uses patterns: table module, table data gateway, action record, transaction script
 
 
 ## 7 TESTING REPOS
