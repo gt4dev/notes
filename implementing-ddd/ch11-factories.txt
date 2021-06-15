@@ -1,0 +1,45 @@
+# CH11 FACTORIES
+
+
+## 1. FACTORIES IN THE DOMAIN MODEL
+
+
+typowe patterns
+- abstract factory
+- factory method
+- builder
+
+all a/m can be used as f
+
+wg EE
+- f tworzy caly agg zapewniajac invariants
+- f nie wystepuje bezposredni w UL - ale jest wazna czescia modelu
+- f ukrywa detale - klienta nie zna detali
+
+postacie
+- stand-alone
+- hooked on aggs [as f methods]
+  - v. useful - ma dostep do detali agg 
+    - latwo tworzy inne aggs [etc] powiazana z curr agg
+      - mniej kodu - mniej bledow
+
+- f methods on aggs - can have names which express UL terms
+- what is not possible from constrs alone
+
+- service moze dzialac jak f
+- produkuje agg or vo
+- useful in BCs integrations
+
+
+## 2. FACTORY METHOD ON AGG ROOT
+
+
+### 2.1 CREATING CalendarEntry INSTANCES
+
+
+### 2.2 CREATING Discussion INSTANCES
+
+
+## 3. FACTORY ON SERVICE
+
+

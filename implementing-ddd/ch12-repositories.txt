@@ -333,3 +333,29 @@ n diffs
 
 
 ## 7 TESTING REPOS
+
+
+- repos tez musisz testowac [zeby miec pewnosc ze all dobrze zapisujesz/odczytujesz]
+
+sample
+testSaveAndFindOneProduct() {
+  var product = new Product(...) // create agg
+  productRepository.save(product);  // test saving
+  var readProduct = productRepository.productOfId(product.Id); // test reading
+  assertEquals(product.sth1(), readProduct.sth1()) // po kolei cmp states
+  assertEquals(product.sth2(), readProduct.sth2())
+}
+
+- tip: jesli 1 metoda testuje write/read single agg to next tests 
+  - can ignore this part of test [write/read agg]
+  - focus on other repo aspects [eg: write 3 aggs, read 3 aggs - juz bez spr. contentu of aggs...]
+  
+  
+### 7.1 TESTING WITH IN-MEMO
+
+
+- prepare in-memo repo real repo np: jest ciezkie, nie ma [still] real db ...
+
+class InMemoryProductRepository extends ProductRepository {
+  Map store = new HashMap() // // zwykla mapa
+}
