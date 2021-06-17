@@ -4,27 +4,26 @@
 ## 1. FACTORIES IN THE DOMAIN MODEL
 
 
-typowe patterns
+std used patterns
 - abstract factory
 - factory method
 - builder
 
-all a/m can be used as f
+// g: seems builder can be used as f
 
-wg EE
-- f tworzy caly agg zapewniajac invariants
-- f nie wystepuje bezposredni w UL - ale jest wazna czescia modelu
-- f ukrywa detale - klienta nie zna detali
+wg EE - f
+- tworzy caly agg zapewniajac invariants
+- nie wystepuje bezposredni w UL - ale jest wazna czescia modelu
+- ukrywa detale przed klientem detale
 
-postacie
+postacie 
 - stand-alone
 - hooked on aggs [as f methods]
   - v. useful - ma dostep do detali agg 
-    - latwo tworzy inne aggs [etc] powiazana z curr agg
-      - mniej kodu - mniej bledow
+  - latwo tworzyc inne aggs z danych z curr agg
 
-- f methods on aggs - can have names which express UL terms
-- what is not possible from constrs alone
+- f methods on aggs [g: standalone f-s too] - can have names which express UL terms
+- it is not possible from for constrs alone
 
 - service moze dzialac jak f
 - produkuje agg or vo
@@ -34,41 +33,44 @@ postacie
 ## 2. FACTORY METHOD ON AGG ROOT
 
 
-przyklady nazywa metody-factories wg UL
-
+przyklady f-methods - expressing UL terms
 Tenant.provisionGoup(..):Group
-      .offerRegistrationInvitation(..):RegistrationInvitation
+Tenant.offerRegistrationInvitation(..):RegistrationInvitation
 Forum.startDiscussion(..):Discussion
 Discussion.post(..):Post
 
-- all w/w zwaracaj stworzony agg
-- w zasadzie each agg ma f ktore tworzy "potomny" agg
+c
+- all w/w tworza nowy agg
+- w iddd-sampl most aggs ma f-methods tworzace inne agg
 
 
 ### 2.1 CREATING CalendarEntry INSTANCES
 
 
-ciekawy testu
-- mamy test metody f = createCalendarEntry
+ciekawy unit test
+- mamy f-metode scheduleCalendarEntry i jej test
 - wewn. testu
-  - wolana jest f = scheduleCalendarEntry(..)
-  - dodatkowo testowane jest wysylanie eventu [wysylany na eo scheduleCalendarEntry]
+  - wolana w/w metoda
+  - dodatkowo testowane jest wysylanie eventu [wysylany wewn scheduleCalendarEntry]
 
-- scheduleCalendarEntry ma duuuzo params [9], well - "complex domain"
+- scheduleCalendarEntry ma duuuzo [9] params 
+  - nie wszytko jest sens kompresowac w single vo
 
-wewn. f scheduleCalendarEntry NIE wywoluj guards!!!
-- just take all method params and pass it to CalendarEntry constr
-- nie ma potrzeby dodawania guards - bo wiemy ze w konstr. e/vo 
+wewn. f scheduleCalendarEntry NIE wywoluj guards sprawdzajace method params!!!!!
+- just pass params to "new CalendarEntry(all 9 params + some more)"
+- nie ma potrzeby dodawania guards - bo wiemy ze w constr. (of e/vo) 
   - sa wolywane self-delegates sprawdzajace obiekt
   - sprawdzana jest spojnosc calego obiektu
-- thus zawsze rob checks/guards w konstr. e/vo - i nie rob tego w innych miejscach
+- thus 
+  - zawsze rob checks/guards w konstr. e/vo 
+  - i powtarzaj tego w innych miejscach
   
-constr. CalendarEntry is protected
-- client can't call it, must use f
+- constr. CalendarEntry is protected
+- client must use f
 
-wada
+wada f on agg
 - zeby stworzyc CalendarEntry
-- musisz wyciagnac z bazy Calendar i dopiero wolac f
+- musisz wyciagnac z bazy Calendar i wolac f
 - to moze obnizyc wydajnosc ale to czesto uzasadniony koszt
 
 
@@ -76,9 +78,11 @@ wada
 
 
 sample 
+
 Forum.startDiscussion(..):Discussion {
-  // tu juz jest uzyty guard [vs a/m sample]
-  if(this.isClosed()) throw new Exception("can't start on closed disc");
+  // tu musimy dodac guard  bo nie ma go w constr [cmp a/m sample]
+  if(this.isClosed()) 
+    throw new Exception("can't start on closed disc");
 
   // reszta guards jest robiona w constr. of agg / vo
   var d = new Discussion(...);
@@ -89,11 +93,16 @@ Forum.startDiscussion(..):Discussion {
 ## 3. FACTORY ON SERVICE
 
 
-- tworzymy osobny service [eg: CollaboratorService]
+// big cut
+
+- tworzymy osobny service
 - useful przy integracji BC'ow
-- sample methods
+sample
+interface CollaboratorService {
   authorFrom(..):Author
   creatorFrom(..):Creator 
-- dzialanie: BC Colaborator access BC identity, reads User + Role and creates object Author, Creator ...
+  ..
+}
+- dzialanie: BC Colaborator access BC identity, reads User + Role and creates vo-s: Author, Creator ...
 - to factory tworzy vo-sy [nie aggs]!!!
   class Author extends Collaborator implements Serializable {...}
