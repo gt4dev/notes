@@ -1,13 +1,72 @@
 # CH13 INTEGRATING BC-S
 
+- uzywaj Context Maps do zarzadania relacjami miedzy BC'ami
+// g: remind Domains, Subdomains to understand this ch
+
+ContextMaps have 2 primary forms
+- simple drawings - illustrate relationships between BCes
+- code of 'theses relationships' [ten ch focus'uje sie na tym kodzie]
+
 
 ## 1 INTEGRATION BASIS
 
 
+2 BC-e mozna zintegrowac na wiele dobrych sposobow
+- wystawic api w 1st i robic rpc'e z 2nd
+  - przez soap, xml over http - nie ma to znaczenia jak
+- through messaging - if form eg:
+  - messages queue
+  - public-subscribe
+  - n: klasyczne api "mozna" uzywac jako gate do odbierania messages
+- restful http
+  - to nie jest proste przesylanie msg miedzy bc'ami
+  - mamy protokul modyfikowania res'ow
+  - res'y sa identyfikowane przez unique uri
+  - mamy set of pertaions to modify reses [get, put, post, delete]
+- sryliard innych integration techs
+  - file-based integration
+  - shared-db integraion
+  .. ale unikaj bo 'doing so could make you old before your time'
+  
+
 ### 1.1 DISTRIBUTED SYSTEM ARE FUNDAMENTALLY DIFFERENT
 
 
+principles of distributed computing 
+- you MUST consider these in integration!!!
+- bez uwzg. tego - zdalne wywolania beda porazka
+
+1. net is not reliable
+2. there is always some latency [possible huge]
+3. bandwitch is limited
+4. net can be insecure
+5. net topology can change [g: net params changes]
+6. knowledge and policy are spread on many admins [people/orgs]
+7. transport has cost
+8. net is heterogenous [mixing technologies]
+
+
 ### 1.2 EXCHANGING INFOS ACROSS SYSTEM BOUNDRIES
+
+
+// big cut
+// sporo teoryzowania, LL detail o serializacji events
+
+- format danych wysylane miedzy BC'ami musi byc ustalony 
+- format moze byc dowolna [java binary serialable, json, xml ..]
+
+- shared kernel - jako opcja integracji
+- wewn. BC'a uzywasz kod ktory pochodzi z innego BC'a
+- sporo wad: przyspawanie do zrodla, polluting model ...
+
+- published lang
+// g: doczytac u EE
+
+sample: [de]serializacja 
+// big cut - VLL details of infra for
+// [de]serializacji DomainEvent do postaci "nietypowanego obiektu"
+// z wersjami event [ze moze istniec kilka wersji event w jednym message infra]
+// reced by VV zeby nie byc uzaleznionym od binaerk zrodla event'ow
 
 
 ## 2 INTEGRATION USING RESTful RESOURCES
