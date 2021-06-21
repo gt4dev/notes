@@ -67,6 +67,8 @@ sample: [de]serializacja
 // [de]serializacji DomainEvent do postaci "nietypowanego obiektu"
 // z wersjami event [ze moze istniec kilka wersji event w jednym message infra]
 // reced by VV zeby nie byc uzaleznionym od binaerk zrodla event'ow
+- ale pamietaj ze te 'nietypowane' eventy sa nietypowane tylko w warstwei integracji
+  - w modelu juz sa to nice vo-s/e-s
 
 
 ## 2 INTEGRATION USING RESTful RESOURCES

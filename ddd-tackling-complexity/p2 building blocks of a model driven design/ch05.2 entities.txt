@@ -1,33 +1,33 @@
 # ENTITIES
 
 
-- Es aka 'reference objects'
+- e-s are aka 'reference objects'
 // q: ciekawe skad ta nazwa
 
 many objects are defined by
-- thread of continueity
+- thread of continuity
+AND
 - identity
-a nie przez attrs
+.. nie przez attrs
 
 example: Person
 - has identity that streches from birth to death [and beyond ;]
-- zasadniczo all attrs of person mozna zmienic w ciagu zycia [i poza nim ;]
-  - phisycal attrs are changing all the time [ultimatelly disappear ;]
-  - nazwisko, relacje z biznesami, edukacja ...
+- zasadniczo all attrs of person mozna zmienic w ciagu zycia [i poza nim tez ;]
+  - physical attrs, nazwisko, relacje z organiazacjami, edukacja ...
 - ale to caly czas ta sama osoba
 - thus: the most most most imporatant is identity
 
 example: customer
-- w app do 
-  - do sledzenia "dlugow" beda informacje rachunkach, platnosciach ...
-  - sprzedazowym: osoba prowadzaca, ...
-- good done identity allows to identity customer in both w/w systems
-
-- w/w apps moga byc mega rozne [rozne langs, bazy ...]
-- ale maja wspolne identity - ktore laczy customers w obu/all apps
+- w app do
+  - sledzenia "dlugow" beda informacje o rachunkach, platnosciach ...
+  - sprzedazy: osoba prowadzaca, ...
+  
+- good done identity allows to identity the same customer in many systems
+- apps moga byc totalnie rozne [rozne langs, bazy ...]
+- ale maja wspolne identity - ktore laczy customers w all apps
 
 - e to obiekt zdef. przede wszyskim przez identity
-- e moga sie kompletnie-totalnie sie zmieniac w LC
+- e moga sie totalnie zmieniac w LC
 - ale musze utrzymywac
   - thread of continiuty
   - "constant" identity [tz. takie po ktorym mozna obiekt "sledzic"]
@@ -35,13 +35,11 @@ example: customer
 - e = anything that has 
   - continuity through a life cycle
   - [vvvv imp] distinction independent from attrs
-- zatem e rozrozniasz przez id, not attrs
 
-example: 2 transfers on the same: account, day; and the same cash
-- to sa osobne tx'y
-- maja diff identity [sa e]
-- wewn. e mozna re-use attrs [obiekt reprezent. day, cash ...]
-  - ale attrs nie maja identity
+example: img 2 cash transfers on the same: account, day, amount
+- to osobne e-sy - maja diff identity
+- wewn. e mozna re-use attrs [obiekt for day, cash ...]
+- ale attrs nie maja identity
   
 vvv c
 - teoret. w app mozesz miec 2 diff classes [z totalnie diff attrs]
@@ -53,53 +51,52 @@ vvv c
 
 [bolded def]
 - if object is distinguished by id [not attrs]
-- klase zrob prosta, focused on 'thread of continuity', identity
-- dodaj mozliwosc rozroznienia each object - niezaleznie od jego formy/histori
-- n: alert if matching E is done by attrs - it's very suspected
+- zrob prosta klase, focused on 'thread of continuity', identity
+- dodaj mozliwosc rozroznienia each object - niezaleznie od jego formy/historii
+- n: it's very suspected if matching e-s is done by attrs 
 
 
 ## 1 MODELING ENTITIES
 
 
-- podczas projektowania obiektu wielu mysli sie o attrs i zachowaniach
-- ale najwazniejsze w e jest ustanowienie 'continuity'
+- podczas projektowania obiektu wielu devs mysli o attrs i zachowaniach
+- a najwazniejsze w e jest ustanowienie 'continuity'
 - wowczas reszta [attrs/zachowania] moga byc "czystsze"
 - najlepiej jesli e ma malo attrs/zachowan
 - zostaw w e "tylko" the most important attr - esp. these which
   - identify e [g: chodzi o klucz naturalny?]
   - sluza do odnajdywania/match'owanie konkretnych e
-- reszte attrs/zachowan - TRY to move to associated with e-s / vo-s
+- reszte attrs/zachowan - TRY to spread around - to associated e-s / vo-s
 
-- e-s also coordinate operations on objects nested/associated with these e-s
+- e also coordinate operations on objects nested/associated with current e
 
 sample
 - model on init
   | customer |<>--------| sales contact |
-- both classes have "some attrs"
-- redesign a/m attrs to follow a/m rules
-- model refined
+- both classes have "big group of attrs"
+- model refined - after adhereing a/m rules
   | customer |<>--------| sales contact |
   |          |<>--------| business line |
-  - do klasy customer wrzucilismy attrs ktore pozwola na wyszukania/match'owania customer - by
-    - contact name
-    - ...     phone
-    - ...     address
-    [wczesniej te attrs byly w customer & sales contact]
+  - do klasy customer shifted attrs sluzace do wyszukania customer - by contact
+    - name
+    - phone
+    - address
+    ... wczesniej te attrs byly w customer & sales contact
   - acz to mega zalezy od reqs - np. customer moze miec wiele phone numbers [owner, ksiegowosc, ..]
-    - wowczas jakis phone number bedzie w klasie 'sales contact', inny w ...
+    - wowczas phone owner number bedzie w klasie 'sales contact', etc ...
 
 
 ## 2 DESIGNING THE IDENTITY OPERATIONS
 
 
-- identity musi dawac mozliwosc "zident" danej e - niezaleznie od sytuacji [eg. system rozproszony, data archived ..]
+- identity musi dawac mozliwosc "zident" danej e - niezaleznie od sytuacji [eg. system rozproszony, e-s are archived ..]
 - definicja identity wymaga zrozumienia domeny
 
 - czasem set of attrs can guarantee uniqeness of e in app
 - mozna ten set uzyc jako unique id
 
 - czasem nie mamy takiego set
-- wowczas dodajemy do e jakies pole z unique cyfra/string/...
+- wowczas dodajemy do e pole z unique cyfra/string/...
 
 // <cut/> troche inf o innych aspektach id-ow
 

@@ -1,11 +1,7 @@
-- aby miec dobry "model driven design"
-- polaczenie modelu i impl musi byc zrobione na poziomie detail [impl]
+- w dobrym "model driven design" polaczenie modelu i impl jest na poziomie detail [impl]
 
 - asocjacje latwo sie rysuje na diagramie
 - ale sa potencjalnie trudne do zakodowania
 
-c: jesne zdef. czym jest E, VO ...
-- zwieksza czytelnosc modelu/kodu, ulatwia projektowanie
+- jasne zdef. czym jest E, VO zwieksza czytelnosc modelu/kodu, ulatwia projektowanie
 - mieszanie definicji - konczy sie choasem
-
-- moduly/namespace'y - musza pochodzic z UL
