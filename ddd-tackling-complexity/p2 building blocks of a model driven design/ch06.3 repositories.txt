@@ -29,7 +29,7 @@ repo moze zwrocic
 - ...
 
 factory vs repo
-- f tworzy obiekty - ktore sa w mem [nie sa z automatu stored]
+- f tworzy obiekty - ktore sa w mem [nie sa stored yet]
 - r zapisuje obiekty z pamieci do store'a lub czyta ze store do pamieci [reconstitute]
 
 - provide repos to access only agg roots [which can't be accessed by traversal]
@@ -44,16 +44,17 @@ metoda searching by
 - id - zwroci 1 obj
 - attr - moze zwrocic many objs
   
-- if repo returns calculations - then usually these are calcs done by underlying db
+- if repo returns calculations - then usually these calcs are done by underlying db
 
 repos can search by
 - simple attrs
-- specifacation [EE patt] based queries 
+- specifacation based queries [EE patt]
   eg. TradeOrderRepo.matching(Criteria c)
 - ...
 
 
 ## 2 CLIENT CODE INGORES REPO IMPL; DEVS DO NOT
+
 
 // big cut
 - in short: devs should understand how repos work - to use it optimally
@@ -68,8 +69,8 @@ repos can search by
 
 recoms
 - leave tx control to the client [don't commit after save to repo ...]
-- client does commit
-  - client can use many repos, changes
+- client does commit - cause
+  - client can use many repos, do many changes
   - do 1 commit for all changes
 - nie koduj tx w repo - beda prostsze
   - i repos
@@ -79,16 +80,16 @@ recoms
 ## 4 WORKING WITH YOUR FRAMEWORK
 
 
-fwk 
-- moze wspierac tworzenie repos
-- moze byc totalnie przeciw repos
+fwk moze
+- wspierac tworzenie repos
+- byc totalnie przeciw repos
 
 c: 
 - entity z old ejb != e from ddd
 - ejb home z old j2ee wyglada jak repo = ale to kompletnie co innego
 
 DON'T FIGHT YOUR FRAMEWORKS!!!!!!!
-- to dotyczy eg robienie immutable vo w Realm [Realm tego nie ma i nie da sie]
+- eg: to dotyczy tez robienie immutable vo w Realm [Realm tego nie ma i nie da sie]
 
 
 ## 5 THE RELATIONSHIP WITH FACTORIES
@@ -109,5 +110,5 @@ rozdzielenie r and f - separuje responsibilities
 - r - zapisuje/czytuje store'a
   
 findOrCreate
-- some are mixing f and r and create method findOrCreate
+- some are mixing f and r and create method "findOrCreate"
 - to absurd, niepotrzebne przy uzywaniu e-s/vo-s

@@ -3,35 +3,34 @@
 
 - cognitive overload is primary reason for creating modules
 - it's easier to understand
-  - modul details [w/o worrying ab. outer m-s]
-  - modules interactions [w/o worrying ab. each m details]
-- human has limit how many things can understand at once 
-  - hence m-s low couping
+  - module details [w/o worrying ab. outer m-s]
+  - modules interactions [w/o worrying ab. m-s details]
+
+- human has limit of how many things can understand at once 
+- hence prefered is m-s low coupling
 
 - keep rules
   - low coupling between m-s
   - high cohesion inside m
-- rules are
+- these rules are
   - important on m-s level
-  - on class level - it's 2nd-ary need/ but "nice to have"
+  - on class level - it's 2nd-ary aim, "nice to have"
 
-- podzial / nazwy m-s [eg customer] - wynikaja wprost z UL
-- group in m elems highly coupled together
-- nazwa m wynika z UL [np 'customer']
+- podzial i nazwy m-s [eg customer] - wynikaja wprost z UL
 
 
 ## 1 AGILE MODULES
 
 
 - rzadko refactoruje sie m-s = to blad
-- m-s refaktoryzuj on each need
-- acz jest to trudniejsze niz refactor class, metody ...
+- m-s refactor on each need
+- acz to trudniejsze niz refactor class, metody ...
 
 - c: czesto podzial na moduly jest staly od poczatku projektu
 
-- brak refactora prowadzi do
-  - high coupling between m-s
-  - low cohesion inside m
+brak refactora prowadzi do
+- high coupling between m-s
+- low cohesion inside m
 
 
 EXAMPLE: PACKAGE CODING CONV. IN JAVA
@@ -47,6 +46,6 @@ EE
 trzymaj osobno each layer [layered architecture]:
 - infrastructure
 - user interface
-- domain layer 
+- domain layer
 
-- g: old j2ee is totally against "MDA/DDD"
+// g: old j2ee spec is totally against "MDA/DDD"

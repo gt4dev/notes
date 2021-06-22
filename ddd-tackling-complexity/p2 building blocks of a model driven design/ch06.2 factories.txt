@@ -4,14 +4,15 @@
 
 analogia
 - jest silnik samochodu i fabryka silnikow
-- silnik siebie nie tworzy - ma inne zadanie
+- silnik siebie nie tworzy - ma kompletnie inne zadanie
 - identycznie w OO - sa obiekty i fabryki
+
 - resps of
   - creating object
   - object 'logic' 
   .. are diff -> can't be mixed
 
-- yet only call of obj constr by client
+- "only" call of obj constr by client
 - makes client hard dependent to object
 - trudno potem zmieniac object bez zmiany klienta
 
@@ -19,13 +20,13 @@ klient
 - nie powien tworzyc obiektow
 - powinien ich tylko uzywac
 
-- creation in in domain layer
+- creation is done in domain layer
 - but [usually] it's not strictly expressed in UL/domain
 
 factory patterns
 - f method
 - abstract f
-- builder [da sie tu rozbic budowe na etapy]
+- builder
 - ...
 
 reqs for good f
@@ -39,17 +40,18 @@ reqs for good f
 ## 1 CHOOSING FACTORIES AND THEIR SITES
 
 
-- zwykle f jest przypiete do domain object
-  - ma wtedy dostep do init data for new object
+- f jest zwykle metoda hooked on existing domain object
+  - ma wtedy dostep do init data from 'host'
 - [rzadziej?] f jest sandalone
   - glownie gdy tworzony jest veery complex object
 
 
-wayA: place f on object which owns created object
+n: way A & B - both are f hooked on existing object
 
-sample
-- you need to add element to existing agg
-- add f method on the root
+way A: place f on object which owns created object
+
+sample: you need to crete obj to add it to existing agg
+- place f method on the root
 - client does't know agg internals
 - agg is resp. for assuring consistency of 
   - new object
@@ -60,17 +62,17 @@ sample
 <root>        <f method>                     <agg internal e>
 purchaseOrder.newItem(productNumber,quantity):PurchaseItem
 
-- sample "identical" like in chapter:aggs
+- sample v. similar to ch:aggs
   PurchaseOrder ----> LineItem -----> Product
 - f na root tworzy internal e
-- klient [pewnie AS] dostaje new object i (chyba) sam dodaje go do PO
-  - bo f tylko tworzy new object - not adds it to root
-- PI ma local id [relative to agg] thus f is part of agg
+- klient [pewnie AS] dostaje new object i sam dodaje go do PO
+- bo f tylko tworzy new object - not adds it to root
+- PI ma local id [relative to agg] thus f must be part of agg
 
 
-wayB: place f on object spawning new object
+way B: place f on object spawning new object
 - "object with f" doesn't own created object
-- lokalizacja pozwala to zaoszczedzic "przepychaniu danych" miedzy obiektami
+- lokalizacja pozwala to zaoszczedzic "przepychania danych" miedzy obiektami
 
 sample
 
@@ -79,8 +81,9 @@ brokerageAccount.newBuy(stockSymbol,amount):TradeOrder
 accNumb = a123                              brokerAccoundId = a123
 customer = 'john'                           stockSymbol = sthFromParam
                                             amount = sthFromParam
-- TO jest osobnym agg
-- TO jest wypelniony danymi z BA - stad f najlepiej bylo otworzyc na BA
+- trade order [TO] jest osobnym agg
+- TO jest wypelniony danymi z BA 
+- stad f najlepiej bylo dodac f na BA
 
 
 ## 2 WHEN CONSTR IS ALL YOU NEED
@@ -105,7 +108,7 @@ cases
 ## 4 WHERE DOES INVARIANT LOGIC GO
 
 
-- f jest odpowiedzalna za stworzenie obj z invariants staisfied from init
+- f jest odpowiedzalna za stworzenie obj z staisfied invariants
 
 
 ## 5 ENTITY FACTORIES VS VO FACTORIES
@@ -122,4 +125,4 @@ cases
 // g: jaka diff z repo? chyba rzadki case?
 - czasem jest case: init data sa incorrect - then
   - obj. can't be re-created
-  - i moze trzeba usunac invalid init data [in db, file ..]
+  - moze trzeba usunac invalid init data [in db, file ..]

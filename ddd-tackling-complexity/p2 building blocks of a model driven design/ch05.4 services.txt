@@ -1,22 +1,19 @@
-vvvv cont. here
-
-
-
 # SERVICES
 
 - sometimes it isn't a thing
 - some operations don't belong to any object
 
-- common mistake: too fast putting operations in services
-- bladem jest tez pchanie metod do obiektow ktore nie naleza do nich
+common mistakes
+- too fast putting operations in services
+- na sile pchanie metod do obiektow ktore tam nie pasuja
 
 - service dzialaja zwykle na wielu obiektach
-- g: met. obiektu pracuje w jego ctx
+// g: metody obiektu pracuja w jego ctx
 
 - service nie ma stanu
-- g: bo nie sa przypisane do obiektu
+// g: nie dziala w ctx obiektu
 
-- nazwa klasy/operations - pochodza z UL
+- nazwa klasy/metod - pochodza z UL
 - service name to raczej activity [nie noun]
 - params and results use domain objects
 - operacje sa elementem domeny
@@ -25,13 +22,13 @@ vvvv cont. here
 ## 1 SERVICES AND ISOLATED DOMAIN LAYOER
 
 
-sa rozne service [in app]
+sa rozne services [in app]
 - domenowe
 - tech
   - aplikacyjne
   - infrastruktury
 
-- technical services can't have any business logic
+- tech services can't have any business logic
 
 sample: transfer pieniedzy
 - transfer to oper robiona na 2 obiektach [kontach]
@@ -46,7 +43,7 @@ sample: transfer pieniedzy
 
 'graining levels'
 - medium-grained service - hides complex flow behind simple method
-- fine-grained access to domain - leaks knowlege to caller side
+- fine-grained access to domain - allow leaking knowlege to caller side
 
 
 ## 3 ACCESS TO SERVICES

@@ -2,54 +2,51 @@
 
 
 in real business
-- objects are far interconnected
-- ciezko znalezc ostre granice
+- objects are heavyily inter-connected
+- trudno znalezc ostre granice
 
 przyklad braku granic
-- usuwasz z bazy e: Person [plus vo: imie, wiek ..]
-- co z e: Address - tez usunac?
+- usuwasz e: Person
+- co z e: Address - usunac | zostawic?
 
-- problem zwieksza crud'owanie danych przez wielu users
+- problem rosnie gdy dane crud'uje wielu users
 
-- if many associations = trudno utrzymac consistency
-- invariants must be kept between related objects
+- if many associations between objects = trudno utrzymac consistency
 
-rozw. tych probs wymaga znajomosci domeny
-- regul 
-- frequency of changes in model
+- invariants between related objects must be kept
+
+rozw. w/w probs wymaga znajomosci domeny
+- regul
+- frequency of data changes in model
 - ..
 
-model musi jednoczesnie trzymac 
-- invarianty
-- loose high contenting elems [aggs/entities]
+model musi
+- utrzymac invariants
+- dawac loose between high contending aggs/entities
 
 - pozornie to techniczne trudnosci [zw. z tx]
-- ale realnie to problemy z modelu!!!
-- z braku granic
-
-- fix w/w probs na poziomie modelu
-- m. bedzie clearer/easier
+- realnie to problemy modelu (esp. braku granic)!!!
+- fix these probs na poziomie modelu (m. w praktyce bedzie clearer)
 
 c: patterns agg history
 - p/b comes from pattern 'onwership relation'
-- in short: tx-es modify only object and owner
+- in short: tx modifies only object and owner
 
 agg def
 - agg = zestaw danych, ktore traktujemy jako single unit z PoV of changing data
-- agg ma root i granice [i ew. dodatkowe e-s]
+- agg ma root i granice [i ew. nested e-s]
 - others can ref only root
-- inside agg - each can ref each [but transiently]
 - root has to have global id, nested e-s can use local id 
-// g: nie ma mowy o zakazie dostepu do inners form outer
-// g: acz moze lepiej ukrywac agg details = wysawiac dane jako vo-s
+// g: pp nie ma zakazu dostepu do inners form outer
+// g: acz lepiej ukrywac agg details = wysawiac dane jako vo-s
 
 sample
-- roots: car, engine
-- car contains: wheel, position, tire
+- roots: | car |-----| engine |
+- car contains nested e-s: wheel, position, tire
 - wydaje sie ze engine should be nested in car
-- ale w modelu sa to rownoprawne, associated e-s
+- ale w modelu to rownoprawna, associated e
 
-- zmiany w wielu aggs - sa wykonywane w kilku tx, korkach
+- zmiany w wielu aggs - sa wykonywane w kilku tx, krokach
 
 inne cech agg
 - root is resp for checking invariants
@@ -57,13 +54,12 @@ inne cech agg
   - root can keep refs to internal e-s, vo-s
   - others - can ref others - only transiently
 - tylko root moze byc wczytany z db
-  - internals are read by associations traversal [eager,lazy loadeded]
+  - internals are read by associations traversal [eager|lazy loadeded]
 - internals can ref other roots
-- delete of agg - removes all its internals
+- delete of agg - removes all associated internals
 - on changes commit - all invariants must be satisfied
 
-- access agg content [to boundary] - through the root
-- root must know about changes of inside objects
+- root must know about all changes of inside objects
 - thus internals of agg can ref to each other 
   - only transiently
   - in sigle operation [of root]
@@ -74,29 +70,29 @@ EXAMPLE: PURCHASE ORDER INTEGRITY
 
 sample
 - init model
-
+<e>                         <e>                    <e>
 | purchase order | -----*-> | po line item | ----- | part |
   limit                       quantity               price
 
 - invariant: suma zamowienia w po nie moze przekraczac limitu
-- wielu users bedzie rownoczesnie crud'owac: po, po-line-item, part
+- wielu users rownoczesnie crud'uje each e
   
-approach 1: each e is agg
+step 1: each e is agg
 - w 1 tx chronimy zmiany na 1 e
-- nie chronimy invariantu
+- nie chronimy invariantu - buuuu
 
-fix
-- create agg
+step 2
+- create agg: po [with nested po line item]
 - copy price to po-line-item
   
-| <root>                                           |  
+| <root>                                 // eo agg |  
 | | purchase order | <>-----*-> | po line item | --|-----> | part |
     limit                         quantity                   price
                                   price
 
 - invariant jest chroniony przez lock na calym po
-- wielu users pracuja na 1 po - bedzie sie wzajemnie lock'owac
+- wielu users pracuja na 1 po - i sie wzajemnie lock'uja
 - cudow nie ma - jesli inv. ma byc utrzymany to modyfikacje musza byc sync'ed
 - optimistic conc. 
   - nie zmieni problemu rownoleglej modyfikacji danych przez many users
-  - ulatwi reads [?]
+  - ale ulatwi reads [?]

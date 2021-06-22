@@ -1,19 +1,19 @@
 # DESIGNING OBJECTS FOR RELATIONAL DBS
 
 
-c: uzywanie relacyjnej db i oo w app = mieszanie paradgims
+c: uzywanie relacyjnej db i oo w app = mixing paradgims
 
 - db schema doesn't have to reflect domain model
-- mapping tools can handle a/m diffs [ale wiadomo - z limitami]
+- mapping tools can handle diffs [ale wiadomo - z limitami]
 - best if db comes from domain
 - if separated db/domain = more work is needed [analyses, coding ...]
 
 diffs miedzy modelami mozna zasypywac przez
-- towrzenie less rich domain
+- tworzenie less rich domain
 - intro denormalizations in db
 - ... 
   
-- z czasem - model db/domain sie rozjada [to naturalne]
+- z czasem - model db & domain sie rozjada [to naturalne]
 
 - migracje/refactoring schematow db sa czesto trudne = to zniecheca do zmian
 
