@@ -309,25 +309,22 @@ c: ukrywanie detali
 - wowczas publicznie bedzie wystawione attr Principal
 
 
-vvv cont here
-
-
 ### Roles And Responsibilities
 
 
 - odkrywanie roles & resps to wazny element modelowania
 
 - w OO interfejs zwykle okresla role obiektu
-- klasa może implementować wiele interfejsów = roles
-- jesli klasa nie implementuje interfejsów - to ma rolę reprezentowaną przez publiczne metody
+- klasa może implementować wiele interfejsów [roles]
+- jesli klasa nie implementuje interfejsów - ma rolę reprezentowaną przez publiczne metody
 
 przyklady
 - klasa User (bez interfejsów) ma rolę user'a
-- klasa X ktora implementuje interfejsy User i Person - ma obie te role
+- klasa "X implements User, Person" - ma obie role
 
 p/p best use case for "role interfaces" is 
-- hiding some methods from client
-- exposing only needed
+- exposing methods only needed by client
+- hiding others
 
 
 ### Construction
@@ -336,19 +333,18 @@ p/p best use case for "role interfaces" is
 constr of E musi zebrac:
 - infa potrzebne do identyfikacji E
   - p/p to dotyczy tylko "early entity generation"
-  - bo w late nie ma takiej mozliwosci
-- jesli E nie jest wyszukiwana przez ID
-  - to constructor zbiera infa uzywane do wyszukania E
-  - np: name, desc ...
+  - w late nie ma takiej mozliwosci
+- jesli E jest wyszukiwana non-ID stuff (np: name, desc ...)
+  - constructor zbiera infa uzywane do wyszukania E
 
-- c: constr of User takes Person
+- constr [btw. protected] of User takes Person as param
+- ale tez: password, username ...
 
 niezmienniki
 - E can contain 1 or more invariants
-- constructor gets all data required to assure/check E invariants
-- et
-  - set states/fields
-  - make prop != null
+- constructor 
+  - gets all data required to assure invariants
+  - set correct e state
 
 self-encapsulation
 - VV reced pattern
@@ -370,20 +366,21 @@ zakres walidacji
 
 
 n: attr/obiekt/kompozycja moga miec "temporary invalid/incomplete state"
-- jest to ok (technicznie/biznesowo)
+- jest to ok (technicznie/biznesowo) w dowolnym momencie LC obiektu
 - walidacja tylko sprawdza poprawnosc stanu
 
 
 WALIDOWANIE ATRYBUTÓW
 
+
 - ch6-vo descs more how to protect single attrs
 
-- ustawianie wartosci attr i walidowanie - to dwie różne sprawy
-- to set attr use self-encapsulation (VV recoms)
 
 self-encapsulation (SE)
-- do attr'ow klasy dostajesz sie przez setter'y/gettery
-- nawet "class-owner of attrs" ich uzywa
+- vv recoms
+- set class fields by self-encapsulation/setter methods (VV recoms)
+- read fields by getter methods
+- nawet "attrs owner [hosting class]" ich uzywa
 - zaleta
   - abstrakcja od zmiennych (gt: isn't too abstr?)
   - prosta "walidacja" przy setter'ach
@@ -394,8 +391,7 @@ c: SE to nie jest walidacja
 
 przykład - klasa VO EmailAddress
 - w konstruktorze pobiera string:adres
-- constr calls setAddress(string)
-- setter robi
+- constr calls setAddress(string) ktory robi
   - walidacje (czy null, czy ok length, czy RegExp email ...) 
   - finalne ustawienia attr
 
@@ -403,16 +399,18 @@ n: podczas przypisania obiektu VO do E
 - E nie moze zwalidowac wewn. stanu VO
 - E moze spr. tylko czy obiekt != null
 - VO musi samo zagwaranotwac spojnosc
+// g: ale juz walidator moze sprawdzic content e i jego vo-s
 
 c: gdzie sprawdzic "limit dlugosci string" etc
-- niektorzy zostawiaja to DB
-  - rzuci excep jesli string przekraczy limit np. 100 znakow
-- wg VV modelu moze to tez sprawdzac
-- dodatkowo model rzuci dokladny excep "ktora wartosc jest zla"
-  - baza rzuci general exception (bez info ktory string jest too long)
+- niektorzy robia to w DB
+- db rzuci excep jesli string przekraczy limit np. 100 znakow
+- wg VV modelu tez jest ok
+- dodatkowo model rzuci excep "ktora wartosc jest zla"
+- baza rzuci general exception (bez info ktory string jest too long)
 
 
 VALIDATE WHOLE OBJECTS
+
 
 - walidacja wymaga dostęp do wszystkich atrybutów obiektu
 - use patterns: specification (EE), strategy (Gamma)
@@ -420,11 +418,11 @@ VALIDATE WHOLE OBJECTS
 Deferred Validation Pattern (by Cunningham)
 - sprawdzenie wykonujemy w "ostatnim możliwym momencie"
 - szczegółowo sprawdzamy obiekt
-- DVP można użyć do 1 obiektu i kompozycji
+- DVP można użyć do pojedynczego obiektu i kompozycji
 
 - walidowanie (W) E wymaga dostępu do calego stanu
 - dodanie W do E jest zle bo
-  - W często sie ona zmienia (częściej niż E)
+  - W często sie zmienia (częściej niż E)
   - responsibility of E to trzymanie stanu (SRP) a nie W
 
 - walidator buduj jako osobna klase
@@ -435,9 +433,9 @@ Deferred Validation Pattern (by Cunningham)
   - ale to złe dla modelu
 
 - klasa W może implementować pattern: specification lub strategy
-- W przypadku wykrycia problemu W
-  - notyfikuje klienta 
-  - lub zapisuje informacje do odczytania później
+- W przypadku wykrycia problemu
+  - od razu notyfikuje klienta 
+  - zbiera wyniki i daje klientowi calosc
 - rob walidacje "do konca" (nie rzucac excep on 1st problem)
 
 impl
@@ -454,14 +452,15 @@ impl
     nh.NotiIncorrectA()
     nh.NotiBadX()
 
-- n: walidowana encja podaj do W jako param constr
 
 - client calls W by:
   MyEntity.validate(ValidationNotificationHandler vnh){
     (new MyEnityValidator(this, vnh)).validate();
   }
+- walidowana encje daj do W jako param constr
+
 - E nie wie jak robic walidacje
-- ale ma metode validate() wiec wie o mozliwosc walidacji
+- ale ma metode validate() - wie o mozliwosc walidacji
 
 
 VALIDATING OBJECT COMPOSITIONS
@@ -471,15 +470,15 @@ VALIDATING OBJECT COMPOSITIONS
 
 flow
 - create walidator object
-- pass to it composition [set/"big" graph]
+- pass to it composition [set or graph of objs]
 
 - do validation (V) in DomainService [dep on reqs]
   - DS reads set of objects from Repo
-  - DS does V - by validator
+  - DS validate
     - single object
     - composition
 
-when to start to V?
+when to start to V
 - listen DEvents which trigger validation
 
 

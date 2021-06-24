@@ -6,21 +6,20 @@
 - same e powinny skupiac sie na serwowaniu vo
 
 - vo sluza do mierzenia, kwantyfikowania (okreslaniu ilosci), opisywania
-- ulatwiaja kodowanie, testowanie, optymalizowanie i utrzymanie (wow, chyba all plusy)
+- ulatwiaja kodowanie, testowanie, optymalizowanie i utrzymanie (wow, all)
 
 - popularnym podejscie [zle]
   - modelowanie domeny jako struktury tabel (1 obiekt domeny = 1 tabela) 
   - powiazanie tabel kluczami
 - to czyste zlo
   - mocno zszyty wielki graf obiektow
-  - przeladowany set/get-erami
+  - przeladowany set/get-terami
 
 - obiekt vo: tworzysz, dajesz klientom i zapominasz o nim
 - to rewolucjonizuje programowanie
-- wg VV to jak przejście z old lang na lang uzywajace GC!!!
+- wg VV to jak przejście z old lang na lang uzywajace GC!!!!!!
 
-- użyj vo jeśli interesuja cie tylko o atrybuty
-- bez identity
+- użyj vo jeśli interesuja cie tylko atrybuty, bez identity
 
 - beginners często nie wiedza czy użyc e czy vo
 - ale profs tez tak maja ;]
@@ -46,11 +45,11 @@
 ### 6.1.2 immutable
 
 
-- VO baaaardzo rzadko ale moze byc zmienne (see EE)
+- VO baaaardzo rzadko ale moze byc mutable (see EE)
 
 - od razu po utworzeniu - obiekt staje się niezmienny
 - wartości tworzące VO podajemy w konstruktorze
-- acz przy odtwarzaniu VO z DB, JSON, XML ... init nastepuje 'zaraz po'
+- acz przy odtwarzaniu VO z DB, JSON, XML ... init nastepuje 'zaraz po constr' [constr. jest non-params]
 
 obvious ale
 - vo mogą referować do innych vo
@@ -61,28 +60,29 @@ obvious ale
 VO może mieć ref do E
 - VV tego nie zaleca
 - jak E zmieni stan, to zmienia to również VO, a to łamie zasadę niezmienności
+// g: wiec chyba tylko odczyt z e przez vo
 - dopuszczalne tylko jeśli ZNACZNIE uprości to kod
 - ale wowczas klient 
-  - nie może bezpośrednio wołać metod e 
+  - nie może bezpośrednio wołać metod e
   - woła metody vo (cos jak agg)
-    - a te nie modyfikuja stanu vo!
+  - a te nie modyfikuja stanu vo!
 
 - jeśli projetkujesz obiekt (nie wiadomo czy vo,e ..) ktory zmienia stan 
 - to rozwaz vo z kompletna wymieniana obiektu
 
 
-### 6.1.3 conceptual whole (CH)
+### 6.1.3 conceptual whole (CW)
 
 
 - VO zawiera (najczesciej) wiele atrybutów 
 - każdy jest nieodlaczna częścią całości
 - tylko razem tworzą pomiar, opis, kwantyfikuja ...
 
-c: pattern CH opracowal Cuningham
+c: pattern CW opracowal Cuningham
 
 przykład: 50 usd
-- dwa atrybuty
-- razem tworzą CH - okreslaja wartość pieniężną
+- dwa attrs
+- razem tworzą single CW - okreslaja wartość pieniężną
 - osobno kazdy znaczy coś innego
 
 przykład
@@ -91,25 +91,24 @@ class ThingOfWorth {
   ThingName name;  <<< n: VO a nie string!
 }
 - warto uzyc VO zamiast primitive (string, ...) jeśli V ma "zachowanie"
-- zamknij zachowanie w metodzie VO (schowaj logike zachowania przed klientami)
+- zamknij zachowanie w metodzie VO (schowaj detale zachowania przed klientami)
 - eg
-  - thingName.CapitalizedName()
-  - dba 1st letter byla duza reszta była mała
+  - thingName.CapitalizedName() // 1st letter of name is upper-case
 
 obvious but
-- finalny vo jest tworzony w jednej operacji - w konstruktorze
+- vo jest tworzony w jednej operacji - w konstruktorze
 
 
 ### 6.1.4 replacebility
 
 
 - vo is typically refed by e
-- if vo changes - completely replace vo (update e's reference)
+- if vo in e changes - completely replace vo in e
 
-c: setting primitives var -> full replacement
-- eg: when setting int with 3 to 5 - you replace it (not update)
+c: setting primitives on vars = replacement
+- eg: set var int from 3 to 5 - you replace value, not update
 
-whatever you update in vo (1 value, 1k values ..)
+whatever amount of data you change in single vo (1 value, 1k values ..)
 - build whole new vo
 - set it in place of 'old'
 
@@ -122,11 +121,11 @@ whatever you update in vo (1 value, 1k values ..)
 
 
 - w app może istniej wiele roznych instancji VO które z logicznego punktu widzenia są równe
-- mógłbyś zostawic 1 taki VO i uzyc ref do niego wszedzie w app - nie zmieni to zachowania app
+- mozesz uzyc taki single VO wszedzie w app - nie zmieni to zachowania app
 
-- porównanie VOs robimy porownujac 
+- porównanie VOs robimy porownujac
   - typy obu VO
-  - atrybutów (all, 1-by-1)
+  - atrybutów (all attrs, 1-by-1)
 - if both are equal - objects are equal
 
 c: VV in equals() reads values by getters
@@ -135,9 +134,9 @@ c: VV in equals() reads values by getters
 
 c: equals() compares all INTERNAL attrs
 - so cmp is done always correctly 
-- regardles of derived content of VO, eg FullName CapitalizedName(), Initials(), 
+- regardles of derived content of VO, eg FullName CapitalizedName(), Initials() ...
 
-vin: if object doesn't req unique identity - make it VO, else E
+vin: if object doesn't req unique identity - code it as VO, else E
 
 
 ### 6.1.6 side-effect-free behavior (sefb)
@@ -146,13 +145,13 @@ vin: if object doesn't req unique identity - make it VO, else E
 - EE pattern
 
 - funkcja = metoda obiektu która nie modyfikuje jego stanu
-- all sefb to funkcje
-- all vo (public) methods are functions
-// q: what with "getters"
+- all SEFB to funkcje
+- all vo public methods are functions
 
-c: w funkcyjnych langs uzywa sie tylko sefb
+c: w funkcyjnych langs uzywa sie tylko SEFB
 
 c: Mayer/Fowler funkcje = "metody query" 
+- query nie modyfikuje obj!
 - z pattern CQS (Command Query Separation) 
 
 przykład
@@ -163,22 +162,23 @@ czy vo może modyfikować e przekazana jako parametr metody vo
 - jesli metoda ta modyfikuje tylko stan e (nie zmienia stanu vo) - jest to dopuszczalne
 - ale to trudno przetestowac
 - thus best
-  - vo method should return sth what E can consume [set-on-itself]
+  - vo method should return sth what E can consume [set as field, method param ..]
   - vo method shouldn't modify e
 
-- obiekt vo businessPriority.priorityOf(product):float // bp = vo, p = e
+            <vo>                        <e>
+- obiekt vo businessPriority.priorityOf(product):float
 - 'float' jest wyliczany ze stanu e
 - problems
-  - vo zależy od e (i znac strukture e)
+  - vo zależy od e (i zna jego strukture e)
     - unikaj tego
     - vo best ograniczyć do znajomości siebie i swoich atrybutów
-  - nie widzimy explicite co z Product jest używane - bo more explicite 
-    - wyciagniecie z Product stanu np. product.PrioritySthSth()
-    - i przekazanie do vo
+  - nie widzimy explicite co z Product jest używane - be more explicite 
   - nie widzimy wprost czy e jest modyfikowane
 
 - very very very rare ale czasem vo jest modyfikowalne!
-- acz raczej buduj vo z sefb
+
+
+vvv cont here
 
 
 ## 6.2 integrate with minimalism
