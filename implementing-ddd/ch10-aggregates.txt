@@ -1,3 +1,6 @@
+vvv here
+
+
 # ch10 aggregates
 
 - tworzenie aggs z encji i vo to jeden z mniej zrozumiałych tematów DDD

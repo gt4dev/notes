@@ -2,20 +2,20 @@
 
 
 - w DDD serwis = bezstanowa operacja wykonujaca zadanie z domeny
-- kiedy uzyc serwis: jak metoda nie pasuje do zadnego agregatu, encji, VO
+- stworz serwis jesli metoda nie pasuje do zadnego agregatu, encji, VO
 
 
 ## what a domain service is (but 1st what it isn't)
 
 
-- nazwe interfejsu/operacji - wez z UL
+- nazwe interfejsu/operacji - pochodzi z UL
 - DS jest stateless
 - DS'y zwykle operuja na wielu obiektach domenowych - zmienianych w pojedynczej, atomowej operacji
 - typowe powody uzycia DS
   - wykonywania waznych procesow biznesowych
   - przeksztalcenie obiektu domenowy w inny
   - obliczanie wartosc na bazie stanu wielu obiektow domenowych
-    - wyliczenia bazujaca na 1 E -> sa metodami E
+  // g: wyliczenia bazujaca na 1 E -> sa metodami E
 
     
 ## make sure you need a service
@@ -31,7 +31,7 @@
   - nie wystawiamy do klienta obiektow: user, tenant, authService ...
   - wystawiamy 1 operacje np: AuthService.Authenticat(password, user):UserDesc
 
-c: UserDesc extends Serializable, nie "VOBase"
+c: UserDesc extends Serializable [nie "VOBase"]
 - UD jest z modelu (tz. z UL)
 - generalnie VO u VV extenduja
   - serializable, assertion-concern ...
@@ -46,7 +46,7 @@ c: UserDesc extends Serializable, nie "VOBase"
 - 1st decide: czy uzyc SeparatedInterface pattern [Folwer]
 - interfejs wrzuc do pakietu domeny
   np: my-boudned-context/domain/model/
-- if impl. interfejsu zawiera duzo technikaliow z poza UL - wrzuc ja do pakietu infra 
+- if implementacja interfejsu zawiera technikalia z poza UL - wrzuc ja do pakietu infra 
   np: my-boudned-context/infrastructure/services
 - typowa impl. DS.MySampleOperation
   - 1st: validate params - if bad -> throw exception
@@ -74,23 +74,23 @@ przyklad: jesli masz >interfejs< AuthenticationService i "klase ...Impl" - to le
 - acz sa rozne opinie ws
   - czy uzywac postfix Impl 
   - czy rozdzielac interfejs od klasy (w przypadku pure UL)
-.. wiec nie ma co filozowac
+.. nie ma co wiecej filozowac
 
 
 ## a calculation process
 
 
-- przyklad: klasa BusinessPriorityCalculator
-  - nie ma w nazwie klasy zadnego postfix Service
-  - nie rozdzilamy klasy i interfejsu (na chwile obecna nie ma potrzeby)
-- klasa ma metode businessPriorityTotal(...):BusinessPriorityTotals
-- content metody
+przyklad: klasa BusinessPriorityCalculator
+- n: nazwa klasy NIE MA zadnego postfix Service
+- nie rozdzilamy klasy i interfejsu (na chwile obecna nie ma potrzeby)
+- content metody metody businessPriorityTotal(...):BusinessPriorityTotals
   - pobranie aggs z repos
-    - c: repo ma metode myRepo.GetSthWhichIsSth1AndDoSth2(tenantId)
-      - specjalizowana pod current case
-      - jest to w "kontrze" do robienia repos podobnych do interfejsu collection
-  - potem robimy przeliczenia, tworzymy i zwracamy VO
-- repozytoria
+  - c: repo ma metode myRepo.GetSthWhichIsSth1AndDoSth2(tenantId)
+    - specjalizowana pod current case
+    - jest to w "kontrze" do robienia repos podobnych do interfejsu collection
+  - kod robi przeliczenia, zwraca VO
+
+- repos
   - mozna uzywac w DS'ach
   - nie mozna (zwykle) w aggs
   
@@ -98,12 +98,12 @@ przyklad: jesli masz >interfejs< AuthenticationService i "klase ...Impl" - to le
 ## transformation services
 
 
-- tu implemtacja DS'a rezyduje w pakiecie infra!
-- najczesciej takie DS'y integruje BC'e
+- najczesciej takie DS'y integruja BC'e
 - implementacji DS czesto zawiera:
   - translatory
   - adaptery
   - ...
+- implemtacja czesto rezyduje w pakiecie infra!
 - VV omawia to w ch13 Integrating BC
  
  
@@ -119,11 +119,11 @@ przyklad: jesli masz >interfejs< AuthenticationService i "klase ...Impl" - to le
 
 
 - przyklad AuthenticationServiceTest : IdentityTest
-- w/w IdentityTest jest pp wspolna dla all testow z BC "identity"
-- metody testu sprawdzaja scenariusze
+- IdentityTest jest pp wspolna dla all testow z BC "identity"
+- metody sprawdzaja scenariusze
   - happy day scenario "testAuthenticatinoSuccess"
   - kilka alter. scenariuszy "testAuth...FailedPassword"
 - n: zeby testowac DS
   - musisz miec jakies repos
   - w realu beda to mocki lub realne R (jesli baza nie zawiera duzo danych)
-- testy DS' sprawdzaja rezultaty zwracane z serwisu - czy sa ok
+- testy DS sprawdzaja dane zwracane z serwisu - czy sa ok

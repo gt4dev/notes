@@ -178,28 +178,24 @@ czy vo może modyfikować e przekazana jako parametr metody vo
 - very very very rare ale czasem vo jest modyfikowalne!
 
 
-vvv cont here
-
-
 ## 6.2 integrate with minimalism
 
 
 - projekty ddd maja zwykle wiele bc
-- (if possible) model concepts 
-  - from remote bc (server, upstream) 
+- if possible model concepts from remote bc (server, upstream) 
   - as vo on local bc (client, downstream)
-- it minimizes amount of "inytegration problems"
+- it minimizes amount of "integration problems"
 
 przyklad
-- w remote bc-r sa aggs: User, Role
-- local bc-l uses data from w/w aggs
-- bc-L keeps this data in VOs: Moderator, Owner, Participant
-- it simplifies case a lot - in bc-L we have only_only needed data
+- w remote bc sa aggs: User, Role
+- local bc uses a/m data
+- local bc keeps data in VOs: Moderator, Owner, Participant
+- it simplifies case a lot - in local bc have only_only needed data
 
 problem: integration is static
-- if bc-r changes data -> bc-l doesn't know about it
-- bc-l uzyc 'eventual consistency'
-  - nasluchiwac events z bc-r i aktualizowac sie
+- if remote bc changes data -> local bc doesn't know about it
+- local bc uzywa 'eventual consistency'
+  - nasluchuje events z remote bc i sie aktualizuje
 - ale wowczas dane sie zmieniaja!!!
   - nie mozna uzyc vo - trzeba dane trzymac w e
 // q: a co z replacing vo?
@@ -210,12 +206,12 @@ problem: integration is static
 
 ST
 - opisuje rzeczy, mierzy ... (like vo)
-- rozroznie stuff (e,vo) od siebie
+- rozroznia stuff (e,vo) od siebie
 
 sample 1
 - UL defs phone number
 - phone moze byc dla cell, home, work, ...
-- tworzymy 1 VO do reprezentacji phone number i rozorozniamy przez ST
+- tworzymy 1 klase VO do reprezentacji phone number i rozrozniamy typy przez ST
 
 sample 2
 - UL defs currency of: usd, jpy, eur, pln
@@ -227,13 +223,13 @@ STs can be defined on diff levels
 - corporation
 - international stds
 
-freq STs are managed in specialized BCs, usually
-- defined as Es, with attrs
+- freq STs are managed in specialized BCs
+- defined as Es with attrs:
   - identity
   - name
   - description
   .. and more
-- you consume them as VO, usually with 1 (yes, 1) attr
+- you consume them as VO, usually with 1 (yes, 1!) attr
   
 samples (on enums)
 enum GroupMemberType {Grup, User, "some overrides"}
@@ -247,7 +243,7 @@ ST from Agg
 - 1 instance of Agg for ST type
 - but think twice
 
-c: ST (raczej) nie powinny byc utrzymywane w BC który ich używa
+ST (raczej) nie powinny byc 'zarzadzane' w BC który ich używa
 // - q: why?
 
 - widly used ST should be def in specialized BC
@@ -257,38 +253,37 @@ c: ST (raczej) nie powinny byc utrzymywane w BC który ich używa
   - or globally as immutable VO(?)
 
 shared, immutable ST
-- create service (DS) or factory for each shared ST
-  - it reads data from shared database
+- create domain service or factory for each shared ST
+- it reads data from shared database
 - sample services are for PhoneNumber, PostalAddressType, CurrencyType
-- service (or factory) returns then VO eg: Currency
+- service/factory returns then VO eg: Currency
 
-acz strive to use simplest approach = enums
+- acz strive to use simplest approach = enums
 
 - VV recoms "enums based ST" also exposed from service/factory
 - src code of enum must be "generated" basing on "DB content"
-
 
 
 ## 6.4 testing value objects
 
 
 // regular infos
-- tests write in a way that non-technical expert can understand id = use only UL
+- tests write in a way that non-technical expert can understand = use only UL
 
 
 ## 6.5 implementation
 
 
 - BusinessPriority to super przyklad vo
-- pokazuje nawet uzycie strategy pattern (aka policy)
+- pokazuje "nawet" uzycie strategy pattern (aka policy)
 
 - BP jest serializable
 - to wazne przy remote calls, persisting object
 
 VV daje 2 konstruktory do vo
 - 1st - do initu obiektu (calls self-delegate methods)
-- 2nd - creates copy
-  - c: robimy shallow copy
+- 2nd - do kopiowania
+  - robimy shallow copy
     - nie kopiujemy nested objects but ref to them
     - typowo w VO deep copy nie ma sensu, acz czasem jest potrzebne
   - 2nd const - useful for testing immutability, like
@@ -302,11 +297,11 @@ pattern strategy/policy
 - vo (BP) ma publiczne metody, eg: TotalValue():float
 - metoda 
   - nie dziala bezposrednio na attrs vo
-  - internally calls other methods (self-delegatino and others)
-  - operates on result from a/m methods
-- to "strategy" bo
-  - at any time you can override any of these methods
-  - docelowo BP bedzie miec wiele implementacji i sie to przyda
+  - internally it 
+    - calls other methods (self-delegates and others)
+    - operates on result from a/m methods
+- to "strategy" bo at any time you can override any of these methods
+- docelowo BP bedzie miec wiele implementacji i sie to przyda
 
 nazwy getterow
 - VV odradza nazwy metod eg getSomething()
@@ -320,11 +315,11 @@ c: bad Java Beans specification
   - ale sa bad getSth ...
 
 c: encapsulation
-- masz setter setRatings (private, calles in constr)
+- masz setter setRatings (private, called in constr)
 - masz "getter" "public ratings()" - just returns attr value
-- conc: w ten sposob mozesz "upubliczniac" private attr (to pewnie uzasadnione)
+- conc: w ten sposob "upubliczniasz" private attr (to pewnie uzasadnione)
 
-remember to impl
+remember to impl in vo
 - equals
 - hashCode
 - toString
@@ -337,11 +332,9 @@ remember to impl
 - dalsze przyklady zakladaja ze VO jest czescia A
 - typowo A (razem z VO) jest read/write by repo
 
-- zwykle pers. robimy z orm
+- klasycznie persisting robimy z orm
 - ale to complicated (bo trzeba zrobic mapowanie, przygotowac tabele ...)
 - no-SQL/key-value stores mega ulatwiaja pers. of A
-  - troche o tym z ch12-repos
-  - tu tylko sql
 
 
 ### 6.6.1 reject undue influence of data model leakage
@@ -357,7 +350,7 @@ remember to impl
 - more - it should be reverse: domain model drives data model
 - although as always - there are exceptions
 
-- sometimes particular db model structure is needed (keep ref integritiy, indexes, keys, support raporting, queries ...)
+- sometimes particular db model structure is needed (to keep ref integritiy, indexes, keys, support raporting, queries ...)
 - many claim that raporting should: not work on prod DB, but has own data stucture
 
 
@@ -377,14 +370,14 @@ c
 - VV's sample nests 1 VO in another
 - in hbm cfg it by nesting <component> in another <component>
 
-- n: domain model (vo) doesn't have any stuff from DB model
+- domain model (vo) doesn't have any influence from DB model
 
 
 ### 6.6.3 orm and many values serialized into a single column
 
 
 - list of VO is represented in E as Set or List
-- serialize collection to text and store in 1 column
+- serialize collection to "single text" and store in 1 column
 
 wady
 - col width - sometimes we don't know
@@ -406,16 +399,16 @@ wady
 - VO z "model PoV" musi byc wolny od technikaliow bazy, ORM, ...
 - pomaga tu pattern Layer SuperType (LST)
 - VV wprowadza klase LST IdentifiedDomainObject
-- przechowuje ona pole "klucz encji"
-   - niewidoczny "w domenie", bo private/protected
+  - LST ma pole "klucz encji" 
+  - niewidoczny "w domenie", [private/protected]
 - VV dodatkowo wprowadza klase "IdentifiedValueObject (extends IdentifiedDomainObject)"
   - klasa nie dodaje zadnego kodu
   - ma znaczenie jako dokumentacja - explicite wyraza intencje modelowania VO
   - n: IDO ma tez odpowiednik dla encji (see CH5, "Entity extends IdentifiedDomainObject")
 
 przyklad
-- agregat Group zawiera kolekcje VOs typu "GroupMember : IdentifiedValueObject"
-- klasa Group jest czysta od technikaliow - po prostu ma kolekcje GroupMember-s
+- agg Group zawiera kolekcje VOs z obiektami "GroupMember : IdentifiedValueObject"
+- Group jest czysta od technikaliow - po prostu ma kolekcje GroupMember-s
 - HBM cfg
     <class name="Group" ...
       <set name="members" ...
@@ -434,7 +427,7 @@ przyklad
 ### 6.6.5 ORM and many values backed by join table
 
 
-- HBM zapisuje kolekcje w join table 
+- HBM zapisuje kolekcje w join table
 // q: what is hbm-join-table?
 - VO-s sa zapisane w dedykowanej tabeli
 - VO nie potrzebuje wlasnego klucz
