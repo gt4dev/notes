@@ -1,13 +1,10 @@
-vvv here
-
-
 # ch10 aggregates
 
-- tworzenie aggs z encji i vo to jeden z mniej zrozumiałych tematów DDD
+- tworzenie aggs z e and vo to jeden z mniej zrozumiałych tematów DDD
 
-- typowy problemy - robienie aggs zbyt
-  - duzych (za wiele e-s)
-  - malych (to nie chroni invariants)
+typowe problemy - robienie aggs zbyt
+- duzych (za wiele e-s)
+- malych (nie chronia invariants)
 
 
 ## 1 using aggregates in the scrum core domain
@@ -19,7 +16,7 @@ vvv here
 ### 1.1 1st attempt: large-cluster aggregate
 
 
-- Product is large agg with e-s:: BacklogItem, Release, Sprint ..
+- Product is large agg with e-s: BacklogItem, Release, Sprint ..
 - struktura jest prosta
 - ale tworzy duzo problemow
   - many tx will fail (due to conflicts)
@@ -28,14 +25,13 @@ vvv here
 optimistic concurrency
 - class Product extends ConcurencySafeEntity (CSE)
 - CSE impls optimistic concurrency
-dzialanie OC
 - CSE zawiera pole concurrencyVersion (tabela ma kolumne concurrency_version)
 - podczas zapisu E - jesli numer wersji w obiekcie jest starszy niz w bazie -> update jest odrzucany
-- hbm uzywa elem <version> do cfg OC (i wskazania pola)
+- hbm uzywa elem <version> do cfg OC (i wskazania pola z ver)
 sample
 - user A i B pracuja na tym samym obiekcie Product,ver=1
 - A dodaj BacklogItem i robi commit, teraz P.ver=2
-- B dodaje Release i probuje zrobic commit - tx fails bo ma stale ver
+- B dodaje Release i probuje zrobic commit - tx fails bo ma stara ver
 
 c: nadpisywanie zmian w key-value stores
 - przy kazdym zapisie agg - zapisywana jest jego CALA zawartosc
@@ -55,21 +51,23 @@ consider model
 - each refs Product by ProductId (identity of Product)
 
 comparing to "large model"
-- signature of Product methods will change
-  large agg
-    Product { void ScheduleSprint("params desc sprint, w/o any IDs")
-  small agg
-    Product { Sprint ScheduleSprint("params identyczne")
-- mega zmiany
-  - w large jest command
-  - w small jest querry [factory: tworzy i zwraca agg]
+- signature of Product agg methods have mega changes
+  large agg - jest command
+    void ScheduleSprint("params desc sprint, w/o any IDs")
+    ^^^^
+  small agg - jest query [factory: tworzy i zwraca agg]
+    Sprint ScheduleSprint("params identyczne")
+    ^^^^^^
 
-uzycie w AS [small agg ver]
-- class MyAppService / public void planProductBacklogItem(
-    aTenantID, aProductID 
-    aSummary, aCategory, aBacklogItemType, aStoryPoint) 
+uzycie "small agg ver" w AS
+class MyAppService {
+  public void planProductBacklogItem(
+    aTenantID, aProductID,
+    aSummary, aCategory, aBacklogItemType, aStoryPoint
+  ) {..}
+}
 - all params = primitives / strings
-  - g: analog. postac jest w DB
+// g: similar form is in DB
 - AS konwertuje primitives/strings do VO
   - ID'kie przez "new TenantId(tenandId)"
   - reszta przez "static methods/factorie" w VO
@@ -107,28 +105,25 @@ typy konsystencji
 przykład
 - class Agg1 { 
   // pola a, b, c
-  // operacje 
+  // operacje x, y, z
   }
 - inwariant c = a + b
-- cokolwiek się dzieje, niezależnie jakie operacje sa wywołane = invariant zawsze jest spełniony
+- cokolwiek się dzieje, niezależnie jakie operacje sa wywołane = invariant zawsze [on commit] jest spełniony
 
 - agregat wyznacza TC boundary (obszar zawsze konsystentnych danych)
 
-- consistency zwykle zapewnia TX
+- consistency zwykle dostarczaja TX z DB
 - podczas commit wszystko wewn. granic agregatu musi byc consistent
-- czyli w "temporary state" inwariant nie musi byc zachowany
+- tz. w "temporary state" inwariant nie musi byc zachowany
   - ale raczej powinien
 
 - BC modyfikuje tylko 1 agg w 1 tx
 
 - do zaproj. agg trzeba wykonac analize tx-es - co kiedy ma byc consistent
 
-duzo zalezy od UI
-- ile aggs modyf. przy 1 use case
+duzo zalezy od UserInterface
+- ile aggs modyf. 1 use case
 - powinien modyfikowac 1 agg
-
-- agg wyznaczaja granice consistency
-- a nie tworza graf obiektow "do nawigacji"!!!
 
 
 ## 3 rule: design small aggregates
@@ -139,24 +134,25 @@ std problems of large aggs
 - performance
 - scalability
 
-sample perfoarmance problem [1 of many]
-- assume >large< agg Product with 1k of BIs, Sprints, Releases ...
+sample performance problem [1 of many]
+- assume >large< agg Product contains 1k of BIs, Sprints, Releases ...
 - chcesz dodac new BI
 - musisz wczytac ALL BIs (mimo ze ich nie potrzebujesz)
 - to problem wydajnosci i pamieci
-- n: pozostale E (Release, Sprint ..) sa lazy-loading [nie beda wczytywane]
+- n: pozostale E (Release, Sprint ..) mozna zrobic lazy-loading [nie beda wczytywane]
 
 another probs of >large agg<
 - maja zle invariants
-- dla "pozornej" wygody nawigacji - tworza duze grafy obiektow
+- dla "pozornej" wygody nawigacji - musza tworza duze grafy obiektow
 
 niejawne invariants
-- w Product attrs name and desc sa zwykle zmieniane razem - stad sa w 1 agg
+- w Product attrs name and desc sa zwykle zmieniane razem 
+- stad sa w 1 agg
 
 hint
 - przy modelowaniu mysl czy dany element
   - bedzie sie zmienial w czasie
-  - mozna go kompletnie wymienic
+  - mozna kompletnie wymienic
 .. if 2nd - project it as VO
 
 - if you'd re-analyse your model 
@@ -200,11 +196,11 @@ wazne
   }
 
 
-if in 1 tx you modify many aggs - it's strong info that there is 
+if in 1 tx you modify many aggs - it's strong hint that there is 
 - bad consistency boundary
 - some UL notion wasn't discovered yet
 
-- jesli mimo dodatkowych analiz - problem pozostaje - moze trzeba uzyc eventual consistency
+- jesli mimo dodatkowych analiz - problem pozostaje - moze uzyj eventual consistency
 
 
 ### 4.1 making aggregates work together through identity reference
@@ -232,20 +228,21 @@ how to navigate with ID
   - use repo or DS to load 2nd agg data
   - pass this agg data to 1st agg on calling its methods
 
-sample: call of agg method BacklogItem.assignTeamMemberToTask(TeamMemberId, Team, TaskId)
-- create method MyAppService.assignTeamMemberToTask(..) which
+way 2 sample: call <agg>BacklogItem.assignTeamMemberToTask(TeamMemberId, Team, TaskId)
+- method <AS>MyAppService.assignTeamMemberToTask(..)
   - prepare params needed by agg's method
-  - read agg Team from repo
-  - call BI agg with fetched Team agg
+  - prepare agg Team (read from repo)
+  - call BI agg with am data
     - nie wnikam - ale pp BI potrzebuje calego Team zeby cos wyliczyc?
 
 - way 1 is ok for complex domains
   - pass to called method ref to repo/DS 
     // q: why not make repo field of class?
   - agg robi double dispatch to dwl needed data
+
 - way 2 frees agg from deping on repo/DS
 
-- but in each way - modify 1 agg in 1 tx
+- but each way - modify 1 agg in 1 tx
 
 c: ui and navigations
 - using IDs for refing between aggs make navigation hard
@@ -281,7 +278,7 @@ other plus
 
 wg EE 
 - to keep consistency and modify many aggs in 1 request - use eventual consistency
-- this rule regards all 'modify aggs cases', eg:
+- this rule applyies to all 'modify aggs scenarios':
   - few aggs modified "in 1 req"
   - many aggs modified in batch processing
 
@@ -298,7 +295,7 @@ EC sample
 what if modification fails on suber side
 - modification can be retried
   - if suber doesn't ack that modification is done [or failed] -> event is redelivered
-    // q: how queue gets info that event handled/failed?
+    // q: how queue gets info that event passed/failed?
 - try many times until 'event is handled' [and consistency achieved]
 - there should be limit of retries - after it app should
   - either compensate tx
@@ -312,9 +309,9 @@ c: do non-linear retires
 ### 5.1 ask whose job it is
 
 
-- sometimes it's hard to guess which consistency to apply (tx \/ eventual)
+- sometimes it's hard to guess which consistency to apply (tx / eventual)
 - wg EE - assess whose responsibility is to assure consistency
-  - if user (who calls particular use-case) - do task in 1 tx
+  - if user (who calls use-case) - do task in 1 tx
   - if another user or system - do task in EC
 
 
@@ -325,11 +322,11 @@ c: do non-linear retires
 - ponizsze 4 powody nie sa jedyne ;]
 
 
-### 6.1 r1: user interface convinience
+### 6.1 reason1: user interface convinience
 
 
 - user na 1 ekranie tworzy kilka nowych aggs np. BacklogItems
-- taki UC obsługujemy w 1 metodzie  
+- taki UC obsługuż w 1 metodzie  
 - np. AS.planBatchOfBacklogItems[productId, tenantId, BItemDesc[] newItems]
 - AS.plan... tworzy klika instancji agg: BItems i dodaje je kolejno do BItemRepo, >w 1 tx<
 
@@ -338,7 +335,10 @@ c: do non-linear retires
 - n: zachowanie inwariants jest kryterium czy mozna zlamac "agg-rule"
 
 
-### 6.2 r2: lack of technical mechanism
+vvvvv cont. here
+
+
+### 6.2 reason2: lack of technical mechanism
 
 
 - using eventual consistency reqs some infra (messaging, timers, background threads ..)
@@ -352,7 +352,7 @@ way2
 - if reqs can't be changed --> no choice: you can modify many aggs in 1 tx
 
 
-### 6.3 r3: global transacitons
+### 6.3 reason3: global transacitons
 
 
 - if you use global, 2-phase TX-es - then it looks ok to modify many aggs in 1 tx
@@ -360,7 +360,7 @@ way2
 - if possible - avoid even here modifying many aggs in 1 tx
 
 
-### 6.4 r4: query performance
+### 6.4 reason4: query performance
 
 
 - sometimes you must have "live" ref from agg1 to agg2
