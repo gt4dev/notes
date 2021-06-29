@@ -23,7 +23,7 @@ postacie
   - latwo tworzyc inne aggs z danych z curr agg
 
 - f methods on aggs [g: standalone f-s too] - can have names which express UL terms
-- it is not possible from for constrs alone
+- it is not possible if using constrs alone
 
 - service moze dzialac jak f
 - produkuje agg or vo
@@ -39,7 +39,6 @@ Tenant.offerRegistrationInvitation(..):RegistrationInvitation
 Forum.startDiscussion(..):Discussion
 Discussion.post(..):Post
 
-c
 - all w/w tworza nowy agg
 - w iddd-sampl most aggs ma f-methods tworzace inne agg
 
@@ -48,13 +47,13 @@ c
 
 
 ciekawy unit test
-- mamy f-metode scheduleCalendarEntry i jej test
+- mamy f metode scheduleCalendarEntry i jej test
 - wewn. testu
-  - wolana w/w metoda
+  - wolana jest w/w metoda
   - dodatkowo testowane jest wysylanie eventu [wysylany wewn scheduleCalendarEntry]
 
 - scheduleCalendarEntry ma duuuzo [9] params 
-  - nie wszytko jest sens kompresowac w single vo
+- nie wszytko jest sens kompresowac w single vo
 
 wewn. f scheduleCalendarEntry NIE wywoluj guards sprawdzajace method params!!!!!
 - just pass params to "new CalendarEntry(all 9 params + some more)"
@@ -63,7 +62,7 @@ wewn. f scheduleCalendarEntry NIE wywoluj guards sprawdzajace method params!!!!!
   - sprawdzana jest spojnosc calego obiektu
 - thus 
   - zawsze rob checks/guards w konstr. e/vo 
-  - i powtarzaj tego w innych miejscach
+  - i NIE powtarzaj tego w innych miejscach
   
 - constr. CalendarEntry is protected
 - client must use f
@@ -80,7 +79,7 @@ wada f on agg
 sample 
 
 Forum.startDiscussion(..):Discussion {
-  // tu musimy dodac guard  bo nie ma go w constr [cmp a/m sample]
+  // tu robimy guard!!! bo nie ma tego testu w constr [cmp a/m sample]
   if(this.isClosed()) 
     throw new Exception("can't start on closed disc");
 

@@ -13,7 +13,7 @@ c: to idea vv - podzial repos na
 .. oriented
 
 
-## 1 COLLECTION ORIENTED REPOS
+## 1 COLLECTION ORIENTED REPOS [COR]
 
 
 - COR to klasyczne podejscie z DDD
@@ -22,7 +22,7 @@ c: to idea vv - podzial repos na
 
 standardowe zachowanie kolekcji to
 - po dodaniu obj do kolekcji - jest on tam caly czas
-- jak wyciagasz i zmieniasz obj z kolekcji - kol NIC o tym nie musi wiedziec
+- jak wyciagasz i zmieniasz obj z kolekcji - kol NIC o tym nie wie
   
 sample
 interface Collection {
@@ -37,13 +37,13 @@ typowe zachowania repo
   - esp: nie leci excep 
 - podczas get obj gdy obj nie ma - dostajesz null [takze dla GetEntityById(id)}
   - esp: nie leci excep
-- rzucaj excep jesli query params sa nieprawidlowe ["poza zakresem"]
+- rzucaj excep jesli query params sa nieprawidlowe [poza zakresem, ...]
 
 - don't save objs already held by repo
 - po get obj z repo i modyf - nie wstawiaj go z powrotem do repo
 
 c: vv troche sp*l
-po co tu rozszerzal HashSet? 
+po co tu rozszerzal HashSet w sample? 
 class MyRepo extends HashSet<Calendar>
   add(Calendar c) {..}
 }
@@ -53,24 +53,25 @@ persiting mech
 - pers. mech - musi umiec rozpoznac ze obj zostal zmieniony
 - many possible impls - below only 2
 - oba podejscia maja rozna wydajnosc
-- w obu cases - sledzenie zmian jest niezauwazalne dla klienta
+- w obu 
+  - sledzenie zmian jest niezauwazalne dla klienta
   - user wola tylko 'commit'
 
 1 implicit copy on read
-- poczas reconstituting [from store] are created objects
+- poczas reconstituting [from store to mem] are created objects:
   - private copy
   - for use by client
 - on commit [called by client]
-  - mech cmp both objs
+  - mech cmps both objs
 - jak sa diffs -> changed objs are flushed to store
 - c: przy lazy loading - cmp'ed are only [lazy] loaded elems of e
 
 2 implicit copy on write
 - przy reconst. 
-  - obj wrapowany jest 'light proxy' 
+  - obj wrapowany jest w 'light proxy' 
   - returned to client
 - klient wola metody na "proxy"
-  - pers mech zna widzi te calls
+  - pers mech widzi te calls
   - docelowe metody tez sa wolane
 - on 1st proxy method call - PM robi kopie obiektu i oznacza go jako dirty
 - on commit - all dirty objects are flushed to db
@@ -79,7 +80,7 @@ persiting mech
 ### 1.1 HIBERNATE IMPL
 
 
-- n: hbm tworzy collection oriented repos
+- hbm tworzy collection oriented repos
 
 typowy interf
 interface CalendarRepository {
@@ -108,26 +109,26 @@ interface CalendarRepositrory {
   Calendar calendarOfId(CalId)
   ..
 }
-- if szukamy po id i nic nie znajdujemy - to zwroc null [a nie excep]
+- if szukamy po id i nic nie znajdujemy - zwroc null [a nie excep]
 - to naturalne w kolekcjach
 
 
 subfolder impl w modelu
 - czasem umieszcza sie impl of repo w domain.model
   mybc.domain.model.calendar.impl
-- it's popular pattern in java
-- teoret. sam model nadal jest [nie ma technikaliow]
+- it's popular in java
+- teoret. model nadal jest clean [nie ma technikaliow]
 - acz "typowo" impl. interfejsu jest w ns:infrastructure
 g: pewnie da sie tak robic dla innych 'technikaliow' [klient poczty, stub serwisu ..]
   - folder $root
-    - logika bazujaca na interfaces [wolna od techs]
-    - czysty UL domenu [nawet technicznej]
+    - czysty UL domeny [nawet technicznej]
+    - logika uzywa interfaces [wolna od techs]
   - folder $root/impl
-    - technikalia z poza UL
+    - impl interfaces - technikalia z poza UL
 
 delete in hbm
 - metoda remove(Calendar c) pobiera pelny obiekt [nie tylko id]
-- bo impl. calls: session().delete(wholeObject)
+- bo w impl. jest call: session().delete(wholeObject)
 - ale hbm ma kilka ways for deletes
 
 cascade delete
@@ -144,7 +145,7 @@ cascade delete
 
 ### 1.2 CONSIDERTIONS TO TOP-LINK
 
-- w top-link jest oddzielnie session, unit of work
+- w top-link jest oddzielnie session + unit of work
 - w hbm jest to "polaczone" w session [and tx'y]
 
 repo interface musi miec dodatkowa metode
@@ -159,6 +160,9 @@ way2: MyRepo.UseEditingMode():void
 
 - to nadal styl 'collection oriented repo'
 - chociaz juz dosc mocne przegiecie z dodatkowym callem
+
+
+vvvvv cont here
 
 
 ## 2 PERSISTENCE ORIENTED REPOS

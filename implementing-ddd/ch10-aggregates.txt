@@ -335,18 +335,15 @@ c: do non-linear retires
 - n: zachowanie inwariants jest kryterium czy mozna zlamac "agg-rule"
 
 
-vvvvv cont. here
-
-
 ### 6.2 reason2: lack of technical mechanism
 
 
-- using eventual consistency reqs some infra (messaging, timers, background threads ..)
+- using eventual consistency reqs infra: messaging, timers, background threads ..
 - some projs don't have it - sad but true
 
 way1
 - as we can't use EC -> proj p/b will end with large aggs
-- this will decrese performance/scalaebility
+- this will decrese performance/scaleability
 way2
 - strive to create small aggs 
 - if reqs can't be changed --> no choice: you can modify many aggs in 1 tx
@@ -356,16 +353,16 @@ way2
 
 
 - if you use global, 2-phase TX-es - then it looks ok to modify many aggs in 1 tx
-  - although it DOESN'T force us to do so
+- although it DOESN'T force us to do so
 - if possible - avoid even here modifying many aggs in 1 tx
 
 
 ### 6.4 reason4: query performance
 
 
-- sometimes you must have "live" ref from agg1 to agg2
-  - due to ease doing fetching data ...
-- you can do it but remember about "performance" [etc.] problems
+- sometimes you must have "living/active" ref from agg1 to agg2
+- eg. because of ease doing fetching data ...
+- you can do it but remember about problems with performance, etc.
 
 
 ### 6.5 adhering to the rules
@@ -391,15 +388,15 @@ current state
 - aggs ref each other by id
 
 sample
-- if sum of hours in Tasks in BacklogItem == 0 -> auto set BI as done
-- it's invariant and BI and Tasks are kept in 1 agg (BI)
+- req: if sum of hours in Tasks in BacklogItem == 0 -> auto set BI as done
+- it's invariant thus BI and Tasks are kept in 1 agg (BI)
 
 
 ### 7.2 estimating aggregate cost
 
 
 technika BOTE [back of the envelope]
-- estymuje ilosci obiektow bioracych udzial w danym UC/...
+- estymuj ilosc obiektow bioracych udzial w danym UC/control-flow
 - przyklad
   - zgrubienie określ czas trwania Sprint, ilość Tasks in Sprint ... 
   - zgrubnie policz ilosc obiektów BItem, Task ...
@@ -418,8 +415,8 @@ problem z optimistic concurrency
   - modyfikujemy wiele diff tasks by wielu users
 
 - ustawienie mech. OC zalezy od konkretnego UC 
-- ustawiamy na bazie heurystyki ["przypuszczenia" jakie ustawienie bedzie dzialac w danym zestawie UCes]
-- zakladamy jak userzy beda sie zachowywac - co wcale nie musi sie sprawdzic i w realu strategia moze byc zla
+- ustawienie OC wybieramy heurystycznie ["przypuszczenia" jakie ustawienie bedzie dzialac w danym zestawie UCes]
+- zakladamy jak userzy beda sie zachowywac - co nie musi sie sprawdzic, w realu wybor moze byc zly
 - acz zawsze niedopuszczalne jest nadpisywanie danych by users ;]
 
 
@@ -442,7 +439,7 @@ although 'double lazy ..' but wg VV
 ### 7.5 exploring another alternative design
 
 
-// ch tests alter approaches to agg boundaries
+// ch analyses alter approaches to agg boundaries
 
 idea: wydzielic Task jako osobny agg (poza agg BI)
 - pros
@@ -450,7 +447,7 @@ idea: wydzielic Task jako osobny agg (poza agg BI)
   - eliminate lazy loading
 - cons: delay in setting BI status to done (due to EC)
 - but if business accept it -> idea is accepted
-- naturalnie invariant 'auto-set BI to done' znika
+- naturalnie znika invariant 'auto-set BI to done'
 
 
 ### 7.6 implememnting eventual consistency
@@ -465,7 +462,7 @@ example - use EC to set BI 'done'
 - suber of a/m event - calls DS which
   - get BI, Task z repo (by IDs from event)
   - calls BI.estimateTaskHoursRemaining(event.hoursRemaining, task)
-    - this sets BI state to done if no more hours remain
+  - this sets BI state to done if no more hours remain
 
 optimalization
 - instead of reading all Tasks for BI (to calc remaining hours)
@@ -477,7 +474,7 @@ waiting for EC and refresh UI
 - app quickly update Task but BI with delay (due to EC)
 - problem: what to show on UI: task is modified but BI not yet
 - maybe message: "BI state is being calculated, refresh soon"
-- gt: slabe, lepiej owrapowac calosc w await
+// gt: slabe, lepiej owrapowac calosc w await
 
 
 ### 7.7 is it the team member's job?
@@ -498,7 +495,7 @@ waiting for EC and refresh UI
 // nothing special
 
 
-### 8.1 create a rool entity with unique identity
+### 8.1 create a root entity with unique identity
 
 
 // nothing special
@@ -509,8 +506,8 @@ waiting for EC and refresh UI
   - optimistic concurrency versioning
 
 - class Product has property Set<ProductBacklogItem>
-- don't mistake it with BacklogItem
-- it's represents sorting of BIs
+- don't mistake it with [agg]BacklogItem
+- it represents sorting of BIs
 
 - Product ma id: domenowe i surrogate
 - w konstruktorze Product jest tylko id domenowe
@@ -543,7 +540,7 @@ integrate BCs
 - as we use E - we set only attr 'ordering' [and quickly change sorting]
 
 - w w/w case: tech wplynal na model domenowy
-- acz pp niewiele - bo z client PoV nie widzimy duzej diff miedzy vo/e
+- acz pp niewiele - bo z client PoV nie ma duzej diff miedzy vo/e
   - w e ustawiamy attr "sorting"
   - w vo byla by zamiana calej kolekcji [?]
 - if we'd use key-value store then we'd use VO [not E]
@@ -571,8 +568,8 @@ LOD
 - esp: C should not call internal parts of S
 - if such call is needed then
   - S exposes method which delegates to internal part
-  - and C calls exposed method
-- recap: metoda obiektu moze wolac inne metody
+  - and C calls this exposed method
+- in short: metoda obiektu moze wolac inne metody
   - nalezace do tego obiektu
   - parametrow przekazanych tej metodzie
   - obiektu ktory stworzyla
@@ -586,21 +583,19 @@ przyklad
 - good: C "mowi" S co ma zrobic [C wola command on S]
 
 SAMPLES
-- client calls
+- client calls 'command'
     void Product.reorderFrom(BacklogItemId anId, int anOrdering) { ... }
-- it's command
 - client has "least knowledge" to perfom call
   - params are "primitive", 100% needed [no polution]
   - internals of Product are not know to client
   
-- client calls
+- client calls 'query'
     Set<ProductBI> Product.backlogItems() { ... }
-- it's querry
 - n: it's return ProductBI [VO] not BI [E]
   - PBI is small [least knowledge]
   - it doesn't publish "internals" of P
 
-- caly kod w klasie should minimize keeping knowlegde [use minimun to perform task]
+- caly kod w klasie should minimize keeping knowlegde [use minimum to perform task]
 
 - TDA/LOD są podobne
 - TDA prosciej stosowac
@@ -610,13 +605,13 @@ SAMPLES
   - pozwala na nawigacje [nie zakazuje jej ;]
   - wymusza modyfikacje stanu agg przez commands
 
-- czasem proj agg moze stosowac tylko TDA [bez LOD]
+- czasem agg moze stosowac tylko TDA [bez LOD]
 
 
 ### 8.4 optimistic concurrency
 
 
-assume 
+bad sample
 - set OC only on root entity
 - increas on ANY change in agg boundries
 
@@ -636,13 +631,13 @@ Product.reorderFrom(..) {
   // modify PBI
   version(version() + 1)
 }
-probs here
+probs:
 - Product.version zmienia sie takze jesli call to reorderFrom(..) nie zmienia kolejnosci
 - wyciek infra do modelu
   
-good fix
+GOOD FIX
 - przy modyf PBI nie podbijaj P.version
-- PBI maja own OC
+- PBI ma own OC
 - OC chroni single PBI przed nadpisywaniem przez wielu users
 
 - versioning all E parts doesn't work in every case
@@ -659,13 +654,13 @@ alter way
 - ale moze uzasadnione
 
 - wg VV problemu nie ma w techs gdzie agg zapisujemy jako calosc [mongo, riak ..]
-- gt: pewnie sa problemy z brakiem OC ;]
+// gt: pewnie sa problemy z brakiem OC ;]
 
 
 ### 8.5 avoid dependency injection
 
 
 - injecting repos or DS to aggs is bad
-- bo aggs moga robic dociagaja inne aggs
+- bo aggs moga dociagac inne aggs
 - reced way: load all data/aggs before calling method on agg
 - btw. wstrzykuj Repos, DS do AS etc.
