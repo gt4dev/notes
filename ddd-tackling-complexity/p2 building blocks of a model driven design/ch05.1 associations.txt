@@ -77,7 +77,7 @@ EXAMPLE - ASSOCIATIONS IN A BROKERAGE ACCOUNT
     }
 - z client PoV - nie ma roznicy miedzy w/w impls [pojo, sql]
 
-usuniecie multiplicity BroAcc ---*-> Inv
+usuniecie multiplicity BroAcc -----*-> Inv
 - z: z b.needs wynika ze BroAcc moze miec tylko jedna (!!!) Inv dla danego stock'a [kij z semantyka]
 - nowy model
   - | brokerage account |[stock] -------> | investment |

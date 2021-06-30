@@ -1,0 +1,147 @@
+ch07 using the language - extended example
+
+
+ch07.01 introducing the cargo shiping system
+
+- asocjacja kwalifikowana [qualified]
+
+| Customer |----------*--[ role | Cargo |
+                         ^^^^^^^^
+// g: Cargo ma metode getCustomer(string role):Customer
+- multiple customers are involved with a Cargo, each plaing a diff role [shipper, payer, receiver ..]
+- dana role moze grac tylko 1 customer
+- dzieki kwalifikacji role mamy relacje m-to-1 zamiast m-to-m
+// g: acz bez kwalif. nie bylo by role, tylko "List customers" - to troche bida
+- role moze byc
+  - string [super simple case]
+  - vo class [
+- kwalifikacje (role) rysujemy w malym kwadraciku przyleglym do duzego kwadracika Cargo
+- n: w samples 'prezydent usa', 'investments' tez nie ma slownika dat, a tylko fakt kwalifikacji
+
+btw
+- nie myl kwalifikacji z nazwa relacji w std asocjacji
+- przyklad
+                      role
+| Customer |-----------*-- | Cargo |
+
+- Customer ma attr 'List<Cargo> role' - bez sensu
+- to kompletnie inna asocjacja
+
+
+- zauwac ze 1st szkic modelu, class diagram [rys 7.1] - reprezentuje klasy
+- nie wiadomo jeszcze ktora klasa jest encja, vo ...
+- w 1st ver of model 
+  - only focus on projecting classes for terms from UL, desc associations
+  - totally IGNORE problem of disting. what is e what vo ...
+
+
+c: sledzenie historii zmian w app
+- EE w modelu zapisuje historie w DeliveryHistory
+- it's a nice tip/pattern
+- explicityly define history/events
+- don't need envers or other implicit history tracking events
+
+
+remember: model constantly changes in 'interative way'
+- odkrywamy nowe fakty, poprawiamy model
+- kodujemy
+- ...
+
+
+ch07.02 isolating the domain: introducing the applications
+
+
+w Cargo sample EE wyroznil 3 'serwisy aplikacyjne'
+EE nazywa je application functions
+AS'y:
+- tracking query [obsluga samego cargo
+- booking app [przygotowuje Cargo]
+- incident logging app [NIEWAZNE co ta AF robi]
+
+VVVVVI
+these classes are coordinators
+they should not work out the answers - AS szukaja answers w domain layer
+
+
+ch07.03 distinguishing entities and value objects
+
+
+class Customer
+- Customer ma identity wazne dla usera
+- zatem C = e
+- ustalenie czyma ma byc ID wymaga ustalen z expertami domenowymi
+- jako ID uzyjemy ID customers z 2nd systemu - do zglaszania zapotrzebowania by users
+- w v0 - id mozna przepisywac recznie z 2nd to 1st system
+- this settles 'continuity of identity' between those systems
+- mamy 'rozszerzenie encji'
+// g: acz czy to rozsadne, to najtrudniejsze id
+
+class Cargo
+- dwie identyczne crates [skrzynie] musza byc rozroznialne 
+- dlatego Cargo = entities
+- id generujemy automatycznie
+
+class HandlingEvent
+- HEs to obiekty ktore nie sa interchanalbe
+- thus HE = entity
+- podczas dyskusji z 'domain expert' okazuje sie ze HE moze byc identyfikowane przez
+  - cargoId, completionTime, type
+// g: acz czy to rozsadne?
+
+class Location
+- dwa miejsca z ta sama nazwa - nie sa ta sama lokacja
+- thus: L = entity
+- id = auto-generated
+
+class DeliveryHistory
+- mega ciekawe
+- DHs nie sa interchangable = thus sa e-s
+- ale DH ma relacja 1-1 z Cargo!!!
+- DH ma ID 'pozyczone' z Cargo
+
+class DeliverySpecification
+- kilka Cargos moze miec to samo DS, nie potrzebujemy rozroznienia obiektow
+- thus DS to VOs!!!
+
+
+ch07.03.1 role and other attrs
+
+
+
+
+
+ch07.04 designing assocaitions in the shipping domain
+
+
+ch07.05 aggregate boundaries
+
+
+ch07.06 selecting repositories
+
+
+ch07.07 walking through scenarios
+
+
+ch07.08 object creation
+
+
+ch07.09 pause for refactoring: alter design
+
+
+ch07.10 modules in shipping model
+
+
+ch07.11 intro a new feature: allocation checking
+
+
+ch07.11.1 connecting the two systems
+
+
+ch07.11.2 enhancing the model: segmenting the business
+
+
+ch07.11.3 performance tuning
+
+
+ch07.12 final look
+
