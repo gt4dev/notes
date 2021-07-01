@@ -107,13 +107,81 @@ class DeliverySpecification
 ch07.03.1 role and other attrs
 
 
+// role - jako kawalifikator przy Cargo
+- role says sth about the association it qualifies
+- but it has no history or continuity
 
+- jest to vo - moze byc dzielony miedzy wiele Cargo-Customer associations
 
 
 ch07.04 designing assocaitions in the shipping domain
 
+- dodajemy traversal directions do diagramu
+- w modelu v0 - all jest bidirectional
+- in: bidirectional are problematic in design/code
+
+- traversal direction better express insight of the domain, deeping the model
+ 
+association Customer-Cargo
+- Customer nie jest specyf. dla Cargo
+- w diff systemach Customer moze miec wiele rol w interkacji z wieloma obiektami
+- thus keep Customer free from any additional repsonsibilities
+- n: jak potrzebujesz wyszukac Cargo by Customer - no problem, do it on repository level
+
+asso Cargo-DeliveryHistory
+- b. ciekawe
+- asso zostaje bidirectional bo
+  - sledzenie historii Cargo jest kluczowe dla Cargo
+  - historia musi refowac do jej cubject
+  
+Cargo-DeliverySpecification
+- b. ciekawe
+- DS jest vo-sem
+- vo zwykle nie ma ref'a do owner'a - stad relacja jest directed
+
+circular reference
+Cargo --- DeliveryHistory ---> HandlingEvents ---> Cargo [again]
+- circular references logically exists often in business
+- nie da sie ich 'wyeliminowac' z modelu - musza byc uwzglednione
+- da sie to zakodowac acz bywa tricky [g: bo cos trzeba 'lazy-loadowac']
+
+ciekawy case
+HandlingEvent -*--------0..1-> CarierMovement
+- kierunkowosc powoduje ze CM nic nie wie o HE i * w modelu 'nie ma sensu'
+- w modelu widac ze CM moze 'miec' many HE ale nie bedzie to zakodowane 
+
 
 ch07.05 aggregate boundaries
+
+- Customer, Location, CarriesMovement musza byc root aggregates bo
+- sa wspoldzielone przez many Cargos
+- class'y te tworza 'globalne dane/dane dostepne niezaleznie od innych' - stad beda dostepne jako roots
+
+- Cargo tez jest rootem
+
+granica agg Cargo
+- DeliveryHistory - wciagamy do ag Cargo - bo NIKT nie bedzie czytal DH bez C
+- DeliverySpeciifaction - vo bezposrednio refowany przez C thus jest czescia agg Cargo
+
+
+mega-mega-turbo-uwaga
+- model
+vo wewn. cargo agg           osobny agg
+DeliverySpecification ------ Location
+
+DS ma ref do Location [czyli vo ref'uje agg/e - to juz dziwne]
+ale asso jest bidir!!! - Location refuje vo's
+q: to mozliwe??? to zaprzeczenie ze refujemy tylko root'y agg - nic wewnatrz!!!
+n: to blad, bez sensu zeby L mial ref do DS
+
+
+- wg VV - granice aggs wysznaczamy przez "granice tx'ow" 
+- EE w ogole o tym nie mowi, ma inne kryteria graniczenia aggs [raczej skupia sie czy cos jest global czy nie]
+// g: pewnie to sie zdezaktualizowalo
+// g: sprawdz agg desc in earlier chapter
+
+
+>>>>>> start here 1 lip 2021,22.40
 
 
 ch07.06 selecting repositories
