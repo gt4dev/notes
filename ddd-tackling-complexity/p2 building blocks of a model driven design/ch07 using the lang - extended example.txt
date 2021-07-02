@@ -181,31 +181,132 @@ n: to blad, bez sensu zeby L mial ref do DS
 // g: sprawdz agg desc in earlier chapter
 
 
->>>>>> start here 1 lip 2021,22.40
-
-
 ch07.06 selecting repositories
+
+
+- tylko agg root moze miec repo [ale wg potrzeby, moga ale nie musza]
+- to jakie repos potrzeba - wynika z potrzeb UC'ow
+- np: potrzebujesz w UCx wyciagnac Customers ktorzy spelniaja kryteria y - budujesz repo z metoda - proste
 
 
 ch07.07 walking through scenarios
 
 
+- co jakis czas testuj koncepcyjnie model - wykonuj scenariusze/UC-e i sprawdzaj czy model dziala
+
+c: impl. roles w Cargo
+- uzywamy simple Map customerRoles = new HashMap();
+- klucze/role - pewnie sa zdefinowane w innym miejscu
+
 ch07.08 object creation
+
+
+od constr wymagamy zeby stworzyl obiekt ktory spelnia
+- invariants
+- [dla e-s] identity
+
+c: bidirect 1-1 asso Cargo-DeliveryHistory
+- means: rzadna ze stron nie jest komplenta bez counterparta
+// g: acz samo bidirect - nie mowi ze obie strony sa niekompletne bez siebie
+- oba obietky [c, dh] musza byc stworzone razem i powiazane - zeby zachowac relacje
+
+constr Cargo(string id) { n2
+  id = id
+  deliveryHistory = new DeliverHistory(this);  n1
+  // init other attrsn2
+}
+
+n1: robienie bidirec asso
+- C jest rootem agg i zawiera e DH
+- dlatego C moze wywolac constr. of DH
+- zeby storzyc bidirect - w robimy DH(this)
+
+n2: w constr. przekaz all needed attrs towrzoca id
+- to szczegolnie wazne dla HandlingEntity ktorego id = {cargoId, timestam, type}
+
+c: 
+- EE recoms ustawianie 'non-identity' attrs poza constr, w factory method
+sample
+static HandlingEvent HandlingEvent:newLoading(Cargo c, CarrierMovement cm, Date time) { n1
+  var result = new HandlingEvent(c,LOADING_EVENT,time) n2
+  result.setCM(cm); n3
+  return result
+}
+
+n2: constr. pobiera tylko attrs of id: full Cargo
+n3: non-ident. attr of HE jest ustawiany poza constr
+n1: nazwa factory - oddaje term z UL - "tworzymy loading event"
+
+c: EE refuje miedzy agg root by ref a nie id!
+
+
+c: cycle references
+- n: jak tworzysz 'cycle of objects' to wszystkie obiekty tworzace cycle musza byc polaczone przed commit
+- zadna filozofia
 
 
 ch07.09 pause for refactoring: alter design
 
 
+- czasem trzeba refactor'owac model zeby moc dalej go zmieniac
+
+performance problem of curr. model
+- dodajac HandlingEvent - trzeba tez w 1 tx zmodyfikowac DeliveryHistory
+- beda tx fails/locks - jak wielu users bedzie dodawac HE
+- fix [chyba]: w attr DeliveryHistory.events
+  - replace real collection of objects [HE]
+  - with query to db ["lazy loading" on access to this attr]
+- it allows calling many tx-es without conflicting each other
+
+- w/w zapytanie o HE dla danego DH - wstaw do HE Repo
+
+- c: w/w trick z DH - rozw. tez problem z circle reference - wg EE it's no more problem
+
+
 ch07.10 modules in shipping model
+
+
+c: efekt pakietowania wg infra
+- jesli pakietujesz klasy wg infra [np. vo-sy do pakiety vo, service'y do ...]
+- to finalnie masz 
+  - w pakietach klasy ktore nie maja ze soba wiele wspolnego [low cohesion]
+  - a z 2nd side: masz duzo zaleznosci miedzy pakietami/modulami [high coupling 
+  - dokladnie odwrotnosc 'oczekiwan' [high coh in modules, low coupling between m-s]
+
+// g: t: mark green sticky - diagram 'ref moduling' 7.8/181
+
+- ok podzial na moduly wynika z UL
+// g: pp to sa juz moduly na poziomie BC'ow, bo kazdy address inny typ aplikacji/user'a
 
 
 ch07.11 intro a new feature: allocation checking
 
+connecting the two systems
+- cel: booking app korzysta z local system/UL [cargo repo] i remote system/UL [sales management system]
+- prob: booking app korzysta z 2 diff ULs
+- fix: translate remote UL to local UL - zeby miec 1 UL i moc robic MDD
+- translator class - anty-corruption layer [more ch14]
+  - pobiera z remote tylko feats req by local reqs/model
+  - reabstract remote terms to local [handy in local model]
+  
+- create interface representing remote system [sales management system]
+- zakoduj interface jako service [domain ser]
+- nadaj DS'owi nazwe z UL np. AllocationChecker [w nazwie nie ma zadnego suffix Service - pure UL]
 
-ch07.11.1 connecting the two systems
+problem: type of cargo z sales management system musimy reprezentowac w local UL
+- w SMS categories to set of strings - z nazwami kategorii
+- sol0: skopiowac liste categories z SMS to local UL
+- sol1: reabstract the domain of other system - tworzymy wlasna reprez.
+- ustal z domain expert - jak dodac nowy koncept [kategorie cargo] do UL
 
+use pattern 'enterprise segment' z book analyse patterns '96
+// g: oblukaj ten pattern [dzielisz enterpr. na segmenty wg dimensions: categories, times ..]
+tnx of it - model bedzie simpler and more expressive
+- create class vo EnterpriseSegment - reprezentujacym kategorie Cargo
+- dodaj do local domain
+- AllocationChecker translates from EnterpriseSegment to SMS's category string
+- a sam stub do SMS uzywa category wg reprezentacji z SMS [acz niewidoczne to jest w domain]
 
-ch07.11.2 enhancing the model: segmenting the business
 
 
 ch07.11.3 performance tuning
