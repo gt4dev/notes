@@ -3,6 +3,7 @@ ch07 using the language - extended example
 
 ch07.01 introducing the cargo shiping system
 
+
 - asocjacja kwalifikowana [qualified]
 
 | Customer |----------*--[ role | Cargo |
@@ -116,6 +117,7 @@ ch07.03.1 role and other attrs
 
 ch07.04 designing assocaitions in the shipping domain
 
+
 - dodajemy traversal directions do diagramu
 - w modelu v0 - all jest bidirectional
 - in: bidirectional are problematic in design/code
@@ -152,6 +154,7 @@ HandlingEvent -*--------0..1-> CarierMovement
 
 
 ch07.05 aggregate boundaries
+
 
 - Customer, Location, CarriesMovement musza byc root aggregates bo
 - sa wspoldzielone przez many Cargos
@@ -197,6 +200,7 @@ ch07.07 walking through scenarios
 c: impl. roles w Cargo
 - uzywamy simple Map customerRoles = new HashMap();
 - klucze/role - pewnie sa zdefinowane w innym miejscu
+
 
 ch07.08 object creation
 
@@ -280,6 +284,7 @@ c: efekt pakietowania wg infra
 
 
 ch07.11 intro a new feature: allocation checking
+
 
 connecting the two systems
 - cel: booking app korzysta z local system/UL [cargo repo] i remote system/UL [sales management system]

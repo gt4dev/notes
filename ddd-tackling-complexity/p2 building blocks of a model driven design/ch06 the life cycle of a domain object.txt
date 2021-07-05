@@ -1,10 +1,10 @@
-- kazdy obiekt ma LC, eg:
-  - krotki [vo, transient, 1 operation]
+- kazdy obiekt ma LC
+  - krotkie [vo, transient, 1 operation]
   - dluugui [e, wiele lat]
   
 typical problems of LC
 - keeping integrity [invariants] througout LC
-- keeping model clean from techs of managing object LC
+- keeping model clean from techs from handling object LC
 
 these probs are addressed by
 - aggregate

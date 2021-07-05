@@ -6,10 +6,10 @@ in real business
 - trudno znalezc ostre granice
 
 przyklad braku granic
-- usuwasz e: Person
-- co z e: Address - usunac | zostawic?
+- usuwasz e Person
+- co z e Address - usunac, zostawic?
 
-- problem rosnie gdy dane crud'uje wielu users
+- problem rosnie gdy rownoczenie dane crud'uje wielu users
 
 - if many associations between objects = trudno utrzymac consistency
 
@@ -29,7 +29,7 @@ model musi
 - fix these probs na poziomie modelu (m. w praktyce bedzie clearer)
 
 c: patterns agg history
-- p/b comes from pattern 'onwership relation'
+- p/b derived from pattern 'ownership relation'
 - in short: tx modifies only object and owner
 
 agg def
@@ -44,9 +44,9 @@ sample
 - roots: | car |-----| engine |
 - car contains nested e-s: wheel, position, tire
 - wydaje sie ze engine should be nested in car
-- ale w modelu to rownoprawna, associated e
+- ale w modelu to rownoprawne e-sy
 
-- zmiany w wielu aggs - sa wykonywane w kilku tx, krokach
+- zmiany w wielu aggs - sa wykonywane w kilku tx/krokach
 
 inne cech agg
 - root is resp for checking invariants
@@ -57,9 +57,9 @@ inne cech agg
   - internals are read by associations traversal [eager|lazy loadeded]
 - internals can ref other roots
 - delete of agg - removes all associated internals
-- on changes commit - all invariants must be satisfied
+- on commit - all invariants must be satisfied
 
-- root must know about all changes of inside objects
+- root must know about all changes on inner objects
 - thus internals of agg can ref to each other 
   - only transiently
   - in sigle operation [of root]
@@ -82,7 +82,7 @@ step 1: each e is agg
 - nie chronimy invariantu - buuuu
 
 step 2
-- create agg: po [with nested po line item]
+- create agg: po [with nests "po line item"]
 - copy price to po-line-item
   
 | <root>                                 // eo agg |  

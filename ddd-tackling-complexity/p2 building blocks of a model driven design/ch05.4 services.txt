@@ -1,25 +1,26 @@
 # SERVICES
 
+
 - sometimes it isn't a thing
 - some operations don't belong to any object
 
 common mistakes
-- too fast putting operations in services
-- na sile pchanie metod do obiektow ktore tam nie pasuja
+- too fast putting operations into services
+- dodawanie metod do obiektow gdzie one nie pasuja
 
 - service dzialaja zwykle na wielu obiektach
-// g: metody obiektu pracuja w jego ctx
+// g: a metody obiektu pracuja w jego ctx
 
 - service nie ma stanu
-// g: nie dziala w ctx obiektu
+// g: bo nie dziala w ctx obiektu
 
 - nazwa klasy/metod - pochodza z UL
-- service name to raczej activity [nie noun]
+- service name to raczej activity [nie noun] AccountChecker
 - params and results use domain objects
 - operacje sa elementem domeny
 
 
-## 1 SERVICES AND ISOLATED DOMAIN LAYOER
+## 1 SERVICES AND ISOLATED DOMAIN LAYER
 
 
 sa rozne services [in app]
@@ -50,4 +51,4 @@ sample: transfer pieniedzy
 
 
 - s to proste obiekty: interfaces and implementations
-- nie trzeba corba, j2ee ...
+- nie trzeba heavy infra: corba, j2ee ...

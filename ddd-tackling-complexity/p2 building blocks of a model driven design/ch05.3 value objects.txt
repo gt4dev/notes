@@ -5,40 +5,40 @@
 - obiekty te opisuja rzeczy
 
 - vo to NIE "e bez identity"
-- vo to obiekty ktore opisuja rzeczy
+- vo opisuje rzeczy
 
 sample: color as vo
-- uzycie color vo moze byc proste [from client PoV]
-- ale internals moga byc complex [np: alg. mieszania kolorow i tworzenia new color vo]
+- uzycie vo color moze byc proste [from client PoV]
+- ale internals moga byc complex [np: alg. mieszania kolorow i tworzenia new vo]
 
 - vo-s moga zawierac inne vo-s [i to sporo]
 - vo-s moga ref'owac entities
 - np. map service 
   - moze zwrocic vo Route [reprezentuje trase]
-  - a Route moze ref'owac e-sy reprezentujace miasta: startowe, koncowe, posrednie
+  - Route moze ref'owac e-sy reprezentujace miasta: startowe, koncowe, posrednie
   
 - vo-s sa czesto przekazywane jako params w komunikatach miedzy objects
-- zyja wtedy b. krotko - w czasie wolania operacji
+- zyja wtedy tylko w czasie wywolania operacji
 
 - vo-s sa uzywane jako attrs of: e-s, innych vo-s
 
 - when you care only about attrs of element - make it vo
 - don't give it any identity
-- treat vo as immutable
+- make vo immutable
 
 conceptual whole [CO]
 - attrs wewnatrz vo - powinny tworzyc CO [ward cunnigham pattern]
 - sample: 
   - klasa Customer ma attrs: id, name, phone, street, city ...
-  - attrs: street, city ... wydzielamy do osobnej klasy Address = co
+  - attrs: street, city ... wydzielamy do osobnej klasy Address = CO
   - nowy model | Cusomter |<>------- | Address |
 
 czy Address to VO czy E
 - ZALEZY: od systemu, "kto pyta"
 - przyklady [ale duuuuzo zalezy od reqs]
 - jako vo
-  - adres jest 'prosta' inf o miejscu dostarczeniu paczki
-  - nie ma znaczenia ze wiele diff objects ma te same attrs ...
+  - adres jest 'prostym' infem o miejscu dostarczeniu paczki
+  - nie ma znaczenia ze wiele innych objects ma ref do tego samego czy identycznego vo
 - jako e
   - adresy tworza hierarchie, kolejne elementy hierarchi uszczegulawiaja adres
   - sledzimy zmiany adresu etc.
@@ -50,29 +50,28 @@ czy Address to VO czy E
 
 
 - vo-s musza byc immutable
-- immutability 
+- immutability
   - simplify much
   - perfectly fits "value idea"
 
 - vo-s mozna uzywac jako 
   - attrs encji
-  - methods [n: masz pewnosc ze zadne wywolanie nie zmieni danych]
-    - params 
-    - result
+  - method: params, result
+    - masz pewnosc ze zadne wywolanie nie zmieni danych
   
 - istotna jest wydajnosc
 - vo-s zwykle jest b. duzo
 - sa immutable = moga byc dowolnie share'owane
 
-reasons to allow mutablility [mainly performance]
+reasons to allow mutability [mainly performance]
 - value changes frequently
 - vo creation/deletion is expensive
-- if replacement disturb clastering/other tech limits 
+- if replacement disturbs clastering/other techs
 - not sharing vo-s
-vvvi: anyway: if vo is mutable = DON'T SHARE IT
+vvvi: anyway: if vo is mutable = DON'T SHARE IT!!!
 
 c: DB speed up
-- DB wczytuje dane w "page'ach" [czy jakos tak]
+- DB wczytuje dane w "page'ach" [jakos tak]
 - 1 mechanical read = 1 page
 - zeby przyspieszyc query - all dane powinny byc w 1 page = kolo siebie
 - robisz to przez denormalizacje
@@ -86,8 +85,7 @@ c: DB speed up
 - fewer associations -> better
 
 - bidirect. associations between vo-s make no sense
-- n: between lang objects [in model is ok]
 - bad: vo0 refs vo1, vo1 refs vo0
 - ok:  vo0 refs vo1, vo1 refs vo2 with identical attrs like vo0
 - if anyway masz bidirect - pp 1 z vo-s jest e
-- n: bidrect between e-s = ok, but hard to maintain
+- n: bidirect between e-s = ok, but hard to maintain

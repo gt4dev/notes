@@ -3,7 +3,7 @@
 
 - przejscie z modelu do impl jest szczegolnie tricky dla asocjacji
 
-- kazda asocjacja z modelu - w programie jest odzwieciecdona properties'ami
+- kazda asocjacja z modelu - w programie jest odzwieciedlona properties'ami
 
 asocjacje moge byc oparte na diff mechs
 - klasyczne refs [do pojo-s]
@@ -11,7 +11,7 @@ asocjacje moge byc oparte na diff mechs
 
 z punktu widzenia modelu
 - widzimy tylko property
-- "nie interesuje nas" internals asocjacji [czy ref, czy lookup ..]
+- "nie interesuje nas" internal mech asocjacji [ref, lookup ..]
 
 w real-life najwiecej relacji jest typu:
 - many to many
@@ -30,26 +30,27 @@ metody upraszczania asocjacji
 
 - upraszczanie wymaga zrozumienia domeny
 
-- wazne: ogranicz relacje tak mocno jak to mozliwe
+- uprosc relacje tak mocno jak to mozliwe
 
 - asocjacja bidirectional - oznacza ze 2 obiekty moga byc zrozumiane tylko razem
 
-sample 
+sample - add direction
 - usa mialo wielu prezydentow
 - mamy relacje: 1 to many, bidirect
-- ale "nikt" nie startuje od G.Washington'a i pytania "czyim byl prezedentem"
-- mozemy uprosc relacje - zrobic unidirect.
-  | Country | ------[president]-*-> | Person |
-- teraz klasa Person nie zalezy od idei "president", klasy Country ..
+- ale "nikt" nie startuje od G.Washington'a i pyta "czyim byl prezydentem"
+- upraszczamy relacje - set unidirect.
+  | Country | --------[president]-*-> | Person |
+- teraz klasa Person nie zalezy od idei "president" klasy Country ..
 
 sample - kwalifikowana relacja
 - jest tylko 1 prezydent w danym momencie
 - uzycie kwalifikatora redukuje relacje do "1 to 1"!!!
 - dodatkowo modelu pokazuje wazna regule biznesowa
 
-  | Country |[period] --------[president]--> | Person |
+  | Country |[period] ----------[president]--> | Person |
              ^^^^^^^^ kwalif.
              
+
 - dodajac unidirect. traversal na relacje many-to-many
 - robisz relacje 1-to-many
 - ktora jest znacznie prostsza w implementacji
@@ -64,8 +65,8 @@ EXAMPLE - ASSOCIATIONS IN A BROKERAGE ACCOUNT
   - ................. ---------- customer
 - kod
   class BrokerageAccount {
-    Set getInvestments() {...}
-    Customer getCustomer() {...} 
+    Set getInvestments() {...}   // 1-to-m
+    Customer getCustomer() {...} // 1-to-1
   }
 - c: EE uzywa getter'y, a VV odradza ;]
 - impl. BrokerageAccount
@@ -83,7 +84,7 @@ usuniecie multiplicity BroAcc -----*-> Inv
   - | brokerage account |[stock] -------> | investment |
 - nowy kod
   class BorkerageAccount {
-    Investment getInvestments(string stock) { // n: zwraca 1 obiekt, ograniczenie jest parametrem w metodzie
+    Investment getInvestments(string stock) { // 1-to-1, zwraca 1 obiekt, ograniczenie jest parametrem w metodzie
       return investments.get(stock); // inv. to mapa, ale to impl. detal, w sql bedzie inaczej, niewazne ;]
     } 
     ...

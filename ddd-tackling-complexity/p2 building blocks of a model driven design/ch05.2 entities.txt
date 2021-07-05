@@ -2,9 +2,9 @@
 
 
 - e-s are aka 'reference objects'
-// q: ciekawe skad ta nazwa
+// g: skad 'reference objects'?
 
-many objects are defined by
+many objects [all e-s] are defined by
 - thread of continuity
 AND
 - identity
@@ -17,37 +17,38 @@ example: Person
 - ale to caly czas ta sama osoba
 - thus: the most most most imporatant is identity
 
-example: customer
+example: Customer
 - w app do
   - sledzenia "dlugow" beda informacje o rachunkach, platnosciach ...
-  - sprzedazy: osoba prowadzaca, ...
+  - sprzedazy: osoba prowadzaca, hist. zakupy ...
   
-- good done identity allows to identity the same customer in many systems
+- good identity allows to identify the same customer in many systems
 - apps moga byc totalnie rozne [rozne langs, bazy ...]
 - ale maja wspolne identity - ktore laczy customers w all apps
 
-- e to obiekt zdef. przede wszyskim przez identity
+- e definuje przede wszyskim jego identity
 - e moga sie totalnie zmieniac w LC
-- ale musze utrzymywac
+- ale musza utrzymywac
   - thread of continiuty
   - "constant" identity [tz. takie po ktorym mozna obiekt "sledzic"]
   
 - e = anything that has 
   - continuity through a life cycle
-  - [vvvv imp] distinction independent from attrs
+  - [vvvv imp] distinction [from others instances] independent from attrs
 
-example: img 2 cash transfers on the same: account, day, amount
+example: two diff cash transfers with the same: account, day, amount
 - to osobne e-sy - maja diff identity
-- wewn. e mozna re-use attrs [obiekt for day, cash ...]
+- wewn. e mozna re-use attrs [day, cash ...]
 - ale attrs nie maja identity
   
 vvv c
 - teoret. w app mozesz miec 2 diff classes [z totalnie diff attrs]
 - ale jesli beda uzywac TEGO SAMEGO identity [do identyfikacji]
 - to opisuja one "ten sam obiekt" [abstract]
+- to dotyczy nawet roznych systemow
 
-- samo identity [jako abstrakt/obiekt] moze miec wazne znaczenie poza app
-// g: pewnie do 'rozszerzania' identyf. encji
+- samo identity [jako abstrakt/obiekt] mozesz uzywac poza 'main' app
+// g: pewnie do 'rozszerzania' encji
 
 [bolded def]
 - if object is distinguished by id [not attrs]
@@ -61,27 +62,27 @@ vvv c
 
 - podczas projektowania obiektu wielu devs mysli o attrs i zachowaniach
 - a najwazniejsze w e jest ustanowienie 'continuity'
-- wowczas reszta [attrs/zachowania] moga byc "czystsze"
+- wowczas reszta [attrs/zachowania] moze byc "czystsza"
 - najlepiej jesli e ma malo attrs/zachowan
 - zostaw w e "tylko" the most important attr - esp. these which
-  - identify e [g: chodzi o klucz naturalny?]
+  - identify e
   - sluza do odnajdywania/match'owanie konkretnych e
 - reszte attrs/zachowan - TRY to spread around - to associated e-s / vo-s
 
 - e also coordinate operations on objects nested/associated with current e
 
 sample
-- model on init
+- model v0 - init
   | customer |<>--------| sales contact |
 - both classes have "big group of attrs"
-- model refined - after adhereing a/m rules
+- model v1 - refined by a/m rules
   | customer |<>--------| sales contact |
   |          |<>--------| business line |
-  - do klasy customer shifted attrs sluzace do wyszukania customer - by contact
+  - do klasy customer trafily attrs sluzace do wyszukania customer - by contact
     - name
     - phone
     - address
-    ... wczesniej te attrs byly w customer & sales contact
+    ... wczesniej te attrs byly i w customer i w sales contact
   - acz to mega zalezy od reqs - np. customer moze miec wiele phone numbers [owner, ksiegowosc, ..]
     - wowczas phone owner number bedzie w klasie 'sales contact', etc ...
 
@@ -92,16 +93,16 @@ sample
 - identity musi dawac mozliwosc "zident" danej e - niezaleznie od sytuacji [eg. system rozproszony, e-s are archived ..]
 - definicja identity wymaga zrozumienia domeny
 
-- czasem set of attrs can guarantee uniqeness of e in app
+- czasem set of attrs can guarantee uniqueness of e in app
 - mozna ten set uzyc jako unique id
 
-- czasem nie mamy takiego set
+- czasem nie ma 'natural set of attrs'
 - wowczas dodajemy do e pole z unique cyfra/string/...
 
 // <cut/> troche inf o innych aspektach id-ow
 
 - czasem id musi byc uspojnione miedzy wieloma systemami
-- np. medical records exchanged between hospitals [with diff soft]
+- np. medical records exchanged between maany hospitals [with totally diff soft]
 - w perfect case - pacjenci maja to samo ID w kazdym systemie 
 - w realu kazda app ma swoje id's
 - wowczas match'owanie diff IDs - mozna zrobic uzywajac 3th ID - wydanych przez nadrzedna instytucje rzadowa

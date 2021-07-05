@@ -3,12 +3,10 @@
 
 - cognitive overload is primary reason for creating modules
 - it's easier to understand
-  - module details [w/o worrying ab. outer m-s]
-  - modules interactions [w/o worrying ab. m-s details]
+  - module details - w/o worrying ab. outer m-s
+  - modules interactions - w/o worrying ab. m-s details
 
-- human has limit of how many things can understand at once 
-- hence prefered is m-s low coupling
-
+- human has limit of how many things can understand at once hence ...
 - keep rules
   - low coupling between m-s
   - high cohesion inside m
@@ -48,4 +46,4 @@ trzymaj osobno each layer [layered architecture]:
 - user interface
 - domain layer
 
-// g: old j2ee spec is totally against "MDA/DDD"
+// g: old j2ee spec is rage against the "MDA/DDD"
