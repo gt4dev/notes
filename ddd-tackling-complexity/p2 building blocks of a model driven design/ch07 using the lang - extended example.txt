@@ -317,5 +317,7 @@ tnx of it - model bedzie simpler and more expressive
 ch07.11.3 performance tuning
 
 
-ch07.12 final look
+- tune'ujemy performance AllocationChecker'a
+- niektore zapytania do remote system - mozna cache'owac [query o categories]
+- niektore musza byc real calls [robienie alokacji trnaportu]
 

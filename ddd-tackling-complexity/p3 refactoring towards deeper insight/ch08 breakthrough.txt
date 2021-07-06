@@ -1,0 +1,58 @@
+ch08 breakthrough
+
+- zwrot z refactor'a nie jest 'linearny'
+- male refactory - daja maly zwrot, te r-s zwalczaja entropie
+
+- czasem wprowadzamy nowa wizje do modelu
+- ta zmiana daje mega wartosc dodana do modelu
+
+
+ch08.01 story of breakthrough
+
+- opowiesc o breakthrough podczas modelowania
+- case: bank inwestycyjny agreguje inne banki w celu dania pozyczki pod budowe fabryki intel
+
+- model "v1" mial blad - ciezko sie ten model uzywalo
+- w v1 byla relacja miedzy loan-facility - a w realu tej relacji nie ma
+
+// g: musisz, musisz, musisz testowac model na konkretnych przykladach 
+// g: to dobrze uszczegolwwia model, destyluje wiedze, pozwala zrozumiec domene
+
+c
+- podczas rozmow z domain experts o ww model v1 - zglaszali oni ze nie rozumieja modelu
+- ale mysleli oni ze to technikalia ktorych nie musza oni rozumiec
+- in real: experci domenowi musza BARDZO DOBRZE rozumiec model, musza!!!
+
+c: model v2 [po big breakthrough] byl na tyle super ze termy z nowego UL
+- oprocz devs i experts
+- uzyte byly w folderze reklamowym ;]
+
+
+ch08.02 opportunities
+
+
+- po big btreakthrough - moze byc wymagany big refactor
+- to troche scary - zmiany w kodzie na roznych poziomach [model and higher]
+// g: ale jak masz dobrze odseparowany model od klientow przez dto ...
+
+
+ch08.03 focus on basics
+
+
+// nothing special
+
+
+ch08.04 epilogue: a cascade of new insights
+
+
+- ee po breakthrough i zrobieniu model v2 - "wyszli z lasu"
+- apka miala czystszy desig i byla 'bogatsza'
+
+- ale w czasie pracy nad v2 - mieli kolejny breakthrough!!!
+
+conc
+- model ZAWSZE bedzie sie zmianial, moze byc wiele BREAKTHROUGHS [nie popierdulkowych refactors]
+- nie ma co sie spawac do konkretnego modelu, trzeba byc gotowy na duze zmiany
+
+efekt nie zrobienia refactor po breakthrough
+- utrzymywanie modelu ktory jest nieefektywny i zatrzymuje rozwoj

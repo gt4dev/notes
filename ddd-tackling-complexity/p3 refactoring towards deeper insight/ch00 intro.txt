@@ -1,0 +1,47 @@
+- model musi byc wypracowany iteracyjnie [a nie 'przekazany' jak w waterfall]
+- miedzy domain experts i devs
+- przez modelowanie, kodowanie, refactor
+
+
+1. levels of refactoring
+
+- r = redesign sw w sposob ktory nie zmienia jego funkcjonalnosci
+- zeby robic r - musisz miec unit tests - zeby wiedziec czy feat nadal dziala
+// g: zeby robic r na poziomie modulow - musisz miec testy integracyjne, na poziomie modulow
+// g: ut'ami testujesz tylko units - i tylko units moresz r'owac
+
+- r-s ktore maja biggest impact - to te ktore sa motywowane przez nowe spojrzenie na domene lub czyszczace model
+// g: inne r-s to techniczne refactors - techniczne popierdulki
+
+type r-s
+- micro r-s - tech r-s, opisane np. przez fowler'a [refactoring 99]
+  - fix'uja code smells - ktore trzeba naprawic
+- r to deeper model - 
+
+
+2. deep models
+
+
+classic approach to modeling
+- find verbs/nouns in specification
+- build from them objects and methods
+
+- ee uwaza w/w za oversimplification
+- useful only when learning OO ;]
+// g: a "wszyscy" tedo uzywaja
+
+// g: acz w/w to dobry start modelu v0
+// g: wraz z nauka domeny - opracowujesz deep model
+
+'deep model' 
+- moel ktory wydestylowal bardzo pierwotne 'primary concerns' z domeny
+- odcina sie od powierzchownych aspektow domeny/use-cases
+
+
+3. deep model supple design
+
+
+- w warunkach ciaglej zmiany [modelu] - design musi wspierac te zmiany
+- ch10 opisuje supple design = design ktory wspiera zmiany w modelu
+
+- ciezki w zmianie kod - kompletnie zatrzymuje mozliwosc zmiany modelu
