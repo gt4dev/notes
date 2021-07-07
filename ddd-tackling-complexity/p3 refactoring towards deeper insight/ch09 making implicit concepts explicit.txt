@@ -48,13 +48,133 @@ c: ee zaleca book Analyse Patterns by Fowler 97
 ch09.2 how to model less obvious kinds of concepts
 
 
+- wg ee next 3 constrs were not obvious when started oo modeling ;]
+
 ch09.2.1 explicit constraints
+
+
+- constrains to wazny element modelu
+- expressing constraints explicit can greatly improve design
+
+sample
+- Bucket object must guarantee the invariant: contents <= capacity
+- simple constraint/invariant - thus 
+  - can be enforced by "IF like code"
+  - add check to each method changing content/capacity
+class Bucket {
+  float capacity;
+  float contents;
+  
+  // bad: constraint wmieszany w logike metody
+  public void pourIn(float addedValue){
+    if(content + addedValue > capacity)
+      contents = capacity;
+    else
+      contents = contents + addedValue;
+  }
+
+  // good: constraint explicit named and separated from 'code'
+  public void pourIn(float addedValue){
+    var newCont = content + addedValue;
+    contents = constrainedToCapacity(newCont) <<< explicit constraint
+  }
+  
+  float constrainedToCapacity(input){ .. }
+}
+good version
+- wydzielenie c zwieksza czytelnosc 'host code' i samego c
+- named/explicit 'thing' is easier to discuss
+- easier to later modify constrint and host code
+
+sygnaly ostrzegawcze c is distoring design of host
+- c reqs data not available on host object
+- c appear in multiple diff objects
+
+w w/w cases - mozliwe ze c nalezy
+- przesunac do innego obiektyu
+- dodac do modelu jako nowe obiekty/relacje [see next sample]
+
+
+example: overbooking policy
+- w shipping business - book'ujesz 10% wiecej niz transport moze pomiescic [zwykle i tak sa 'last minute' cancellations]
+
+| voyage |-----------*--| cargo |
+                ^   
+                | {sum(cargo.size) < voyage.capacity * 1.1}
+                |
+              ---------------------
+              | overbooking policy |     <<< expl. constraint
+              
+int makeBooking(Cargo cargo, Voyage voyage) {
+  if(!overbookingPolicy.isAllowed(cargo,voyage)
+    return -1;
+  // make booking
+}
+
+bool isAllowed(Cargo cargo, Voyage voyage) {
+  "return cargo.size < voyage.capacity * 1.1"
+}
 
 
 ch09.2.2 processes as domain objects
 
 
+- w domain czasem sa procedury
+
+- procedury 'wyrazamy' explicit uzywajac services
+
+- ale moze byc opcja wykonania procedury/procesu na kilka sposobow
+- then: do this procedure [or key fragment] object
+- then the choice between process ver is explicit visible as choice of object - each of which represent STRATEGY
+
+
 ch09.2.3 specification
 
+- s wymyslil ee z fwoler w '97
+- s pridives concise way of expressing certain kings of rules, extracting them from conditional logic
+- and making them explicit in model
+
+- ee rozkminia - ze stosowanie own patterns - czesto jest bez sensu, nawet szkodliwe ;]
+- wiele projects experimented diff approaches
+- use this exper, szkoda czasu/energii na own tries
+- inni 'latami' szukali rozw. jak prawidolowo  budowac dany pattern
+
+// g: w ch10 tez jest o s?
+
+- nie all rules sa proste jak w/w
+
+sample: invoice.IsDeliquent():bool
+- moze byc mega skomplikowana
+  - ma proste testy: is invoice overdue
+  - i complex
+    - lepsi customers moga przekraczac limit o x days
+    - trzeba sprawdzic historie zamowien customer'a
+- w/w r-s nie maja wiele wspolnego z Invoice
+- ale te r-s powinny byc w domain layer
+- s zawiera business r-s!!!
+
+solutions
+- create spec. object that evaluate to boolean
+- place there logic [r-s] of tests
+- s to vs'y  // g: oblukaj smaple Cargo model - there is Spec [as vo]
+
+- s wyraza constraints ktore sa narzucone na inny obiekt, czy spelnia on okreslone kryteria
+- s sprawdza konkretne warunki, r-y
+
+- many s-s are simple special purpose tests [as w/w isDeliquent example]
+
+- factory can create s - by using data from mixes srcs [database, entities ..]
+
+sample
+- s = DeliquentInvoiceSpecification
+- s sprawdza Invoice'y
+- client call
+  deliquentInvoSpec.IsDeliquent(invoice123) // pass tested object to spec
+- DIS ma pola biznesowe np 'standard grace period = 20d'
+- pola sa inited pod konkretna grupe Invoices - do testowania
+- DIS zwraca true - tz. invoice jest 'deliquent'
+
+- dostosuj pattern do 'own needs' - nie trzymaj sie tego sztywn - now
+ point
 
 ch09.2.4 applying and implementing specification
