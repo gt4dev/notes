@@ -177,4 +177,95 @@ sample
 - dostosuj pattern do 'own needs' - nie trzymaj sie tego sztywn - now
  point
 
+
 ch09.2.4 applying and implementing specification
+
+
+// gt: co o spec mowi vv, check iddd index
+
+wg ee spec pozwala zunifikowac czesc funkcjonalnosci of app
+ktore sa zwykle dosc mocno rozstrzelone w app
+a dzieki spec - sa one w 1 miejscu
+unifikacja roznych feats w 1 concept
+- walidacja - validate an object to see if it fulfills some need
+- selekcja - select an object[s] from collection 
+- building to order - spec is specing the creation of new object fitting spec // gt: skad taka nazwa?
+all of them are 'the same' on concept level
+
+
+VALIDATION
+
+
+- simplest spec usage
+
+sample
+- b.need: app wyswietla red flag - if saler opens customer info with delinquent bill [zaległy rachunek]
+- podczas budowania ekranu - musimy wywolac metode 
+    public boolean accountIdDelinquent(Customer customer) {
+      var invoice = customer.pobierzJakisTamInvoice()
+      Specification spec = new DelinquentInvoiceSpecification(today);
+      return spec.isSatisfiedBy(invoice); // true - spec fulfilled - account is delinquent
+    }
+- model
+
+  <abstract, general spec>
+  | InvoiceSpecification [IS]   |                 |         |
+  |-----------------------------| - - - - - - - > | Invoice |
+  | isSatisfiedBy(invoice):bool |                 |         |
+  
+  <real specs, with real validations>  n: spec moze walidowac 'cokolwiek'
+  DelinquentIS : IS {...}   // czy zalegla faktura
+  BigIS        : IS {...}   // czy kwota faktury jest 'big'
+  
+- real spec
+  class DeliquentIS : IS {
+  
+    constr(Date currentDate){ set this.currentDate from param }
+  
+    // n: spec dostaje walidowany obiekt jako param
+    public bool isSatifiedBy(Invoice inv){
+      var someData1, someData2 = inv.get some data to do invoice validation;
+      return compareDateWithConstrDate(someData1, someData2, this.currentDate);
+    }
+  }
+  
+  
+SELECTION [QUERYING]
+
+
+- cel: zbudowac spec ktora ustaw kryteria selecta
+
+- wg ee obie spec [validation i selection] to ten sam concept - roznia sie jedynie impl.
+
+sample: demo ze val/sel - to te same koncepcje
+- wez 'zywcem' spec z prev. sample
+- w InvoiceRepository add method selectSatisfying(InvoiceSpec is)
+- z: all repo data is in mem in List<Invoice> // w realu sa w db ale tu pokazujemy koncept
+- teraz w selectSatisfying przeiteruj przez liste i sprawdz ktore Is spelniaja spec i zwroc te Is
+
+sample: sql spec
+- u: jest wiele diff impls of spec & repo - dostosuj to do own needs
+- sql is very natural way of writing spec!
+
+class DelinquentInvoiceSpecification {
+  public Set satisfyingElementtsFrom(InvoiceRepository ir) { // n0: repo jako param - to troche zgrzyt, ale concept is ok
+    return is.getAllInvoicesOlderThan(this.currentDate.minus(20dni)); // n1: get data from repo which satisfy spec
+  }
+  // - sama spec nic nie wie o sql - i to wazne
+  // - spec jest czystsza i explicit wyraza intencje biznesowe
+}
+
+- client call
+
+  var spec = new "sql based spec for getting delinquent invoices"();
+  invoiceRepo.selectSatisfying(spec) // troche 'double dispatch'/overkill ale concept ok
+
+
+BUILDING TO ORDER [GENERATING]
+
+
+sample: building from spec
+- jak wojsko zamawia jet to mowi: ma miec 2 machy, zasieg 2k km, cena 50M USD
+- wojsko nie mowi jak to zaprojektowac - mowi jaka spec maszyna ma spelniac
+
+n-rec: 8 lip 17.10
