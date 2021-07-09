@@ -1,20 +1,17 @@
-vvvv cont. here
-
 # FACTORIES
 
 - use f to create agg [or any other complex object]
 
 analogia
 - jest silnik samochodu i fabryka silnikow
-- silnik siebie nie tworzy - ma kompletnie inne zadanie
-- identycznie w OO - sa obiekty i fabryki
+- silnik siebie nie stworzy - ma inne zadanie
+- identycznie w OO - sa obiekty i ich fabryki
 
-- resps of
-  - creating object
-  - object 'logic' 
-  .. are diff -> can't be mixed
+CAN'T mix resp of
+- creating object
+- object's logic itself
 
-- "only" call of obj constr by client
+even simple call of obj constr "can be bad"
 - makes client hard dependent to object
 - trudno potem zmieniac object bez zmiany klienta
 
@@ -42,17 +39,18 @@ reqs for good f
 ## 1 CHOOSING FACTORIES AND THEIR SITES
 
 
-- f jest zwykle metoda hooked on existing domain object
-  - ma wtedy dostep do init data from 'host'
-- [rzadziej?] f jest sandalone
-  - glownie gdy tworzony jest veery complex object
+- f to najczesciej metoda hooked on existing domain object
+  - ma wtedy dostep do init data of 'host'
+- rzadziej [?] f jest sandalone
+  - glownie gdy tworzymy veery complex object
 
 
-n: way A & B - both are f hooked on existing object
+n: n/w way A & B - both are f hooked on existing object
+
 
 way A: place f on object which owns created object
 
-sample: you need to crete obj to add it to existing agg
+sample: you crete obj to add it to existing agg
 - place f method on the root
 - client does't know agg internals
 - agg is resp. for assuring consistency of 
@@ -64,17 +62,15 @@ sample
 <root>        <f method>                     <agg internal e>
 purchaseOrder.newItem(productNumber,quantity):PurchaseItem
 
-- sample v. similar to ch:aggs
-  PurchaseOrder ----> LineItem -----> Product
-- f na root tworzy internal e
-- klient [pewnie AS] dostaje new object i sam dodaje go do PO
+- f tworzy internal e
+- klient [moze AS] dostaje new object i sam dodaje go do PO
 - bo f tylko tworzy new object - not adds it to root
-- PI ma local id [relative to agg] thus f must be part of agg
 
 
 way B: place f on object spawning new object
+
 - "object with f" doesn't own created object
-- lokalizacja pozwala to zaoszczedzic "przepychania danych" miedzy obiektami
+- but close location to 'data src' pozwala zaoszczedzic na "przepychaniu danych" miedzy obiektami
 
 sample
 
@@ -88,7 +84,7 @@ customer = 'john'                           stockSymbol = sthFromParam
 - stad f najlepiej bylo dodac f na BA
 
 
-## 2 WHEN CONSTR IS ALL YOU NEED
+## 2 WHEN CONSTRUCTOR IS ALL YOU NEED
 
 
 - zwykle chcemy f-s
@@ -98,7 +94,7 @@ cases
 - obj nie jest czescia hierarchi, nie uzywa polimorfizow, interface'ow ...
 - dla client'a wazna jest impl [gdzies w strategy patt]
 
-- vi: avoid calling constrs inside constrs of other classes
+- vi: avoid calling constrs inside another constrs 
 
 
 ## 3 DESIGNING THE INTERFACE
@@ -110,7 +106,7 @@ cases
 ## 4 WHERE DOES INVARIANT LOGIC GO
 
 
-- f jest odpowiedzalna za stworzenie obj z staisfied invariants
+- f jest odpowiedzalna za stworzenie obj z satisfied all invariants
 
 
 ## 5 ENTITY FACTORIES VS VO FACTORIES

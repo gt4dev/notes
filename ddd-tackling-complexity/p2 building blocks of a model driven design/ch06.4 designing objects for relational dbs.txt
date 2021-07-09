@@ -5,10 +5,11 @@ c: uzywanie relacyjnej db i oo w app = mixing paradgims
 
 - db schema doesn't have to reflect domain model
 - mapping tools can handle diffs [ale wiadomo - z limitami]
+
 - best if db comes from domain
 - if separated db/domain = more work is needed [analyses, coding ...]
 
-diffs miedzy modelami mozna zasypywac przez
+diffs miedzy modelami mozna zasypac przez
 - tworzenie less rich domain
 - intro denormalizations in db
 - ... 
@@ -18,5 +19,5 @@ diffs miedzy modelami mozna zasypywac przez
 - migracje/refactoring schematow db sa czesto trudne = to zniecheca do zmian
 
 moze warto trzymac modele db/domeny
-- ROZDZIELNE
+- ROZDZIELONE
 - ale spojne/czyste [zrefakt. to current needs]

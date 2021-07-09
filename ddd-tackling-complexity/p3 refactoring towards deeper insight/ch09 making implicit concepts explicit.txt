@@ -192,6 +192,8 @@ unifikacja roznych feats w 1 concept
 - building to order - spec is specing the creation of new object fitting spec // gt: skad taka nazwa?
 all of them are 'the same' on concept level
 
+// gt
+n: all specs maja meth isSatisfiedBy(..):bool
 
 VALIDATION
 
@@ -268,4 +270,6 @@ sample: building from spec
 - jak wojsko zamawia jet to mowi: ma miec 2 machy, zasieg 2k km, cena 50M USD
 - wojsko nie mowi jak to zaprojektowac - mowi jaka spec maszyna ma spelniac
 
-n-rec: 8 lip 17.10
+- wg ee: "mimo ze nie wyglada to spec building to ten sam koncept co przy walidacji/selekcji" 
+
+// gt: dziwny pomysl - zapamieta tylko ze ze spec mozna tworzyc obiekty

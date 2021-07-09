@@ -2,7 +2,7 @@
 
 
 in real business
-- objects are heavyily inter-connected
+- objects are heavily inter-connected
 - trudno znalezc ostre granice
 
 przyklad braku granic
@@ -22,27 +22,29 @@ rozw. w/w probs wymaga znajomosci domeny
 
 model musi
 - utrzymac invariants
-- dawac loose between high contending aggs/entities
+- wprowadzac loose between high contending aggs/entities
 
 - pozornie to techniczne trudnosci [zw. z tx]
-- realnie to problemy modelu (esp. braku granic)!!!
-- fix these probs na poziomie modelu (m. w praktyce bedzie clearer)
+- realnie to problemy modelu (esp. braku granic = aggs)!!!
+- fix these probs na poziomie modelu
 
 c: patterns agg history
 - p/b derived from pattern 'ownership relation'
 - in short: tx modifies only object and owner
 
 agg def
-- agg = zestaw danych, ktore traktujemy jako single unit z PoV of changing data
-- agg ma root i granice [i ew. nested e-s]
+- agg = zestaw e/vo, ktore traktujemy jako single unit z PoV of changing data
+- agg ma root i granice [nested e-s, vo-s ...]
 - others can ref only root
-- root has to have global id, nested e-s can use local id 
+- root has to have global id, nested e-s can have local id 
 // g: pp nie ma zakazu dostepu do inners form outer
 // g: acz lepiej ukrywac agg details = wysawiac dane jako vo-s
 
 sample
 - roots: | car |-----| engine |
-- car contains nested e-s: wheel, position, tire
+            |
+            +--------| wheel |  /  | postion |  /  | tier |
+               
 - wydaje sie ze engine should be nested in car
 - ale w modelu to rownoprawne e-sy
 
@@ -52,7 +54,7 @@ inne cech agg
 - root is resp for checking invariants
 - inside agg
   - root can keep refs to internal e-s, vo-s
-  - others - can ref others - only transiently
+  - internal e can ref other internal e - only transiently
 - tylko root moze byc wczytany z db
   - internals are read by associations traversal [eager|lazy loadeded]
 - internals can ref other roots
@@ -69,6 +71,7 @@ EXAMPLE: PURCHASE ORDER INTEGRITY
 
 
 sample
+
 - init model
 <e>                         <e>                    <e>
 | purchase order | -----*-> | po line item | ----- | part |
@@ -79,11 +82,10 @@ sample
   
 step 1: each e is agg
 - w 1 tx chronimy zmiany na 1 e
-- nie chronimy invariantu - buuuu
+- nie chronimy invariantu - buuuuuuu
 
 step 2
-- create agg: po [with nests "po line item"]
-- copy price to po-line-item
+- create agg: po + "po line item" [with price]
   
 | <root>                                 // eo agg |  
 | | purchase order | <>-----*-> | po line item | --|-----> | part |
@@ -93,6 +95,6 @@ step 2
 - invariant jest chroniony przez lock na calym po
 - wielu users pracuja na 1 po - i sie wzajemnie lock'uja
 - cudow nie ma - jesli inv. ma byc utrzymany to modyfikacje musza byc sync'ed
-- optimistic conc. 
+- optimistic conc.
   - nie zmieni problemu rownoleglej modyfikacji danych przez many users
   - ale ulatwi reads [?]

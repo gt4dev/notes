@@ -7,20 +7,19 @@ zeby miec obiekt
 
 // g
 - niezaleznie gdzie [db, vm0 ..] i w jakiej postaci masz e [KlazzA, db-row ..]
-  to koncepcynie all these e - stanowia 1 e [w moze roznym stanie]
-- jako single point of truth - use db (z sync crud'owania by tx'y)
+- to koncepcynie all these forms - stanowia 1 e
 
 klient nie moze miec 
 - zbyt duzej mozliwosci traversowania po assocjacjach -> it muddles the model
-- direct db access [bo nie bedzie uzywal aggs to "crud" data]
+- direct db access [bo nie bedzie uzywal aggs do crud'owania data]
   
 - agg internals [e/vo] can be accessed only by travers [from the root]
 
 - main repos resp = remove from model techs regarding reading/saving data
 
 - w modelu mamy tylko interface
-- klient szuka wg params [obiekty modelu]
-- result jest obiektem modelu
+- klient szuka wg params [w postaci obiektow modelu]
+- result tez jest obiektem modelu
 
 repo moze zwrocic
 - particular object[s]
@@ -41,8 +40,8 @@ factory vs repo
 
 
 metoda searching by 
-- id - zwroci 1 obj
-- attr - moze zwrocic many objs
+- id - moze zwrocic 1 obj
+- any attr - moze zwrocic many objs
   
 - if repo returns calculations - then usually these calcs are done by underlying db
 
@@ -58,7 +57,7 @@ repos can search by
 
 // big cut
 - in short: devs should understand how repos work - to use it optimally
-- eg: to not fetch all objs from db by repo and iterate through
+- eg: don't fetch all objs from db by repo and iterate through
 
 
 ## 3 IMPL A REPO
@@ -88,6 +87,7 @@ c:
 - entity z old ejb != e from ddd
 - ejb home z old j2ee wyglada jak repo = ale to kompletnie co innego
 
+
 DON'T FIGHT YOUR FRAMEWORKS!!!!!!!
 - eg: to dotyczy tez robienie immutable vo w Realm [Realm tego nie ma i nie da sie]
 
@@ -101,7 +101,7 @@ DON'T FIGHT YOUR FRAMEWORKS!!!!!!!
 - r during reconstituting creates object
 - many consider r as kind of f
   - from tech PoV it's ok
-  - from model PoV - reconstitution is NOT creation [conceptualy 1 is existing, 1is completely new obj]
+  - from model PoV - reconstitution is NOT creation [conceptualy 1 is existing, 1st completely new obj]
 
 - teoretycznie r moglo by uzywac f do reconst. obiektow - ale to rzadka praktyka
 
