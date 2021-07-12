@@ -10,7 +10,7 @@ typowe problemy - robienie aggs zbyt
 ## 1 using aggregates in the scrum core domain
 
 
-- samples base on BC APM
+- samples from BC: APM
 
 
 ### 1.1 1st attempt: large-cluster aggregate
@@ -30,7 +30,7 @@ optimistic concurrency
 - hbm uzywa elem <version> do cfg OC (i wskazania pola z ver)
 sample
 - user A i B pracuja na tym samym obiekcie Product,ver=1
-- A dodaj BacklogItem i robi commit, teraz P.ver=2
+- A dodaje BacklogItem i robi commit, teraz P.ver=2
 - B dodaje Release i probuje zrobic commit - tx fails bo ma stara ver
 
 c: nadpisywanie zmian w key-value stores
@@ -59,8 +59,8 @@ comparing to "large model"
     Sprint ScheduleSprint("params identyczne")
     ^^^^^^
 
-uzycie "small agg ver" w AS
-class MyAppService {
+uzycie "way: small agg"
+class SampleAppService { // it's AS
   public void planProductBacklogItem(
     aTenantID, aProductID,
     aSummary, aCategory, aBacklogItemType, aStoryPoint
@@ -72,9 +72,10 @@ class MyAppService {
   - ID'kie przez "new TenantId(tenandId)"
   - reszta przez "static methods/factorie" w VO
     BacklogItemType.valueOf(backlogItemType):BacklogItemType
-- z repo wyszukujemy agg Product and do call
+- z repo wyszukujemy agg Product
+- do call
     product.planBacklogItem("params jako VO"):BacklogItem
-- stworzony agg BI dajemy do repo
+- agg BI dajemy do repo
     biRepo.Add(bi)
     
 c: VV prefix'uje params metody przez 'a': aProductID, aBacklogItemType
@@ -91,10 +92,10 @@ c: VV prefix'uje params metody przez 'a': aProductID, aBacklogItemType
 
 
 - zeby odkryć agregaty (w BC) musimy odkryć true invariants modelu - musimy!!!
-- niezmienniki wyznaczaja zawartość/granice agg
+- niezmienniki wyznaczaja granice agg
 
 - inwariant = reguła biznesowa która musi być zawsze consistent
-- prosta i skuteczna definicja
+- prosta definicja
 
 typy konsystencji
 - transactional consistency TC
@@ -110,16 +111,15 @@ przykład
 - inwariant c = a + b
 - cokolwiek się dzieje, niezależnie jakie operacje sa wywołane = invariant zawsze [on commit] jest spełniony
 
-- agregat wyznacza TC boundary (obszar zawsze konsystentnych danych)
+- agregat w szczegolnosci okresla TC boundary (obszar zawsze konsystentnych danych)
 
-- consistency zwykle dostarczaja TX z DB
+- consistency zwykle dostarcza TX z DB
 - podczas commit wszystko wewn. granic agregatu musi byc consistent
-- tz. w "temporary state" inwariant nie musi byc zachowany
-  - ale raczej powinien
+- acz w "tmp  state" inwariant nie musi byc zachowany, acz powinien
 
 - BC modyfikuje tylko 1 agg w 1 tx
 
-- do zaproj. agg trzeba wykonac analize tx-es - co kiedy ma byc consistent
+- aby wyznaczyc granice agg trzeba zrobic analize tx-es - co kiedy ma byc T-consistent
 
 duzo zalezy od UserInterface
 - ile aggs modyf. 1 use case
@@ -136,14 +136,14 @@ std problems of large aggs
 
 sample performance problem [1 of many]
 - assume >large< agg Product contains 1k of BIs, Sprints, Releases ...
-- chcesz dodac new BI
-- musisz wczytac ALL BIs (mimo ze ich nie potrzebujesz)
+- dodajesz new BI
+- wczytujesz ALL BIs (mimo ze ich nie potrzebujesz)
 - to problem wydajnosci i pamieci
-- n: pozostale E (Release, Sprint ..) mozna zrobic lazy-loading [nie beda wczytywane]
+- c: pozostale E (Release, Sprint ..) mozna zrobic lazy-loading [nie beda wczytywane]
 
 another probs of >large agg<
 - maja zle invariants
-- dla "pozornej" wygody nawigacji - musza tworza duze grafy obiektow
+- dla "pozornej" wygody nawigacji - tworza duze grafy obiektow
 
 niejawne invariants
 - w Product attrs name and desc sa zwykle zmieniane razem 
@@ -168,7 +168,7 @@ c: w "avg" projekcie biznesowym
 
 
 - typowa specyfikacja opisuje tylko use cases
-- trzeba dodac decyzje o tworzeniu aggs
+- trzeba samemu zaproj. granice aggs
 
 - czesto specyfikacja wymaga modyfikacji wielu agg w 1 req
 - nalezy ustalic czy
@@ -231,9 +231,10 @@ how to navigate with ID
 way 2 sample: call <agg>BacklogItem.assignTeamMemberToTask(TeamMemberId, Team, TaskId)
 - method <AS>MyAppService.assignTeamMemberToTask(..)
   - prepare params needed by agg's method
-  - prepare agg Team (read from repo)
+  - read agg Team from repo
   - call BI agg with am data
     - nie wnikam - ale pp BI potrzebuje calego Team zeby cos wyliczyc?
+  - n: ciekawe ze Team potrzebuje w calosci a task - tylko id, hmmm
 
 - way 1 is ok for complex domains
   - pass to called method ref to repo/DS 
@@ -246,8 +247,7 @@ way 2 sample: call <agg>BacklogItem.assignTeamMemberToTask(TeamMemberId, Team, T
 
 c: ui and navigations
 - using IDs for refing between aggs make navigation hard
-- but navigation is useful in UI
-- in such case
+- but navigation is useful in UI, thus
   - either: read data req on UI from few repos [but it's slow]
   - or: use "HBM theta joins" or CQRS
 
@@ -282,7 +282,7 @@ wg EE
   - few aggs modified "in 1 req"
   - many aggs modified in batch processing
 
-- you must agree with domain experts that delayed txes / changes are ok
+- you must agree with domain experts that delayed txes (changes) are ok
 
 EC sample
 - agg has command BacklogItem.commitTo(Sprint s)
@@ -326,13 +326,11 @@ c: do non-linear retires
 
 
 - user na 1 ekranie tworzy kilka nowych aggs np. BacklogItems
-- taki UC obsługuż w 1 metodzie  
+- such UC handle w 1 method  
 - np. AS.planBatchOfBacklogItems[productId, tenantId, BItemDesc[] newItems]
 - AS.plan... tworzy klika instancji agg: BItems i dodaje je kolejno do BItemRepo, >w 1 tx<
 
 - nie ma problemu z niezachowaniem invariants - bo tworzymy nowe BItems
-
-- n: zachowanie inwariants jest kryterium czy mozna zlamac "agg-rule"
 
 
 ### 6.2 reason2: lack of technical mechanism
@@ -343,7 +341,7 @@ c: do non-linear retires
 
 way1
 - as we can't use EC -> proj p/b will end with large aggs
-- this will decrese performance/scaleability
+- this will decrease performance/scaleability
 way2
 - strive to create small aggs 
 - if reqs can't be changed --> no choice: you can modify many aggs in 1 tx
@@ -407,17 +405,16 @@ technika BOTE [back of the envelope]
 
 
 problem z optimistic concurrency
-- umozliw 2+ userom dodawanie nowych task, bez wzajemnej blokady BI [sam Task niech blokuja]
+- umozliw 2+ userom dodawanie nowych Task, bez wzajemnej blokady BI [sam Task niech blokuja]
 - nie moze byc ze dodanie Task do BI zwieksza wersje OC na BI
 - trzeba wyłączyć hbm optimistic lock [p/p na BI]
-- default OC = version, ustaw OC = false
-  - OC=version sie nie sprawdzi
-  - modyfikujemy wiele diff tasks by wielu users
+- default OC = version [sie nie sprawdzi]
+- ustaw OC = false
 
-- ustawienie mech. OC zalezy od konkretnego UC 
-- ustawienie OC wybieramy heurystycznie ["przypuszczenia" jakie ustawienie bedzie dzialac w danym zestawie UCes]
+- ustawienie mech. OC zalezy od konkretnego UC
+- ustawienie OC wybieramy heurystycznie ["przypuszczamy" jakie ustawienie bedzie dzialac w danych UCes]
 - zakladamy jak userzy beda sie zachowywac - co nie musi sie sprawdzic, w realu wybor moze byc zly
-- acz zawsze niedopuszczalne jest nadpisywanie danych by users ;]
+- acz zawsze niedopuszczalne jest wzajemne nadpisywanie danych by users ;]
 
 
 ### 7.4 memory consumption
@@ -431,17 +428,17 @@ sample of "double lazy load"
 
 - wg VV podczas UC ladowanych jest 25 obiektow - "to nieduzo"
 
-although 'double lazy ..' but wg VV
+although it's 'double lazy ..' to wg VV ok
 - optimizing it - should be done after tests/analyses - is it real problem
-- not "now", hmm .. strange
+- not "now"
 
 
 ### 7.5 exploring another alternative design
 
 
-// ch analyses alter approaches to agg boundaries
+// alter approaches to agg boundaries
 
-idea: wydzielic Task jako osobny agg (poza agg BI)
+idea: Task jako osobny agg (poza agg BI)
 - pros
   - save memory (less objects are loaded)
   - eliminate lazy loading
@@ -450,13 +447,13 @@ idea: wydzielic Task jako osobny agg (poza agg BI)
 - naturalnie znika invariant 'auto-set BI to done'
 
 
-### 7.6 implememnting eventual consistency
+### 7.6 implementing eventual consistency
 
 
 // q: jak robione jest message redelivery (after failure)
 
-example - use EC to set BI 'done'
-- agg has command Task.estimatedHoursRemaining()
+example - use EC to set BI as 'done'
+- there is command Task.estimatedHoursRemaining()
 - on end it sends event EventTaskHoursRemainingEstimated
 - event has attrs BacklogItemID, TaskID, hoursRemaining, ...
 - suber of a/m event - calls DS which
@@ -505,7 +502,8 @@ waiting for EC and refresh UI
   - surrogate identity
   - optimistic concurrency versioning
 
-- class Product has property Set<ProductBacklogItem>
+- Product doesn't have ids of BI, Release [these have ProductId]
+- Product has property Set<ProductBacklogItem>
 - don't mistake it with [agg]BacklogItem
 - it represents sorting of BIs
 
@@ -571,7 +569,7 @@ LOD
   - and C calls this exposed method
 - in short: metoda obiektu moze wolac inne metody
   - nalezace do tego obiektu
-  - parametrow przekazanych tej metodzie
+  - z obiektow parametrow tej metody
   - obiektu ktory stworzyla
   - of self-contained parts [obiektow zagregowane [w sensie UML] w "this"]
 

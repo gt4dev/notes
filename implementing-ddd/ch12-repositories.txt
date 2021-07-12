@@ -188,7 +188,7 @@ ale zasadniczo
 - zawsze wolaj save/put zeby utrwalic zmiane
 - wynika to ze sposobu dzialanie unit of work w takich repos
 
-g/n
+// g
 - repo w add(MyE) bierze caly agg [a nie: id + reszta]
 - potem w impl. mozesz wydzielic key wstawic do mapy<key, my-e>
 
