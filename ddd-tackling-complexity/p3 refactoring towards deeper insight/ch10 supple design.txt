@@ -1,0 +1,99 @@
+ch10 supple design
+
+- sw ze zlym design'em, skomplikowany - trudno zmieniac
+- co znaczy ze nie mozna go rozwijac
+
+// en: supple - gietki
+
+- supple design is the COMPLEMENT to deep modeling
+
+flow
+- masz model, refine'ujesz go [implicit concepts you make explicit] - masz 'raw material'
+
+- zeby laczyc elements w czytelny complex system to model [mdd] musi byc polaczony by 'rigorous design style'
+
+- design of sw musi wspierac zmiany w tym sw
+
+- efekt dzialania kodu musi byc 'transparently obvious' [mega oczywisty]
+- dzieki czemu konsekwencje zmiany beda latwe do przewidzenia
+
+- early version of design are usually stiff
+- ale kiedy complexity zatrzymuje progres to wymusza to zmiane design'u
+
+- there is NO formula for designing "easy changable sw"
+- EE prezentuje kilka patterns ktore sie w tym sprawdzaja
+
+c: ee nie widzial sw ktory mialy nice desgin w calym zakresie
+
+
+ch10.1 intention revealing interface
+
+- interfejs obiektow [publiczne api: nazwa metody, types of params, returned] powinien mowic dev'owi jak uzywac obiektu
+- inaczej bedzie musial sprawdzac implementacje - zeby zrozumiec jak dziala
+- a to 'zgubi' efekt enkapsulacji
+// g: czy ee nie przesadza?
+- zwieksza sie congitive overload
+- bo dev is flooded with details 'how component does a job'
+- a powinien skupic sie na kodzie klienta ktory wola dany komponent
+
+vin
+- if dev must consider a impl of component [in order to use it] - value of encaps. is lost
+
+- klasy i metody musza miec nazwy ktore odzwierciedlaja koncpecje z modelu
+
+vin
+- name classes and operations to describe EFFECT AND PUROPSE without ref to means by which they do it
+- nazwy [z UL] powinny oddawac intencje 'po co to jest' a nie 'co to robi w srodku'
+
+- dzieki temu dev klienta naszego obiektu nie bedzie musial znac internals of our object
+
+- best: write uTest - ktory wymusi na Tobie "client PoV" na metody obiektu
+
+example: refactor a paint mixing app
+- trywialny example
+- v0: mamy metode Paint.paint(Paint) // metoda miesza rozne farby
+- v1: rename it   Paint.mixIn(Paint  // nazwa mixIn oddaje intencje "mixowania paints"
+
+vin
+- new name 'mixIn' doesn't tell everything about EFFECT of mixIn
+- for that we'll use assertions [next, next chapter]
+
+
+ch10.2 side-effect-free functions
+
+
+nt: 9 lip 18.38
+
+
+ch10.3 assertions
+
+
+ch10.4 conceptual contours
+
+
+ch10.5 standalone classes
+
+
+ch10.6 closure of operations
+
+
+ch10.7 declarative design
+
+
+ch10.7.1 domain specific languages
+
+
+ch10.8 declarative style of design
+
+
+ch10.8.1 extending spec in a declarative style
+
+
+ch10.9 angles of attach
+
+
+ch10.9.1 carve off subdomains
+
+
+ch10.9.2 draw on estabilished formalizms, when you can
+
