@@ -62,13 +62,81 @@ vin
 ch10.2 side-effect-free functions
 
 
-nt: 9 lip 18.38
+mamy operacje
+- commands - modyfikuja dane
+- queries - wyciagaja dane
+
+- interakcje wielu rules + kompozycje kalkulacji sa EXTREMLLY difficult to predict
+- dev calling that hard operation must understand its implementaitons and impls of ALL its delegations - to predict result
+
+- uzytecznosc any impl of interface is lost if caller must look into impl. details
+- devs musz miec easy predicable abstracts - inaczej zgubia sie w analizie kombinacji algs [combinatory explosion]
+
+- functions = operacje bez side effects [queries]
+
+ways of mitigating command problems [tj doing by them side-effects]
+1
+- keep c and q separated in diff operations
+- ensure that commands doesn't return DOMAIN data
+- c should be ASimpleAP [zeby nie komplikowac ich analizy]
+- all queries/calculations - do in SEFF
+2 
+- bardzo czesto:
+  - zamiast modyfikowac current object
+  - zwroc nowy vo - reprezentujacy rezultat kalkulacji
+- it's common technique
+
+- funk masz obowiazkowo na vo-sach, ale e, ds tez moga miec f
+- z def. commands masz tylko na e-sach [bo vo-sy sa immutable]
+
+- met. ktore sa maja responsibilities of Q + C - powinny byc refactored, zeby je rozdzielic
+- skompl. kalkulacje przenies do vo-sa
+
+- b. wiele SE mozna wyeliminowac - przenoszac logike do vo-sow
+
+// g: vm chyba tez da sie modyfikowac [jak e]
+
+sample: refactor Paint.mixIn(Paint)
+- mixIn robimy SEFF
+- wydzielamy z Paint - PigmentColor i metode mixWith // SEFF
 
 
 ch10.3 assertions
 
 
+- commands called on e-s cause side-effects
+- anyony calling C must understand these SE
+- assertions make SE explicit and easier to deal with
+
+- to wazne dla commands ktore wywoluje inne commands etc... te juz trudno zrozumiec
+
+problem: 
+- SE of C are implicitly visible in impl.
+- nie widzimy SE patrzac na interfejs obiektu
+
+- there must be means to see SE w/o analysing opetaion logic
+- wprowadzamy elementy tzw. design by contract
+- na koncu metody robiacej SE - sprawdzamy POST-CONDITIONS [chociaz nie tyle "sprawdzamy" co explicit pokazujemy zmiane]
+- w post-conditions sprawdzamy invariany/stan [metody, klasy, agregatu] po C
+- wiec nie jest to explicit wskazanie zmiany po C
+- na koniec C trzeba sprawdzic ALL modified states - to give this tech sense
+
+- assertions w post-conditions sa "identyczne" z assert'ami w unit-test
+- np: 
+  - mieszasz paint1 z paint2 
+  - to na koniec sprawdzash assert(paint1.size + paint2.size = paint3.size)
+
+- vi: assercje mozesz pokazac w UT'ach - a nie w main code
+
+- assertions desc state [not procedure] - so they are easy to analyse
+
+// g: te assercje troche smierdza - duzo zalezy od jakosci ich impl., moga wrecz wprowadzac w blad
+
+
 ch10.4 conceptual contours
+
+
+nt: 7.14 16.10.50
 
 
 ch10.5 standalone classes
