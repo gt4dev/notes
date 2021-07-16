@@ -136,13 +136,78 @@ problem:
 ch10.4 conceptual contours
 
 
-nt: 7.14 16.10.50
+- jak mamy monolityczny construct to trudon go zrozumiec, concepty sa zmix'owane
+- ale tez podzielenie zbyt drobne moze skomplikowac strone klienta [klient musi wiedziec jak poszczeg. klocki dzialaja razem]
+- a nawet moze byc utracony jakis wazny koncept doemny
+
+- cookbook rules don't work - tech. zasady podzialu softu nie dzialaja
+- zwykle w doamains jest jakis logiczna struktura deep domains
+
+c: zastrzezenia do spojnosci domen [acz zwykle jest ok]
+- acz nie wszyskie domeny sa spojne!!!
+- nie wszyscy eksperci 
+  - maja spojne/jedno zdanie nt jak powinna dzialac domena
+  - potrafia sie spojnie wyrazic
+  
+r-s: high cohesion, low coupling are important 
+- at ALL scales: from methods, to classes, modules to large scale structures
+- ale tez w concepts modelu
+
+vi
+group design elements [operations, interfaces, classes, aggs] into cohesive units
+taking into cosideration your INTUITION ab. divisions in domain
+
+w tych podzialach 'wypatruj' conceptual contour [acz to dosc vague def]
+
+the goal is simple set of interfaces that combine logically to make sensible statements in UL
+and w/o distractions of irrelevant options
+
+czystosc modelu/kodu jest efekten cont. refactoring
+ale to refactor modelu a nie tech. refactor
+
+summary
+- intention revealing interfaces allow clients to see objects as units of meaning
+- seff + assertions - make using these units safe and make complex combinations
+- conceptual contours - stabilizuje czesci modelu
+
+// g: cc to p/p "kontur koncepcji" tj. na poziomie modelu wyznaczony 'kontur' grupuje koncepty z high cohesion i jednoczesnie miedzy konturami mamy low coupling
 
 
 ch10.5 standalone classes
 
 
+- dependencies make model/code hard [to code/change/maintain ..]
+
+- kazda assoc tworzy zaleznosc
+- zrozumienie klasy wymaga zrozumienia jej samej i all elems od ktorych zalezy [i od ktorych te klasy zaleza ..]
+
+- kazdy param, returned result - tez tworza dep - ktore trzeba zrozumiec
+
+- both: modules/aggs are aimed to limit the web of interdependencies
+
+- im wiecej elems w module - tym wiekszy mental overload
+- problem sie zwieksza jesli masz 'implicit conepts' thus use 'explicit concepts' [are easier to grasp]
+
+- in well distilled subset of domain - the concept deps can [usually] be reduced to ZERO [yes, zero]
+- mozesz te klase zrozumie as is [bez zadnych deps]
+
+- low coupling is fundamental to object design
+
+- if you can - eliminate all concepts and make class self-containd [w/o deps], understood alone
+- // g: acz to troche sciema: bo all classes deps on others - cholera wie jak ee chce wyeliminowac deps ...
+
+- standalone classes - to extremum, rzadko widziane - wiekszosc class bedzie zalazala od innych
+- acz mozesz wyeliminowac all NON-ESSENTIAL deps
+- z core concepts - mozesz zejsc do standalone class [w modelu np: customer, ..]
+
+- ale standalone - moga byc tez complex algs [zaszyte w vo-ach]
+- wydzielone, niezalezne od innych - latwiej je analizowac
+
+
 ch10.6 closure of operations
+
+
+7.16 16.28.54
 
 
 ch10.7 declarative design
