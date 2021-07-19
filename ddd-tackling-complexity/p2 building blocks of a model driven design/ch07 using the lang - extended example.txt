@@ -8,45 +8,38 @@ ch07.01 introducing the cargo shiping system
 
 | Customer |----------*--[ role | Cargo |
                          ^^^^^^^^
-// g: Cargo ma metode getCustomer(string role):Customer
+- Cargo ma metode getCustomer(string role):Customer
 - multiple customers are involved with a Cargo, each plaing a diff role [shipper, payer, receiver ..]
 - dana role moze grac tylko 1 customer
-- dzieki kwalifikacji role mamy relacje m-to-1 zamiast m-to-m
-// g: acz bez kwalif. nie bylo by role, tylko "List customers" - to troche bida
+- dzieki w/w kwalifikacji mamy relacje m-to-1 zamiast m-to-m [bo byla by List<Customer>]
+// g: acz bez kwalif. nie bylo by info o role - to troche brak wiedzy w modelu
 - role moze byc
   - string [super simple case]
-  - vo class [
-- kwalifikacje (role) rysujemy w malym kwadraciku przyleglym do duzego kwadracika Cargo
+  - vo class
+  // g: cokowliek co moze byc key w "hash-map"
 - n: w samples 'prezydent usa', 'investments' tez nie ma slownika dat, a tylko fakt kwalifikacji
 
 btw
 - nie myl kwalifikacji z nazwa relacji w std asocjacji
 - przyklad
-                      role
+                    cargos
 | Customer |-----------*-- | Cargo |
 
-- Customer ma attr 'List<Cargo> role' - bez sensu
+- Customer ma attr 'List<Cargo> cargos'
 - to kompletnie inna asocjacja
 
 
-- zauwac ze 1st szkic modelu, class diagram [rys 7.1] - reprezentuje klasy
+- zauwaz ze w modelu v00, class diagram [rys 7.1] - reprezentuje klasy
 - nie wiadomo jeszcze ktora klasa jest encja, vo ...
-- w 1st ver of model 
+- w model v00
   - only focus on projecting classes for terms from UL, desc associations
   - totally IGNORE problem of disting. what is e what vo ...
-
 
 c: sledzenie historii zmian w app
 - EE w modelu zapisuje historie w DeliveryHistory
 - it's a nice tip/pattern
-- explicityly define history/events
-- don't need envers or other implicit history tracking events
-
-
-remember: model constantly changes in 'interative way'
-- odkrywamy nowe fakty, poprawiamy model
-- kodujemy
-- ...
+- explicityly define history/cargo events
+- don't need Envers or other implicit history tracking events
 
 
 ch07.02 isolating the domain: introducing the applications
@@ -55,13 +48,14 @@ ch07.02 isolating the domain: introducing the applications
 w Cargo sample EE wyroznil 3 'serwisy aplikacyjne'
 EE nazywa je application functions
 AS'y:
-- tracking query [obsluga samego cargo
-- booking app [przygotowuje Cargo]
-- incident logging app [NIEWAZNE co ta AF robi]
+- tracking query [sledzenie cargo]
+- booking app [przygotowuje cargo]
+- incident logging app ["niewazne" ;]
 
 VVVVVI
 these classes are coordinators
-they should not work out the answers - AS szukaja answers w domain layer
+they can't work out the answers 
+AS searched answers in domain layer
 
 
 ch07.03 distinguishing entities and value objects
@@ -70,12 +64,12 @@ ch07.03 distinguishing entities and value objects
 class Customer
 - Customer ma identity wazne dla usera
 - zatem C = e
-- ustalenie czyma ma byc ID wymaga ustalen z expertami domenowymi
+- ustalenie czyma ma byc ID wymaga talk z expertami domenowymi
 - jako ID uzyjemy ID customers z 2nd systemu - do zglaszania zapotrzebowania by users
-- w v0 - id mozna przepisywac recznie z 2nd to 1st system
+- w v0 - id mozna przepisywac recznie miedzy systemami
 - this settles 'continuity of identity' between those systems
 - mamy 'rozszerzenie encji'
-// g: acz czy to rozsadne, to najtrudniejsze id
+// g: acz czy to rozsadne id, to najtrudniejsza forma id
 
 class Cargo
 - dwie identyczne crates [skrzynie] musza byc rozroznialne 
@@ -83,7 +77,7 @@ class Cargo
 - id generujemy automatycznie
 
 class HandlingEvent
-- HEs to obiekty ktore nie sa interchanalbe
+- HEs to obiekty ktore nie sa interchangable
 - thus HE = entity
 - podczas dyskusji z 'domain expert' okazuje sie ze HE moze byc identyfikowane przez
   - cargoId, completionTime, type
@@ -91,7 +85,7 @@ class HandlingEvent
 
 class Location
 - dwa miejsca z ta sama nazwa - nie sa ta sama lokacja
-- thus: L = entity
+- thus it's entity
 - id = auto-generated
 
 class DeliveryHistory
@@ -102,20 +96,18 @@ class DeliveryHistory
 
 class DeliverySpecification
 - kilka Cargos moze miec to samo DS, nie potrzebujemy rozroznienia obiektow
-- thus DS to VOs!!!
+- thus DS is VOs
 
 
 ch07.03.1 role and other attrs
 
 
 // role - jako kawalifikator przy Cargo
-- role says sth about the association it qualifies
-- but it has no history or continuity
-
+- role has no history or continuity
 - jest to vo - moze byc dzielony miedzy wiele Cargo-Customer associations
 
 
-ch07.04 designing assocaitions in the shipping domain
+ch07.04 designing associations in the shipping domain
 
 
 - dodajemy traversal directions do diagramu
@@ -124,17 +116,17 @@ ch07.04 designing assocaitions in the shipping domain
 
 - traversal direction better express insight of the domain, deeping the model
  
-association Customer-Cargo
+asso Customer-Cargo
 - Customer nie jest specyf. dla Cargo
 - w diff systemach Customer moze miec wiele rol w interkacji z wieloma obiektami
 - thus keep Customer free from any additional repsonsibilities
-- n: jak potrzebujesz wyszukac Cargo by Customer - no problem, do it on repository level
+- n: jak potrzebujesz wyszukac Cargos by Customer i odwrotnie - no problem, do it on repository level
 
 asso Cargo-DeliveryHistory
 - b. ciekawe
 - asso zostaje bidirectional bo
-  - sledzenie historii Cargo jest kluczowe dla Cargo
-  - historia musi refowac do jej cubject
+  - sledzenie historii jest kluczowe dla Cargo
+  - historia musi refowac do jej subject
   
 Cargo-DeliverySpecification
 - b. ciekawe
@@ -148,25 +140,26 @@ Cargo --- DeliveryHistory ---> HandlingEvents ---> Cargo [again]
 - da sie to zakodowac acz bywa tricky [g: bo cos trzeba 'lazy-loadowac']
 
 ciekawy case
-HandlingEvent -*--------0..1-> CarierMovement
-- kierunkowosc powoduje ze CM nic nie wie o HE i * w modelu 'nie ma sensu'
-- w modelu widac ze CM moze 'miec' many HE ale nie bedzie to zakodowane 
+HandlingEvent --*-------0..1--> CarierMovement
+- kierunkowosc powoduje ze CM nic nie wie o HE
+- w modelu widac ze CM moze 'miec' many HE [vide '*'] ale nie bedzie to zakodowane 
 
 
 ch07.05 aggregate boundaries
 
 
-- Customer, Location, CarriesMovement musza byc root aggregates bo
-- sa wspoldzielone przez many Cargos
-- class'y te tworza 'globalne dane/dane dostepne niezaleznie od innych' - stad beda dostepne jako roots
+- Customer, Location, CarriesMovement musza byc root aggregates
+- bo sa wspoldzielone przez many Cargos
+- class'y te tworza 'globalne dane/dane dostepne niezaleznie od innych' stad beda dostepne jako roots
 
 - Cargo tez jest rootem
 
 granica agg Cargo
 - DeliveryHistory - wciagamy do ag Cargo - bo NIKT nie bedzie czytal DH bez C
-- DeliverySpeciifaction - vo bezposrednio refowany przez C thus jest czescia agg Cargo
+- DeliverySpecifaction - vo bezposrednio refowany przez C thus jest czescia agg Cargo
 
 
+// g: pytanie do ddd-krk - to blad? raczej
 mega-mega-turbo-uwaga
 - model
 vo wewn. cargo agg           osobny agg
@@ -187,9 +180,9 @@ n: to blad, bez sensu zeby L mial ref do DS
 ch07.06 selecting repositories
 
 
-- tylko agg root moze miec repo [ale wg potrzeby, moga ale nie musza]
+- tylko agg root moze miec repo [ale nie musi]
 - to jakie repos potrzeba - wynika z potrzeb UC'ow
-- np: potrzebujesz w UCx wyciagnac Customers ktorzy spelniaja kryteria y - budujesz repo z metoda - proste
+- np: potrzebujesz w UC wyciagnac Customers ktorzy spelniaja kryteria y - budujesz repo z metoda
 
 
 ch07.07 walking through scenarios
@@ -200,6 +193,9 @@ ch07.07 walking through scenarios
 c: impl. roles w Cargo
 - uzywamy simple Map customerRoles = new HashMap();
 - klucze/role - pewnie sa zdefinowane w innym miejscu
+
+
+vvv cont. here
 
 
 ch07.08 object creation
