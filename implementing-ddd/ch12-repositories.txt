@@ -53,7 +53,7 @@ persiting mech
 - pers. mech - musi umiec rozpoznac ze obj zostal zmieniony
 - many possible impls - below only 2
 - oba podejscia maja rozna wydajnosc
-- w obu 
+- w obu
   - sledzenie zmian jest niezauwazalne dla klienta
   - user wola tylko 'commit'
 

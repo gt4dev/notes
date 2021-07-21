@@ -203,15 +203,50 @@ ch10.5 standalone classes
 - ale standalone - moga byc tez complex algs [zaszyte w vo-ach]
 - wydzielone, niezalezne od innych - latwiej je analizowac
 
+- std bedziesz mial duuuzo deps - i to normalne i pozadane - pod warunkiem ze sa really required
+
 
 ch10.6 closure of operations
 
 
-7.16 16.28.54
+- c: pojecie 'closure' pochodzi z math
+- jesli operacja [np. +] dziala na liczbach real to efekt tez jest liczba real [domkniecie matematyczne]
+
+- jesli mozliwe - zwracaj z metody typ ktory jest taki sam jak args tej metody
+- zaleta: closure - provides interface without introducing any dependency/new concept [bo ma 1 typ]
+
+- CL uzywamy glownie z vo-s
+- czasem mozesz miec e np. Employee z meth: GetSupervisor():Employee
+
+- type in/out moga byc abstract [a w realu jakies konkretne, rozne pod-typy]
+
+- forma posrednia CL: metoda ma arg. identyczne jak 'this' ale zwracaja nowy typ
+- acz to nie sa closed operations ale maja jakies zalety closures
+
+sample: selecting from collections
+// g: Java bezposrednio nie ma CL operations na listach, C# ma przez linq
+- c: wg EE w Java nie ma takich opers // g: ale sa libs
+- myDotNetCollection.Where(i => i.cash > 100)   <<< zwraca inna kolekcje, tego samego typu
 
 
 ch10.7 declarative design
 
+
+vin ab assertions / intention revealing
+- ee wspomina ze assertions sa super ale nie mozna miec ZADNYCH gwarancji w hand-written sw
+- bo niektore assertions moga byc niepotrzebna lub moze ich brakowac
+// g: najblizsze tej idei 'ee-assetions' sa p/b asercja z unit tests
+// - UT cos robi i sprawdzasz co sie zmienilo
+// - ale to dosc HC w analizie [zeby zrozumiec co sie zmienia po call of method-command] i niepewne [jak w/w napisane]
+- intention revealing - moze tez miec ten problem - kod moze 'wprowadzac w blad'
+
+- declarative design to [posrednio] odpowiedz na w/w problemy ["klamania" w assetions/intention revealing interface]
+- dd = way of writing program as kind of executable specification
+- generowanie executable spec - moze miec wiele form - przez
+  - przez reflekscje
+  - przez std generowanie kodu [ze specyfikacji]
+
+nt 7.16 16 48 12
 
 ch10.7.1 domain specific languages
 

@@ -34,7 +34,7 @@ postacie
 
 
 przyklady f-methods - expressing UL terms
-Tenant.provisionGoup(..):Group
+Tenant.provisionGroup(..):Group
 Tenant.offerRegistrationInvitation(..):RegistrationInvitation
 Forum.startDiscussion(..):Discussion
 Discussion.post(..):Post

@@ -6,10 +6,10 @@ zeby miec obiekt
 - albo robisz travers po asocjacji [z innego obj]
 
 // g
-- niezaleznie gdzie [db, vm0 ..] i w jakiej postaci masz e [KlazzA, db-row ..]
-- to koncepcynie all these forms - stanowia 1 e
+- niezaleznie gdzie [db, vm0 ..] i w jakiej postaci masz e [class, db-row ..]
+- to koncepcyjnie [regardless of form] - stanowia 1 e
 
-klient nie moze miec 
+klient nie moze miec
 - zbyt duzej mozliwosci traversowania po assocjacjach -> it muddles the model
 - direct db access [bo nie bedzie uzywal aggs do crud'owania data]
   
@@ -52,7 +52,7 @@ repos can search by
 - ...
 
 
-## 2 CLIENT CODE INGORES REPO IMPL; DEVS DO NOT
+## 2 CLIENT CODE IGNORES REPO IMPL; DEVS DO NOT
 
 
 // big cut
@@ -108,7 +108,7 @@ DON'T FIGHT YOUR FRAMEWORKS!!!!!!!
 rozdzielenie r and f - separuje responsibilities
 - f - tylko tworzy nowe obiekty
 - r - zapisuje/czytuje store'a
-  
+
 findOrCreate
 - some are mixing f and r and create method "findOrCreate"
 - to absurd, niepotrzebne przy uzywaniu e-s/vo-s
