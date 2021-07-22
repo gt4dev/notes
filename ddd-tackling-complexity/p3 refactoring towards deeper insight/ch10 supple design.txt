@@ -246,9 +246,20 @@ vin ab assertions / intention revealing
   - przez reflekscje
   - przez std generowanie kodu [ze specyfikacji]
 
-nt 7.16 16 48 12
+problemy z generowaniem kodu
+- languages nie sa wystarczajaca expresyjne zeby opisac domene
+- wygen. kod ciezko laczyc z 'hand written code' - jest hc
+
 
 ch10.7.1 domain specific languages
+
+
+- dsl czasem sa deklaratywne
+
+- tworzymy jezyk z ktorego generujemy kod
+
+problem
+- trudno pisac dsl - zeby nadarzaly za zmianami w modelu [ciezko zmieniac gramatyke dsl, to wymaga skill'a]
 
 
 ch10.8 declarative style of design
@@ -257,8 +268,41 @@ ch10.8 declarative style of design
 ch10.8.1 extending spec in a declarative style
 
 
+- c: pattern spec jest forma 'predykatu'
+
+- przy spec czesto chcesz je kombinowac, laczyc
+
+- spec to predykat a predykaty mozna laczyc [std operatorami and, or, not i innymi operacjami]
+
+- bazowy interf. WSZYSTKICH spec
+public interface Specification {
+  // v0
+  isSatisfiedBy(object o);
+  // v1 - jesli laczysz specs; n: these are "closure opers"
+  Specification and(Specification s);
+  ...            or(..);
+  ...           not(); // n: bez param
+}
+- acz nie wszyskie w/w opers potrzebujes
+- a czasem potrzebujesz innych operacji laczenia specs, eg. subsume(Spec..)
+
+
+sample - laczenie specs
+Specification ventilated = new ....;
+Specification armored = new ....;
+
+Specification both = ventilated.and(armored);
+Specification either = ventilated.or(armored);
+
+
+sample - impl. or/and/.. -> see book
+- rozne specs wymagaja roznych impls [vide sql spec ..]
+
+
+
 ch10.9 angles of attach
 
+7.21 164437
 
 ch10.9.1 carve off subdomains
 

@@ -63,7 +63,7 @@ sample
 purchaseOrder.newItem(productNumber,quantity):IdOfCreatedInternalEntity
 
 - f tworzy internal e
-- utworzone obiekty te sa JUZ dodane do agg!!!
+- utworzone obiekty te sa JUZ dodane do agg!!! [chyba?]
 
 way B: place f on object spawning new object
 
