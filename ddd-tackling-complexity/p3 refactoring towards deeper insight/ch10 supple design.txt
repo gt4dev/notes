@@ -299,13 +299,64 @@ sample - impl. or/and/.. -> see book
 - rozne specs wymagaja roznych impls [vide sql spec ..]
 
 
-
 ch10.9 angles of attach
 
-7.21 164437
+
+wstep do calego ch10
+- all techs presented here maja na celu
+  - clarify intention of code
+  - make consequences of calling it - transparent [know side effects?]
+  - decouple model elements
+  
+// g: czy aktualna wiedza nt supple designs z ch10 sie zmienila od 2004?
+
 
 ch10.9.1 carve off subdomains
 
 
+- nie mozesz 'walczyc' z designem calej apki 'na raz'
+- znajdz fragment systemu, wydziel go i zastosuj supple designs [refactor code]
+- szukaj fragmentu domeny [calej subdomeny], a nie technicznego: jakies wyliczenia, rule bizneswoe ...
+
+c
+- lepiej dobrze i w calosci naprawic fragment
+- niz po troche refactor'owac w calym systemie
+
 ch10.9.2 draw on estabilished formalizms, when you can
 
+// cut
+
+EXAMPLE
+- przyklad na bazie 'sindicated loan system' ["pozyczka dla intel'a"]
+
+separating commands and queries
+- problem to fix: Loan ma metode ktora robi i calcs i zmiania stan Loan
+- fix: rozbicie jej na command and query - client calls:
+                                                  // g: skoro metoda zwraca:
+  Map distribution = aLoan.calculateSth(sthElse); // cos - to jest pp query/SEFF
+  aLoan.applyPayments(distribution);              // nic - to jest pp cmd
+
+- TEN CASE SUPER POKAZUJE MOC CMD/Q[/IMMUT.] - jest super czytelnie!!!!!!!
+- c: w/w seff wcale nie musi uzywac immutable objects - to 2nd'ary problem
+- sam cmd wcale nie musi byc "1 LoC"
+  - moze calkiem ostro grzebac po modelu
+  - ale niech nic nie liczy
+  
+// g:q: jakim typem metody [q czy c] jest klient - bo wywoluje on obliczenia a potem zmienia stan
+
+// g-btw
+- przyklad Loan fajnie pokazuje jak rozsiac kalkulacje po kilku obiektach
+- normalnie robiles metody 'kalkulatory' i przekazywales im dane wejsciowe [anemiczne klasy]
+- EE cale kalkulacje pieknie rodzielil na kilka klas
+
+ | <e>  |          | <vo>      |               | <pp vo> |  
+ | Loan |<>------->| Share Pie | owner ]<>---->|  Share  |
+ |      |          |           |               |         |  
+
+
+making implicit concepts explicit
+- dodanie explicit klasy SharePie - uproscilo algs, model ... - obvious ;]
+- mega c
+  - caly alg kalkulacji kredytu dla intela jest rozdezielony na 3 w/w klasy!!! 
+  - zwykle robiles to alg w 1 metodzie - a tu - rodzielenie alg na 3 klasy - UPRASZCZA KOD!!!
+  
