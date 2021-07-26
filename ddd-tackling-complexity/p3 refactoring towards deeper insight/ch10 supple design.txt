@@ -360,3 +360,17 @@ making implicit concepts explicit
   - caly alg kalkulacji kredytu dla intela jest rozdezielony na 3 w/w klasy!!! 
   - zwykle robiles to alg w 1 metodzie - a tu - rodzielenie alg na 3 klasy - UPRASZCZA KOD!!!
   
+
+SharePie becomes VO
+- ee refactors metody tak by zrobic z nich SEFF [plus 'closure' bo zwracaja SharePie]
+- troche z tym roboty
+- ale kod jest duuuzo czytelniejszy [z seff]
+
+// g: mega c
+- dla algs zaszytych w w/w klasach - KOMPLETNIE nie ma znaczenia czy to e czy vo 
+- alg cos po prostu liczy na bazie stanu klasy, ew. zmienia stan klasy ...
+- pomijam tu ew. technikalia jak immutability of vo, granice agregatu ... to detale ;]
+- a zapis stanu do bazy - to problem repo
+
+
+721 172400
