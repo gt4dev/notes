@@ -1,0 +1,46 @@
+ch11 applying analysis patterns
+
+
+- ee bazuje na 'analysis patterns' by fowler
+
+- to patterny HL, w porownaniu do patterns z Chapter10 lub Part2
+
+- pozwalaja zaoszczedzic czas na extensive trials, errors and self-learning [inventing the wheel]
+
+- APs to 'starting point', do rozbudowania, zaleznie od potrzeb Your model
+
+
+EXAMPLE: earning interest with accounts
+
+- bazuje na AP/"Inventory and accounting" [ch6]
+
+model
+- w wielu biznesach sledzimy account i zmiany na account
+ | Account |<>-----*--| Entry |--2------| Transaction |
+   balance
+   
+- wartosc dodawana jest przez wstawianie entry
+- jak chcesz 'odjac' - dodaj entry z ujemna wartoscia
+
+
+c: podczas kodowanie modelu ustalonego z expertem - okazal sie zly
+- wyznaczyl on glowne kierunki dzialania
+- ale sporo detali trzeba bylo podorabiac
+
+
+c: podczas kodowania - okazalo sie ze devs musza zastosowac okreslone str. w DB 
+- zeby baza byla czytelna [podobnie jak model]
+- to wymusilo tez konkretne struktury w modelu domenowym
+
+
+mega-c case
+figure 11.7
+- jest klasa FeeCalculator z metoda accrualFor(Date):Entry
+- ale model wyglada tak
+                                   fees
+  | Fee Calculator |-----| Asset |==========| Account |-----| Entry |
+                                   interest
+- FE nie jest na modelu zw. z Entry!!! a metoda zwraca Entry
+- w modelu pokazujemy trwale asocjacje
+- a w/w metoda to p/p fabryka
+- acz pewnie mozna by Entry wziasc jako param mtody w FE i tez na modelu tego NIE pokazemy

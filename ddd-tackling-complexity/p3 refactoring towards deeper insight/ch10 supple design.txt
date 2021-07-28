@@ -367,10 +367,15 @@ SharePie becomes VO
 - ale kod jest duuuzo czytelniejszy [z seff]
 
 // g: mega c
-- dla algs zaszytych w w/w klasach - KOMPLETNIE nie ma znaczenia czy to e czy vo 
+- dla algs zaszytych w modelu - KOMPLETNIE nie ma znaczenia czy to e czy vo
+  - oprocz LL tech kwestii: modyfikacji e, ident. e by id ...
 - alg cos po prostu liczy na bazie stanu klasy, ew. zmienia stan klasy ...
 - pomijam tu ew. technikalia jak immutability of vo, granice agregatu ... to detale ;]
-- a zapis stanu do bazy - to problem repo
+- a zapis stanu obiektu do bazy - to problem repo
 
 
-721 172400
+sample - po refactorze
+- udalo sie wyizolowac complex logic do VO [tak, do vo] i zamknac teo w SEFF
+// g: sample obliczen gdzie SEFF zwraca nowy obiekt zamiast modyfikowac 'this' 
+// - wygladaja REWELKA
+// - latwo sie to analizuje [nie wnikasz jakie inne metody obiekt modyfikuja, masz po each call "nowy obiekt" i na nim robisz next method call ..]

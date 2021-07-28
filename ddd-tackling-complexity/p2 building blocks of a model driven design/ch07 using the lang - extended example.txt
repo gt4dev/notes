@@ -9,12 +9,12 @@ ch07.01 introducing the cargo shiping system
 | Customer |----------*--[ role | Cargo |
                          ^^^^^^^^
 - Cargo ma metode getCustomer(string role):Customer
-- multiple customers are involved with a Cargo, each playng a diff role [shipper, payer, receiver ..]
+- many customers coop with a Cargo, each with diff role [shipper, payer, receiver ..]
 - dana role moze grac tylko 1 customer
 - dzieki w/w kwalifikacji mamy relacje m-to-1 zamiast m-to-m [bylo by Cargo.Customers:List<Customer>]
-// g: acz 
-  - bez kwalif. nie bylo by info o role - a to wychodzi inny model
-  - w impl. Cust. nic nie wiem o Cargo wiec i mamy 1-to-1
+// g: acz
+// - bez kwalif. nie bylo by info o role - a juz inny model
+// - Cust. nic nie wiem o Cargo [unidirect relation] wiec i tak mamy 1-to-1
 - role moze byc
   - string [super simple case]
   - vo class
@@ -32,9 +32,7 @@ btw
 
 - zauwaz ze w modelu v00, class diagram [rys 7.1] - reprezentuje klasy
 - nie wiadomo jeszcze ktora klasa to e, vo ...
-- w model v00
-  - only focus on projecting classes for terms from UL, desc associations
-  - totally IGNORE problem of defing stuff as e, vo ...
+- w modelu v00 only focus on projecting classes for terms from UL, desc associations
 
 c: nice pattern: sledzenie historii zmian w app
 - EE w modelu zapisuje historie w DeliveryHistory
@@ -49,7 +47,7 @@ EE wyroznil 3 'serwisy aplikacyjne' (nazywa je "application functions")
 AS'y:
 - tracking query [sledzenie cargo]
 - booking app [przygotowuje cargo]
-- incident logging app ["niewazne" ;]
+- incident logging app ["whatever"]
 
 VVVVVI
 these classes are coordinators
@@ -63,15 +61,15 @@ ch07.03 distinguishing entities and value objects
 class Customer
 - Customer ma identity wazne dla usera
 - zatem to e
-- ustalenie czym jest ID wymaga talk z expertami domenowymi
-- jako ID uzyjemy ID customers z 2nd systemu - do "zglaszania zapotrzebowania" by users
+- ustalenie ID wymaga talk z expertami domenowymi
+- jako ID uzyjemy customer ID z 2nd systemu - do "zglaszania zapotrzebowania" by users
 - w v0 - id mozna przepisywac recznie miedzy systemami
 - this settles 'continuity of identity' between those systems
 - mamy 'rozszerzenie encji'
 // g: acz czy to rozsadne id? bo to najtrudniejsza forma id
 
 class Cargo
-- dwie identyczne crates [skrzynie] musza byc rozroznialne 
+- dwie identyczne crates [skrzynie] musza byc rozroznialne
 - dlatego Cargo = entities
 - id generujemy automatycznie
 
@@ -79,10 +77,10 @@ class HandlingEvent
 - HEs to obiekty ktore nie sa interchangable
 - thus HE = entity
 - podczas dyskusji z 'domain expert' okazuje sie ze HE sa identyfikowane przez: cargoId, completionTime, type
-// g: acz czy to rozsadne? takie skomplikowane id?
+// g: acz czy to rozsadne? co jesli time or type will change
 
 class Location
-- dwa miejsca z ta sama nazwa - nie sa ta sama lokacja
+- dwa miejsca z ta sama nazwa - to nie sa ta sama lokacja
 - thus it's entity
 - id = auto-generated
 
@@ -91,6 +89,7 @@ class DeliveryHistory
 - DHs nie sa interchangable = thus sa e-s
 - ale DH ma relacja 1-1 z Cargo
 - DH ma ID 'pozyczone' z Cargo
+// g: chyba wcale nie ma id
 
 class DeliverySpecification
 - kilka Cargos moze miec to samo DS, nie potrzebujemy rozroznienia obiektow
@@ -137,7 +136,7 @@ circular reference
 Cargo --- DeliveryHistory ---> HandlingEvents ---> Cargo [again]
 - circular references logically exists often in business
 - nie da sie ich 'wyeliminowac' z modelu - musza byc uwzglednione
-- da sie to zakodowac acz bywa tricky [g: bo cos trzeba 'lazy-loadowac'?]
+- da sie to zakodowac acz bywa tricky [g: cos trzeba 'lazy-loadowac'?]
 
 inny ciekawy case
 HandlingEvent --*-------0..1--> CarierMovement
@@ -159,8 +158,7 @@ granica agg Cargo
 - DeliverySpecifaction - vo bezposrednio refowany przez C thus jest czescia agg Cargo
 
 
-// g: pytanie do ddd-krk - to blad? raczej
-mega-mega-turbo-uwaga
+// g: n/w to blad? raczej tak
 - model
 vo wewn. cargo agg           osobny agg
 DeliverySpecification ------ Location
@@ -172,8 +170,7 @@ n: to blad, bez sensu zeby L mial ref do DS
 
 
 - wg VV - granice aggs wysznaczamy przez "granice tx'ow" 
-- EE w ogole o tym nie mowi, ma inne kryteria graniczenia aggs [raczej skupia sie czy cos jest global czy nie]
-// g: pewnie to sie zdezaktualizowalo
+- EE chyba o tym mowi w ch o aggs ale dodatkowo skupia sie czy cos jest global czy nie
 // g: sprawdz agg desc in earlier chapter
 
 
@@ -205,7 +202,7 @@ od constr wymagamy zeby stworzyl obiekt ktory
 
 c: bidirect 1-1 asso Cargo-DeliveryHistory
 - means: zadna ze stron nie jest komplenta bez counterparta
-- oba obietky musza byc stworzone razem i powiazane - zeby zachowac relacje
+- oba obiekty musza byc stworzone razem i powiazane - zeby zachowac relacje
 
 constr Cargo(string id) { // n2
   id = id
@@ -216,7 +213,7 @@ constr Cargo(string id) { // n2
 n1: robienie bidirec asso
 - Cargo jest rootem i zawiera DH
 - dlatego C moze wywolac constr. of DH
-// q: co z ustawieniem ID na DH
+// q: co z ustawieniem ID na DH? chyba nie ma!
 
 n2: w constr. przekaz all needed attrs tworzace id
 
@@ -242,6 +239,9 @@ c: cycle references
 - "zadna filozofia" ;]
 
 
+#########
+
+
 ch07.09 pause for refactoring: alter design
 
 
@@ -257,7 +257,7 @@ performance problem of curr. model
 
 - w/w budowanie kolekcji DeliveryHistory.events [chyba] rob w HE Repo
 
-// g: w/w to [chyba] std podejscie - gdy agg 1 ma asso do agg 2 i 1 ma wczytac dane 2
+// g: w/w 'lazy loading' to [chyba] std podejscie - gdy agg 1 ma asso do agg 2 i 1 ma wczytac dane 2
 
 - c: w/w trick z DH - rozw. tez problem z circle reference - wg EE it's no more problem
 
@@ -274,7 +274,7 @@ c: efekt pakietowania wg infra
 
 - podzial na moduly wynika z UL
 
-// g: [pp?] na diagramie sa moduly  = BC-e, bo kazdy adresuje inny typ aplikacji/user'a
+// g: [pp?] na diagramie sa moduly = BC-e, bo kazdy adresuje inny typ aplikacji/user'a
 
 
 ch07.11 intro a new feature: allocation checking
