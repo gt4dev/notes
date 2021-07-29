@@ -44,3 +44,8 @@ figure 11.7
 - w modelu pokazujemy trwale asocjacje
 - a w/w metoda to p/p fabryka
 - acz pewnie mozna by Entry wziasc jako param mtody w FE i tez na modelu tego NIE pokazemy
+
+c ab. SEFF
+- metoda FE.accrualFor(Date):Entry to SEFF
+- FE to e -thus-> SEFF moze byc na czymkolwiek [SEFF to idea || do immutability]
+- ta metoda zwraca Entry - tez [pp] e --thus--> SEFF moze zwracac cokolwiek, niekoniecznie vo ...

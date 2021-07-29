@@ -2,11 +2,12 @@ ch09 making implicit concepts explicit
 
 
 wiele b. dobrych refactors modelu jest po
-- znalezieniu implcit some elements [object, relations]
+- znalezieniu implcit elements [object, relations]
 - making them explicit
 
-// g: na modelu - rob all explicit
-// g:           - zadnej implicit wiedzy
+// g: na modelu 
+// - rob all explicit
+// - zadnej implicit wiedzy
 
 
 ch09.1 digging out concepts
@@ -17,13 +18,13 @@ ch09.1 digging out concepts
 
 - to b. podejrzane jesli expert/dev uzywaja slow ktore nie sa w UL
 
-// g: all terms from spec/uc-s/talks musza byc w UL i modelu!!!
+// g: "all" terms from spec/uc-s/talks musza byc w UL i modelu!!!
 
 - czasem bardzo trudno znalezc 'implicit objects' ktore chcemy zrobic 'explicite'
-- widac ze modelowi cos brakuje - ale trudno stwiedzic gdzie jest "brak"
+- widac ze modelowi cos brakuje - ale trudno stwiedzic gdzie jest "problem"
 
 contradictions
-- rozni experci domenowi - roznie widza biznes [zaleznie od dowsiadczen ..]
+- rozni experci domenowi - roznie widza ten sam biznes [PoV doswiadczen ..]
 - more: 1 osoba moze dawac infa ktore sa niespojne [jesli sie temu przyjrzymy]
 
 - w/w niekonsystencje sa dobrym miejsce na poglebianie modelu, destylowanie wiedzy
@@ -32,23 +33,17 @@ contradictions
 - nawet tego nie chcemy
 - niektore contrad. swiadomie zostawiamy w modelu
 
+- opracowanie dobrego modelu - wymaga wiele, wielu rozmow z expertami doemnowymi
 
-c sample
-- w przykladach w tym ch
-- mamy "encje" z modelem [dane + metody]
-- wsrod niech FeeCalculator, InteresCalculator
-- normalnie takie calculatory - lubisz umieszczac w ds
-- tu maja one ctx obiektu
 
-c: ee zaleca book Analyse Patterns by Fowler 97
-
-- dopracowanie dobrego modelu - wymaga wiele, wielu rozmow z expertami doemnowymi
+vvvvv cont here
 
 
 ch09.2 how to model less obvious kinds of concepts
 
 
-- wg ee next 3 constrs were not obvious when started oo modeling ;]
+- wg ee next 3 constrs were not obvious when he started oo modeling ;]
+
 
 ch09.2.1 explicit constraints
 
