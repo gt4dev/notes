@@ -1,0 +1,31 @@
+ch12 relating design patterns to the model
+
+
+- src patterns jest "Design Patterns by Gamma 95" [GoF?]
+- wiekszosc patterns to techniczne patterny
+- niektore mozna uzyc w domain modeling/design - jako domain pattern
+
+- tu pokazane przyklady tylko 2 patterns [strategy, composit] ale wiecej tez da sie uzyc
+- ee pokaze jak tech pattern uzyw w domain model
+
+
+ch12.1 strategy [aka policy!!!]
+
+
+- s pozwala zmieniac alg [wewn. modelu] niezaleznie od klienta
+
+- w modelu d mozesz miec alternatywne procesy
+- s bedzie pomagac w zarzadzaniu nimi - czysto i zrozumiale
+
+- proces ma czesto wiele prawidlowych drog wykonania go
+- czesto jak dodajesz te alter ways do modelu - to proces staje sie nieczytelny/skomplikowany
+- alters czesto mieszaja sie z glownym procesem - to blad
+
+- odseparuj wariacje od glownego procesu
+
+cdn...
+
+ch12.2 composite
+
+
+ch12.3 why not flyweight

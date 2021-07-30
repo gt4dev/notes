@@ -49,5 +49,5 @@ conc
 - model ZAWSZE bedzie sie zmianial, moze byc wiele BREAKTHROUGHS
 - nie ma co sie spawac do konkretnego modelu, trzeba byc gotowy na duze zmiany
 
-efekt nie zrobienia refactor po breakthrough:
+efekt nie zrobienia refactor po breakthrough: 
 - utrzymywanie modelu ktory jest nieefektywny i zatrzymuje rozwoj

@@ -49,3 +49,29 @@ c ab. SEFF
 - metoda FE.accrualFor(Date):Entry to SEFF
 - FE to e -thus-> SEFF moze byc na czymkolwiek [SEFF to idea || do immutability]
 - ta metoda zwraca Entry - tez [pp] e --thus--> SEFF moze zwracac cokolwiek, niekoniecznie vo ...
+
+
+EXAMPLE [part 2]
+
+- zwykle po refactor [i wyklarowaniu pewnych concepts] inne problemy staja sie wyrazniejsze 
+- wymagaja next refactors
+
+// cut, EE omawia detale patternu "posting rules" - ale dosc niejasno, brakuje przykladu
+
+- deverlopers zaczeli od 'posting rules' ale b. mocno odeszli od pierwotnego patternu
+- i to ok
+
+
+AP ARE KNOWLEDGE TO DRAW ON
+
+- nie zawsze masz szczesie by moc uzyc AP
+- a nawet jak trafisz - to i tak najp/p bedziesz musial zmodyfikowac AP do wlasnego case'a
+
+wazne zalety AP
+- super init w problem
+- wprowadzaja zrozumiale well distilled abstracts + ich nazewnictwo
+- informuja o konsewencjach - ktore zaoszczedza problems podczas impl
+
+vin
+- uzywajac term z jakiegos pattern - to nie modyfikuj znaczenia tego term - niech opisuje <> ten sam koncept
+- inaczej - wymysl inna nazwe
