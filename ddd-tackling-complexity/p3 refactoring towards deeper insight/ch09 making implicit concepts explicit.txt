@@ -36,9 +36,6 @@ contradictions
 - opracowanie dobrego modelu - wymaga wiele, wielu rozmow z expertami doemnowymi
 
 
-vvvvv cont here
-
-
 ch09.2 how to model less obvious kinds of concepts
 
 
@@ -76,12 +73,13 @@ class Bucket {
   
   float constrainedToCapacity(input){ .. }
 }
+
 good version
-- wydzielenie c zwieksza czytelnosc 'host code' i samego c
+- wydzielenie c zwieksza czytelnosc "hosting code" i constraint
 - named/explicit 'thing' is easier to discuss
 - easier to later modify constrint and host code
 
-sygnaly ostrzegawcze c is distoring design of host
+sygnaly ostrzegawcze ze constraint is distoring design of host
 - c reqs data not available on host object
 - c appear in multiple diff objects
 
@@ -97,13 +95,14 @@ example: overbooking policy
                 ^   
                 | {sum(cargo.size) < voyage.capacity * 1.1}
                 |
-              ---------------------
-              | overbooking policy |     <<< expl. constraint
+         ----------------------
+         | overbooking policy |     <<< expl. constraint
               
 int makeBooking(Cargo cargo, Voyage voyage) {
   if(!overbookingPolicy.isAllowed(cargo,voyage)
     return -1;
   // make booking
+  ...
 }
 
 bool isAllowed(Cargo cargo, Voyage voyage) {
@@ -115,18 +114,19 @@ ch09.2.2 processes as domain objects
 
 
 - w domain czasem sa procedury
-
 - procedury 'wyrazamy' explicit uzywajac services
 
 - ale moze byc opcja wykonania procedury/procesu na kilka sposobow
-- then: do this procedure [or key fragment] object
 - then the choice between process ver is explicit visible as choice of object - each of which represent STRATEGY
+
+
+vvvv cont. here
 
 
 ch09.2.3 specification
 
-- s wymyslil ee z fwoler w '97
-- s pridives concise way of expressing certain kings of rules, extracting them from conditional logic
+- s wymyslil ee z fwoler'em w '97
+- s pridives concise way of expressing certain kinds of rules, extracting them from conditional logic
 - and making them explicit in model
 
 - ee rozkminia - ze stosowanie own patterns - czesto jest bez sensu, nawet szkodliwe ;]

@@ -1,14 +1,14 @@
 - model musi byc wypracowany iteracyjnie [nie waterfall]
 - miedzy domain experts i devs
-- eg flow: modelowanie, kodowanie, refactor
+- eg flow: modelowanie, kodowanie ...
 
 
 1. levels of refactoring
 
 - r = redesign sw w sposob ktory nie zmienia jego funkcjonalnosci
 - zeby robic r - musisz miec unit tests - zeby wiedziec czy feat nadal dziala
-// g: zeby robic r na poziomie modulow - musisz miec testy na poziomie modulow [integracyjne] 
-// g: ut'ami testujesz tylko units - i tylko units mozesz testowac = r-owac
+// g: zeby robic r na poziomie modulow - musisz miec testy na poziomie modulow [integracyjne?] 
+// g: ut'ami testujesz tylko units - zatem tylko units mozesz r-owac
 
 - r-s ktore maja biggest impact = r-s motywowane przez nowe spojrzenie na domene lub czyszczace model
 
@@ -25,11 +25,10 @@ classic approach to modeling
 - find verbs/nouns in specification
 - build from them objects and methods
 
-- ee uwaza ze w/w = oversimplification
-- useful only when learning OO ;]
-// g: "wszyscy" tego uzywaja
-
-// g: acz w/w to dobry start modelu v0
+- w/w is oversimplification
+- useful only for learning OO ;]
+// g: a i tak "wszyscy" tak modeluja
+// g: acz to dobry init modelu
 
 // g: wraz z nauka domeny - opracowujesz DEEP model
 
@@ -42,6 +41,6 @@ classic approach to modeling
 
 
 - w warunkach ciaglej zmiany [modelu] - design musi wspierac te zmiany
-- opisuje taki design ch10 (supple design)
+- design taki opisuje ch10 supple design
 
-- ciezki w zmianie kod - moze totalnie zatrzymuje mozliwosc zmiany modelu
+- ciezki w zmianie kod - moze totalnie zatrzymac mozliwosc zmiany modelu

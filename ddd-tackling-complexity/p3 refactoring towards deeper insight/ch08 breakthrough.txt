@@ -1,21 +1,21 @@
 ch08 breakthrough
 
-- zwrot z refactor'a nie jest 'linearny'
+- zwrot z refactor'a nie jest liniowy
 - male refactory - daja maly zwrot, zwalczaja entropie
-
-- mega wartosc dodana do modelu daje nowa wizja modelu
+- mega wartosc dodaje nowa wizja modelu
 
 
 ch08.01 story of breakthrough
 
+
 - opowiesc o breakthrough podczas modelowania
-- case: bank inwestycyjny agreguje inne banki w celu dania pozyczki pod budowe fabryki intel
+- case: bank inwestycyjny agreguje inne banki w celu dania pozyczki pod budowe duzej fabryki (intel)
 
 - model "v1" ma blad - ciezko sie go uzywalo
 - jest tam relacja miedzy loan-facility - a w realu tej relacji nie ma
 
 // g: musisz, musisz, musisz testowac model na konkretnych przykladach 
-// g: to dobrze destyluje wiedze, pozwala zrozumiec domene, refine'uje model
+// g: to super destyluje wiedze, pozwala zrozumiec domene, refine'uje model
 
 c: experci domenowi musza rozumiec model
 - domain experts zglaszali ze nie rozumieja w/w modelu v1
@@ -28,8 +28,8 @@ c: model v2 [po big breakthrough] byl na tyle super ze termy z nowego UL uzyto n
 ch08.02 opportunities
 
 
-- po big breakthrough - najpp wymagany jest big refactor
-- to troche scary - zmiany w kodzie na roznych poziomach [model and higher]
+- po big breakthrough - najpp wymagany bedzie big code refactor
+- to troche scary - zmiany w kodzie na roznych poziomach [model i klienci]
 // g: ale jak masz dobrze odseparowany model od klientow przez dto ...
 
 
