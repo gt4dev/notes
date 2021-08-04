@@ -5,6 +5,7 @@
 
 1. levels of refactoring
 
+
 - r = redesign sw w sposob ktory nie zmienia jego funkcjonalnosci
 - zeby robic r - musisz miec unit tests - zeby wiedziec czy feat nadal dziala
 // g: zeby robic r na poziomie modulow - musisz miec testy na poziomie modulow [integracyjne?] 

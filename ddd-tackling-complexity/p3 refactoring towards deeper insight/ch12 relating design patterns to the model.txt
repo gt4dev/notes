@@ -11,6 +11,14 @@ ch12 relating design patterns to the model
 
 ch12.1 strategy [aka policy!!!]
 
+model:
+
+abstract class Strategy {
+  alg();
+}
+class ConcretStrategyA : Strategy { ... }
+class ConcretStrategyB : Strategy { ... }
+
 
 - s pozwala zmieniac alg [wewn. modelu] niezaleznie od klienta
 
@@ -23,9 +31,78 @@ ch12.1 strategy [aka policy!!!]
 
 - odseparuj wariacje od glownego procesu
 
-cdn...
+
+EXAMPLE: ROUNT FINDING POLICIES
+
+class RoutingService {
+  findCheapest(Specification):Itinerary
+  findFastest(..):...
+  findSthElse(..):...
+}
+
+problem
+- alg wyszukania drogi bedzie mial wiele conditionals [zeby uwzgl. warianty wyszukania]
+- jak bedzie wiecej opcji findSth - to problem sie zwiekszy
+
+rozw [1 of many ;]
+- parametryzowac alg politykami
+- alg. uzywa abstract
+
+  abstract class LegMagnitudePolicy
+    length(sth):long
+
+- klient wola alg. z konkretna policy
+
+  LegMoneyPolicy : LegMagnitudePolicy
+    ...
+    
+  LegTimePolicy : LegMagnitudePolicy
+    ...
+
+class RoutingService {
+  find(Specification,LegMagnitudePolicy):Itinerary 
+                     ^^^ n1
+}
+
+- n1: teraz mamy tylko 1 metode find [ale z param policy]
+- nie ma tu zadnych if-s ["zadnych!!!"]
+// g: w policy mozesz zaszyc fragment alg - ktory zmienia sie zaleznie od strategi
+// g: not sure - tu chyba jest naruszenie liskov substit. principle - raz length zwaraca czas, raz droge ...
+
+- n: klient jest swiadomy roznych strategii - musi to wiedziec bo to wybiera
+
 
 ch12.2 composite
+
+
+w complex domains czesto mamy hierarchie mega podobnych elementow:
+- top elem sklada sie z mniejszych
+- te skladaja sie z jeszcze mniejszych ... itc
+
+- jak nested objects - sa koncepcyjnie tego samego typu
+- ale to zignorujemy
+- to w kodzie bedzie sporo powtorzen, klienci beda uzywali roznych api do "tych samych" obiektow
+
+DIAGRAM COMPOSITE
+
+- prosty ale sa tricky elements
+
+class Client {
+  Component component; // client ref'uje Component [acz patt. name = composite]
+}
+
+abstract class Component {
+  abstr. someOperation();
+}
+
+class ConcretLeaf : Component {
+  someOperation() {..} // n1: operates only on leaf
+}
+
+class Composite : Component {
+  List<Composite> children; // n: childem moze byc any component [leaf or inny composite]
+  someOperation() {.. } operates on ALL CHILIDREN of this Composite
+}
 
 
 ch12.3 why not flyweight

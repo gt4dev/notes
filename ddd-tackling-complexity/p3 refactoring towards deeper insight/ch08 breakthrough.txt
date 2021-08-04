@@ -1,5 +1,6 @@
 ch08 breakthrough
 
+
 - zwrot z refactor'a nie jest liniowy
 - male refactory - daja maly zwrot, zwalczaja entropie
 - mega wartosc dodaje nowa wizja modelu
