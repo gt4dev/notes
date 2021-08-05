@@ -1,9 +1,9 @@
+vvvv cont here
+
 ch10 supple design
-
-- sw ze zlym design'em, skomplikowany - trudno zmieniac
-- co znaczy ze nie mozna go rozwijac
-
 // en: supple - gietki
+
+- sw ze zlym design'em - trudno zmieniac - nie mozna go rozwijac
 
 - supple design is the COMPLEMENT to deep modeling
 

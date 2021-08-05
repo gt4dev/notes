@@ -120,57 +120,54 @@ ch09.2.2 processes as domain objects
 - then the choice between process ver is explicit visible as choice of object - each of which represent STRATEGY
 
 
-vvvv cont. here
-
-
 ch09.2.3 specification
 
-- s wymyslil ee z fwoler'em w '97
-- s pridives concise way of expressing certain kinds of rules, extracting them from conditional logic
-- and making them explicit in model
 
-- ee rozkminia - ze stosowanie own patterns - czesto jest bez sensu, nawet szkodliwe ;]
-- wiele projects experimented diff approaches
-- use this exper, szkoda czasu/energii na own tries
-- inni 'latami' szukali rozw. jak prawidolowo  budowac dany pattern
+- s wymyslil ee z fowler'em w '97
 
-// g: w ch10 tez jest o s?
+s 
+- pridives concise way of expressing rules
+- extracts rules/spec from conditional logic
+- makes rules/spec explicit in model
 
-- nie all rules sa proste jak w/w
+- wg ee - stosowanie own patterns - czesto jest bez sensu, nawet szkodliwe ;]
+- many old projects tested diff ways - use this exper
+- mozna 'latami' szukali prawidlowej budowy pattern'u
+
+// w ch10 tez jest o s
 
 sample: invoice.IsDeliquent():bool
-- moze byc mega skomplikowana
-  - ma proste testy: is invoice overdue
-  - i complex
+- inner rules moga byc mieszanka
+  - prostych testow: is invoice overdue, ..
+  - complex tests
     - lepsi customers moga przekraczac limit o x days
     - trzeba sprawdzic historie zamowien customer'a
-- w/w r-s nie maja wiele wspolnego z Invoice
+- w/w r-s nie maja wiele wspolnego z Invoice [thus sa w s a nie invoice]
 - ale te r-s powinny byc w domain layer
 - s zawiera business r-s!!!
 
 solutions
 - create spec. object that evaluate to boolean
 - place there logic [r-s] of tests
-- s to vs'y  // g: oblukaj smaple Cargo model - there is Spec [as vo]
+- s to vs'y  
+// g: sample "Cargo diagram"  ma spec jako vo
 
-- s wyraza constraints ktore sa narzucone na inny obiekt, czy spelnia on okreslone kryteria
-- s sprawdza konkretne warunki, r-y
+- s wyraza constraints narzucane na inny obiekt
+- s sprawdza konkretne warunki, rules
 
-- many s-s are simple special purpose tests [as w/w isDeliquent example]
+- many s are simple special purpose tests [as w/w isDeliquent example]
 
-- factory can create s - by using data from mixes srcs [database, entities ..]
+- factory can create s - by using data from mixes sources [database, entities ..]
 
-sample
-- s = DeliquentInvoiceSpecification
+sample: DeliquentInvoiceSpecification
 - s sprawdza Invoice'y
 - client call
-  deliquentInvoSpec.IsDeliquent(invoice123) // pass tested object to spec
+  deliquentInvoSpec.IsDeliquent(invoice123) // tested object is passed to spec
 - DIS ma pola biznesowe np 'standard grace period = 20d'
 - pola sa inited pod konkretna grupe Invoices - do testowania
 - DIS zwraca true - tz. invoice jest 'deliquent'
 
-- dostosuj pattern do 'own needs' - nie trzymaj sie tego sztywn - now
- point
+- dostosuj pattern do 'own needs' - nie trzymaj sie tego sztywn - no point
 
 
 ch09.2.4 applying and implementing specification
@@ -178,17 +175,16 @@ ch09.2.4 applying and implementing specification
 
 // gt: co o spec mowi vv, check iddd index
 
-wg ee spec pozwala zunifikowac czesc funkcjonalnosci of app
-ktore sa zwykle dosc mocno rozstrzelone w app
-a dzieki spec - sa one w 1 miejscu
-unifikacja roznych feats w 1 concept
-- walidacja - validate an object to see if it fulfills some need
-- selekcja - select an object[s] from collection 
-- building to order - spec is specing the creation of new object fitting spec // gt: skad taka nazwa?
-all of them are 'the same' on concept level
+- s unifikuje czesc funkcjonalnosci ktore sa zwykle mocno rozrzucone w app
+- funkcjonalnosci:
+  - walidacja - test czy object fulfills some needs
+  - selekcja - select an object[s] from collection 
+  - building to order - spec is specing the creation of new object fitting spec // gt: skad taka nazwa?
+- s lokuje te feats w 1 miejscu
+all of them are 'the same s-s' on concept level
 
-// gt
-n: all specs maja meth isSatisfiedBy(..):bool
+// g: "all" specs maja meth isSatisfiedBy(..):bool
+
 
 VALIDATION
 
@@ -196,34 +192,36 @@ VALIDATION
 - simplest spec usage
 
 sample
-- b.need: app wyswietla red flag - if saler opens customer info with delinquent bill [zaległy rachunek]
-- podczas budowania ekranu - musimy wywolac metode 
+- b.need: app shows warning - if saler checks customer with delinquent bill [zaległy rachunek]
+- podczas otwierania ekranu - app calls:
     public boolean accountIdDelinquent(Customer customer) {
       var invoice = customer.pobierzJakisTamInvoice()
       Specification spec = new DelinquentInvoiceSpecification(today);
-      return spec.isSatisfiedBy(invoice); // true - spec fulfilled - account is delinquent
+      return spec.isSatisfiedBy(invoice); // true = spec fulfilled = account is delinquent
     }
 - model
 
-  <abstract, general spec>
+  <abstract spec>
   | InvoiceSpecification [IS]   |                 |         |
   |-----------------------------| - - - - - - - > | Invoice |
   | isSatisfiedBy(invoice):bool |                 |         |
   
-  <real specs, with real validations>  n: spec moze walidowac 'cokolwiek'
+  <specs impl with real validations>  n: spec moze walidowac 'cokolwiek'
   DelinquentIS : IS {...}   // czy zalegla faktura
-  BigIS        : IS {...}   // czy kwota faktury jest 'big'
+  BigIS        : IS {...}   // faktura ok ale czy kwota faktury jest 'big'
   
 - real spec
   class DeliquentIS : IS {
   
-    constr(Date currentDate){ set this.currentDate from param }
+    constr(Date currentDate){ .. } // n2
   
-    // n: spec dostaje walidowany obiekt jako param
-    public bool isSatifiedBy(Invoice inv){
-      var someData1, someData2 = inv.get some data to do invoice validation;
+    public bool isSatifiedBy(Invoice inv){  // n1
+      var someData1, someData2 = get some data from tested invoice to validate;
       return compareDateWithConstrDate(someData1, someData2, this.currentDate);
     }
+    
+    // n1: spec dostaje walidowany obiekt jako param
+    // n2: params to cfg validation, eg. threshold when inv. is 'big'
   }
   
   
@@ -232,30 +230,30 @@ SELECTION [QUERYING]
 
 - cel: zbudowac spec ktora ustaw kryteria selecta
 
-- wg ee obie spec [validation i selection] to ten sam concept - roznia sie jedynie impl.
+- wg ee obie spec [validation i selection] to ten sam concept - roznia sie "jedynie" impl.
 
-sample: demo ze val/sel - to te same koncepcje
-- wez 'zywcem' spec z prev. sample
-- w InvoiceRepository add method selectSatisfying(InvoiceSpec is)
-- z: all repo data is in mem in List<Invoice> // w realu sa w db ale tu pokazujemy koncept
-- teraz w selectSatisfying przeiteruj przez liste i sprawdz ktore Is spelniaja spec i zwroc te Is
+sample: demo ze obie w/w s to te same koncepcje
+- wez spec z prev. sample
+- do repo InvoiceRepository add method selectSatisfying(InvoiceSpec is)
+- z: repo keeps data in mem in List<Invoice>
+- teraz w selectSatisfying(..) iteruj repo data & check if fulfills spec  -> if T -> return it
 
 sample: sql spec
-- u: jest wiele diff impls of spec & repo - dostosuj to do own needs
+- jest wiele mozliwych impls of spec & repo - dostosuj impl to own needs
 - sql is very natural way of writing spec!
 
 class DelinquentInvoiceSpecification {
-  public Set satisfyingElementtsFrom(InvoiceRepository ir) { // n0: repo jako param - to troche zgrzyt, ale concept is ok
-    return is.getAllInvoicesOlderThan(this.currentDate.minus(20dni)); // n1: get data from repo which satisfy spec
+  public Set satisfyingElementsFrom(InvoiceRepository ir) {
+    return ir.getAllInvoicesOlderThan(this.currentDate.minus("20dni"));
   }
-  // - sama spec nic nie wie o sql - i to wazne
+  // - sama spec nic nie wie o sql - i to jest wazne
   // - spec jest czystsza i explicit wyraza intencje biznesowe
 }
 
 - client call
 
   var spec = new "sql based spec for getting delinquent invoices"();
-  invoiceRepo.selectSatisfying(spec) // troche 'double dispatch'/overkill ale concept ok
+  invoiceRepo.selectSatisfying(spec) // tu jest pp 'double dispatch'
 
 
 BUILDING TO ORDER [GENERATING]
@@ -265,6 +263,6 @@ sample: building from spec
 - jak wojsko zamawia jet to mowi: ma miec 2 machy, zasieg 2k km, cena 50M USD
 - wojsko nie mowi jak to zaprojektowac - mowi jaka spec maszyna ma spelniac
 
-- wg ee: "mimo ze nie wyglada to spec building to ten sam koncept co przy walidacji/selekcji" 
+- wg ee: "mimo ze tak nie wyglada to "spec building" to ten sam koncept spec co przy walidacji/selekcji" 
 
 // gt: dziwny pomysl - zapamieta tylko ze ze spec mozna tworzyc obiekty

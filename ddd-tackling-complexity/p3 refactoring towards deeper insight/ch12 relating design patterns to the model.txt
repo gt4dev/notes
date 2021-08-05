@@ -88,7 +88,7 @@ DIAGRAM COMPOSITE
 - prosty ale sa tricky elements
 
 class Client {
-  Component component; // client ref'uje Component [acz patt. name = composite]
+  Component component; // client ref'uje Component [acz patt. name = composite - odnosi sie do innego elem. z patt.]
 }
 
 abstract class Component {
@@ -101,8 +101,33 @@ class ConcretLeaf : Component {
 
 class Composite : Component {
   List<Composite> children; // n: childem moze byc any component [leaf or inny composite]
-  someOperation() {.. } operates on ALL CHILIDREN of this Composite
+  someOperation() {.. } // n: operates on ALL CHILIDREN of this Composite!!!!
+}
+
+
+EXAMPLE: shipment routs make of routes
+- droga konetnera jest complex: najpierw droga ladowa, koleja, potem trafia do portu, na stated
+- elementy tej drogi modelujemy jako composite
+
+abst. class Route {
+  anyPortOperation(); // any oper, esp. iterate through structure
+}
+
+class CompositeRount : Route // n: kompozyt zawsze wystepuje ;]
+{...}
+
+class DoorLeg : Route { // leaf, 1 z kilku typow
+.. // kazdy leaf [oprocz metod Route] ma swoje specyficzne metody, assoc!!!
+}
+
+class SthLeg : Route { // another leaf
+.. // mocno inna logika niz DoorLeg, np. ref do innych asso ...
 }
 
 
 ch12.3 why not flyweight
+
+
+- pp NIE ma zastosowania w domain model - bo raczej nigdzie to nie pasuje [ale moze gdzies pasuje?]
+- mozesz uzyc fly-weight w impl. VO etc .. ale to detale impl [niezalezne od modelu]
+
