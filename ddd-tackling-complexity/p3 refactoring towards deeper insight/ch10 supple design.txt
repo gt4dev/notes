@@ -1,24 +1,20 @@
-vvvv cont here
-
 ch10 supple design
 // en: supple - gietki
 
-- sw ze zlym design'em - trudno zmieniac - nie mozna go rozwijac
+- sw ze zlym design'em - trudno zmieniac - nie mozna rozwijac
 
 - supple design is the COMPLEMENT to deep modeling
 
 flow
-- masz model, refine'ujesz go [implicit concepts you make explicit] - masz 'raw material'
+- masz model, refine'ujesz go [implicit concepts make explicit ...] -> masz 'raw material'
 
-- zeby laczyc elements w czytelny complex system to model [mdd] musi byc polaczony by 'rigorous design style'
-
-- design of sw musi wspierac zmiany w tym sw
+- zeby laczyc elementy w czytelny complex system - model musi byc zbudowanw wg 'rigorous design style'
 
 - efekt dzialania kodu musi byc 'transparently obvious' [mega oczywisty]
 - dzieki czemu konsekwencje zmiany beda latwe do przewidzenia
 
 - early version of design are usually stiff
-- ale kiedy complexity zatrzymuje progres to wymusza to zmiane design'u
+- ale kiedy complexity zatrzymuje progres to wprowadza sie zmiany design'u
 
 - there is NO formula for designing "easy changable sw"
 - EE prezentuje kilka patterns ktore sie w tym sprawdzaja
@@ -28,13 +24,15 @@ c: ee nie widzial sw ktory mialy nice desgin w calym zakresie
 
 ch10.1 intention revealing interface
 
-- interfejs obiektow [publiczne api: nazwa metody, types of params, returned] powinien mowic dev'owi jak uzywac obiektu
+
+- interfejs obiektow [nazwy metody, types of params, result] powininny mowic dev'owi jak uzywac obiektu
 - inaczej bedzie musial sprawdzac implementacje - zeby zrozumiec jak dziala
 - a to 'zgubi' efekt enkapsulacji
 // g: czy ee nie przesadza?
-- zwieksza sie congitive overload
-- bo dev is flooded with details 'how component does a job'
-- a powinien skupic sie na kodzie klienta ktory wola dany komponent
+- more: zwieksza sie congitive overload
+- dev 
+  - skupia sie na 'how component does a job'
+  - a powinien skupic sie na kodzie klienta ktory wola komponent
 
 vin
 - if dev must consider a impl of component [in order to use it] - value of encaps. is lost
@@ -45,14 +43,12 @@ vin
 - name classes and operations to describe EFFECT AND PUROPSE without ref to means by which they do it
 - nazwy [z UL] powinny oddawac intencje 'po co to jest' a nie 'co to robi w srodku'
 
-- dzieki temu dev klienta naszego obiektu nie bedzie musial znac internals of our object
-
-- best: write uTest - ktory wymusi na Tobie "client PoV" na metody obiektu
+- write uTest - ktory wymusi na Tobie "client PoV" na metody obiektu
 
 example: refactor a paint mixing app
 - trywialny example
 - v0: mamy metode Paint.paint(Paint) // metoda miesza rozne farby
-- v1: rename it   Paint.mixIn(Paint  // nazwa mixIn oddaje intencje "mixowania paints"
+- v1: rename it   Paint.mixIn(Paint) // nazwa mixIn oddaje intencje "mixowania paints"
 
 vin
 - new name 'mixIn' doesn't tell everything about EFFECT of mixIn
@@ -66,15 +62,14 @@ mamy operacje
 - commands - modyfikuja dane
 - queries - wyciagaja dane
 
-- interakcje wielu rules + kompozycje kalkulacji sa EXTREMLLY difficult to predict
-- dev calling that hard operation must understand its implementaitons and impls of ALL its delegations - to predict result
+- mixing many C/Q in 1 oper gives code EXTREMLLY difficult to predict
 
 - uzytecznosc any impl of interface is lost if caller must look into impl. details
 - devs musz miec easy predicable abstracts - inaczej zgubia sie w analizie kombinacji algs [combinatory explosion]
 
-- functions = operacje bez side effects [queries]
+- function = operacja bez side effects [query]
 
-ways of mitigating command problems [tj doing by them side-effects]
+ways of mitigating command problems [tz their side-effects]
 1
 - keep c and q separated in diff operations
 - ensure that commands doesn't return DOMAIN data
@@ -84,15 +79,15 @@ ways of mitigating command problems [tj doing by them side-effects]
 - bardzo czesto:
   - zamiast modyfikowac current object
   - zwroc nowy vo - reprezentujacy rezultat kalkulacji
-- it's common technique
 
-- funk masz obowiazkowo na vo-sach, ale e, ds tez moga miec f
-- z def. commands masz tylko na e-sach [bo vo-sy sa immutable]
+- SEFF masz obowiazkowo na vo-s, ale teoretycznie e, ds tez moga je miec
 
-- met. ktore sa maja responsibilities of Q + C - powinny byc refactored, zeby je rozdzielic
+- commands masz tylko na e-sach [bo vo-sy sa immutable]
+
+- refactor mets ktore sa maja responsibilities of Q + C
 - skompl. kalkulacje przenies do vo-sa
 
-- b. wiele SE mozna wyeliminowac - przenoszac logike do vo-sow
+- b. wiele side-effects mozna wyeliminowac - przenoszac logike do vo-sow
 
 // g: vm chyba tez da sie modyfikowac [jak e]
 
@@ -104,33 +99,31 @@ sample: refactor Paint.mixIn(Paint)
 ch10.3 assertions
 
 
-- commands called on e-s cause side-effects
-- anyony calling C must understand these SE
+- commands called on e-s cause side-effects [SE]
+- anyony calling C must understand its SE
 - assertions make SE explicit and easier to deal with
-
-- to wazne dla commands ktore wywoluje inne commands etc... te juz trudno zrozumiec
+- to szczgolnie wazne dla commands ktore wywoluje inne commands etc... 
 
 problem: 
 - SE of C are implicitly visible in impl.
 - nie widzimy SE patrzac na interfejs obiektu
 
-- there must be means to see SE w/o analysing opetaion logic
-- wprowadzamy elementy tzw. design by contract
+- to see SE w/o analysing operataion code - we can use elems of design by contract
 - na koncu metody robiacej SE - sprawdzamy POST-CONDITIONS [chociaz nie tyle "sprawdzamy" co explicit pokazujemy zmiane]
-- w post-conditions sprawdzamy invariany/stan [metody, klasy, agregatu] po C
+- w post-conditions [of C] sprawdzamy invariany/stan [metody, klasy, agregatu]
 - wiec nie jest to explicit wskazanie zmiany po C
 - na koniec C trzeba sprawdzic ALL modified states - to give this tech sense
 
 - assertions w post-conditions sa "identyczne" z assert'ami w unit-test
 - np: 
   - mieszasz paint1 z paint2 
-  - to na koniec sprawdzash assert(paint1.size + paint2.size = paint3.size)
+  - to na koniec sprawdzasz assert(paint1.size + paint2.size = paint3.size)
 
 - vi: assercje mozesz pokazac w UT'ach - a nie w main code
 
 - assertions desc state [not procedure] - so they are easy to analyse
 
-// g: te assercje troche smierdza - duzo zalezy od jakosci ich impl., moga wrecz wprowadzac w blad
+// g: ale tez assercje troche smierdza - duzo zalezy od jakosci ich impl., moga wrecz wprowadzac w blad
 
 
 ch10.4 conceptual contours
@@ -138,13 +131,13 @@ ch10.4 conceptual contours
 
 - jak mamy monolityczny construct to trudon go zrozumiec, concepty sa zmix'owane
 - ale tez podzielenie zbyt drobne moze skomplikowac strone klienta [klient musi wiedziec jak poszczeg. klocki dzialaja razem]
-- a nawet moze byc utracony jakis wazny koncept doemny
+- nawet moze byc utracony jakis koncept doemny
 
 - cookbook rules don't work - tech. zasady podzialu softu nie dzialaja
-- zwykle w doamains jest jakis logiczna struktura deep domains
+- zwykle w domains jest jakas logiczna struktura deep domains
 
 c: zastrzezenia do spojnosci domen [acz zwykle jest ok]
-- acz nie wszyskie domeny sa spojne!!!
+- nie wszyskie domeny sa spojne!!!
 - nie wszyscy eksperci 
   - maja spojne/jedno zdanie nt jak powinna dzialac domena
   - potrafia sie spojnie wyrazic
@@ -155,22 +148,20 @@ r-s: high cohesion, low coupling are important
 
 vi
 group design elements [operations, interfaces, classes, aggs] into cohesive units
-taking into cosideration your INTUITION ab. divisions in domain
+use your INTUITION to divide domain
 
 w tych podzialach 'wypatruj' conceptual contour [acz to dosc vague def]
 
 the goal is simple set of interfaces that combine logically to make sensible statements in UL
 and w/o distractions of irrelevant options
 
-czystosc modelu/kodu jest efekten cont. refactoring
-ale to refactor modelu a nie tech. refactor
-
 summary
 - intention revealing interfaces allow clients to see objects as units of meaning
 - seff + assertions - make using these units safe and make complex combinations
 - conceptual contours - stabilizuje czesci modelu
 
-// g: cc to p/p "kontur koncepcji" tj. na poziomie modelu wyznaczony 'kontur' grupuje koncepty z high cohesion i jednoczesnie miedzy konturami mamy low coupling
+
+vvvv cont. here
 
 
 ch10.5 standalone classes
@@ -322,7 +313,9 @@ c
 - lepiej dobrze i w calosci naprawic fragment
 - niz po troche refactor'owac w calym systemie
 
+
 ch10.9.2 draw on estabilished formalizms, when you can
+
 
 // cut
 
