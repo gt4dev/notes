@@ -4,20 +4,19 @@ ch10 supple design
 - sw ze zlym design'em - trudno zmieniac - nie mozna rozwijac
 
 - supple design is the COMPLEMENT to deep modeling
+// g: bo pozwala utrzymac czytelnie zakodowany model
 
-flow
-- masz model, refine'ujesz go [implicit concepts make explicit ...] -> masz 'raw material'
+- zeby laczyc elementy w czytelny complex system - model musi byc zbudowany wg 'rigorous design style'
 
-- zeby laczyc elementy w czytelny complex system - model musi byc zbudowanw wg 'rigorous design style'
+- EFEKT DZIALANIA KODU MUSI BYC 'TRANSPARENTLY OBVIOUS' [MEGA OCZYWISTY]
+- DZIEKI TEMU KONSEKWENCJE ZMIANY KODU BEDA LATWE DO PRZEWIDZENIA
 
-- efekt dzialania kodu musi byc 'transparently obvious' [mega oczywisty]
-- dzieki czemu konsekwencje zmiany beda latwe do przewidzenia
-
-- early version of design are usually stiff
+zwykle
+- EARLY version of design is stiff
 - ale kiedy complexity zatrzymuje progres to wprowadza sie zmiany design'u
 
 - there is NO formula for designing "easy changable sw"
-- EE prezentuje kilka patterns ktore sie w tym sprawdzaja
+- EE prezentuje kilka patterns ktore sie mu sprawdzaja
 
 c: ee nie widzial sw ktory mialy nice desgin w calym zakresie
 
@@ -29,19 +28,19 @@ ch10.1 intention revealing interface
 - inaczej bedzie musial sprawdzac implementacje - zeby zrozumiec jak dziala
 - a to 'zgubi' efekt enkapsulacji
 // g: czy ee nie przesadza?
-- more: zwieksza sie congitive overload
-- dev 
+- more: zwieksza sie cognitive overload
+- more: dev 
   - skupia sie na 'how component does a job'
-  - a powinien skupic sie na kodzie klienta ktory wola komponent
+  - a powinien na kodzie klienta [ktory wola komponent]
 
 vin
 - if dev must consider a impl of component [in order to use it] - value of encaps. is lost
 
 - klasy i metody musza miec nazwy ktore odzwierciedlaja koncpecje z modelu
 
-vin
-- name classes and operations to describe EFFECT AND PUROPSE without ref to means by which they do it
-- nazwy [z UL] powinny oddawac intencje 'po co to jest' a nie 'co to robi w srodku'
+VIN
+- NAME CLASSES AND OPERATIONS TO DESCRIBE EFFECT AND PUROPSE WITHOUT REF TO MEANS BY WHICH THEY DO IT
+- NAZWY [Z UL] POWINNY ODDAWAC INTENCJE 'PO CO TO JEST' A NIE 'CO TO ROBI W SRODKU'
 
 - write uTest - ktory wymusi na Tobie "client PoV" na metody obiektu
 
@@ -65,7 +64,7 @@ mamy operacje
 - mixing many C/Q in 1 oper gives code EXTREMLLY difficult to predict
 
 - uzytecznosc any impl of interface is lost if caller must look into impl. details
-- devs musz miec easy predicable abstracts - inaczej zgubia sie w analizie kombinacji algs [combinatory explosion]
+- devs musza miec easy predicable abstracts - inaczej zgubia sie w analizie kombinacji algs [combinatory explosion]
 
 - function = operacja bez side effects [query]
 
@@ -73,7 +72,7 @@ ways of mitigating command problems [tz their side-effects]
 1
 - keep c and q separated in diff operations
 - ensure that commands doesn't return DOMAIN data
-- c should be ASimpleAP [zeby nie komplikowac ich analizy]
+- c should be A-Simple-AP [zeby nie komplikowac ich analizy]
 - all queries/calculations - do in SEFF
 2 
 - bardzo czesto:
@@ -81,11 +80,10 @@ ways of mitigating command problems [tz their side-effects]
   - zwroc nowy vo - reprezentujacy rezultat kalkulacji
 
 - SEFF masz obowiazkowo na vo-s, ale teoretycznie e, ds tez moga je miec
-
 - commands masz tylko na e-sach [bo vo-sy sa immutable]
 
-- refactor mets ktore sa maja responsibilities of Q + C
-- skompl. kalkulacje przenies do vo-sa
+- refactor methods ktore sa maja responsibilities of Q + C
+- skompl. kalkulacje przenies do vo-s
 
 - b. wiele side-effects mozna wyeliminowac - przenoszac logike do vo-sow
 
@@ -100,11 +98,11 @@ ch10.3 assertions
 
 
 - commands called on e-s cause side-effects [SE]
-- anyony calling C must understand its SE
+- anyone calling C must understand its SE
 - assertions make SE explicit and easier to deal with
 - to szczgolnie wazne dla commands ktore wywoluje inne commands etc... 
 
-problem: 
+problem:
 - SE of C are implicitly visible in impl.
 - nie widzimy SE patrzac na interfejs obiektu
 
@@ -161,15 +159,11 @@ summary
 - conceptual contours - stabilizuje czesci modelu
 
 
-vvvv cont. here
-
-
 ch10.5 standalone classes
 
 
 - dependencies make model/code hard [to code/change/maintain ..]
 
-- kazda assoc tworzy zaleznosc
 - zrozumienie klasy wymaga zrozumienia jej samej i all elems od ktorych zalezy [i od ktorych te klasy zaleza ..]
 
 - kazdy param, returned result - tez tworza dep - ktore trzeba zrozumiec
@@ -177,42 +171,39 @@ ch10.5 standalone classes
 - both: modules/aggs are aimed to limit the web of interdependencies
 
 - im wiecej elems w module - tym wiekszy mental overload
-- problem sie zwieksza jesli masz 'implicit conepts' thus use 'explicit concepts' [are easier to grasp]
+- problem sie zwieksza jesli masz 'implicit concepts'
+  - thus make them 'explicit' [are clearer]
 
 - in well distilled subset of domain - the concept deps can [usually] be reduced to ZERO [yes, zero]
-- mozesz te klase zrozumie as is [bez zadnych deps]
 
 - low coupling is fundamental to object design
 
-- if you can - eliminate all concepts and make class self-containd [w/o deps], understood alone
-- // g: acz to troche sciema: bo all classes deps on others - cholera wie jak ee chce wyeliminowac deps ...
-
-- standalone classes - to extremum, rzadko widziane - wiekszosc class bedzie zalazala od innych
+- standalone classes - to rzadko widziane - wiekszosc class bedzie zalazala od innych
 - acz mozesz wyeliminowac all NON-ESSENTIAL deps
 - z core concepts - mozesz zejsc do standalone class [w modelu np: customer, ..]
 
 - ale standalone - moga byc tez complex algs [zaszyte w vo-ach]
 - wydzielone, niezalezne od innych - latwiej je analizowac
 
-- std bedziesz mial duuuzo deps - i to normalne i pozadane - pod warunkiem ze sa really required
+- std bedziesz mial duuuzo deps - to normalne i porzadane - pod warunkiem ze sa really required
 
 
 ch10.6 closure of operations
 
 
 - c: pojecie 'closure' pochodzi z math
-- jesli operacja [np. +] dziala na liczbach real to efekt tez jest liczba real [domkniecie matematyczne]
+- jesli operacja [np. +] dziala na liczbach rzeczywistych to efekt tez jest liczba rzeczywista [domkniecie matematyczne]
 
 - jesli mozliwe - zwracaj z metody typ ktory jest taki sam jak args tej metody
 - zaleta: closure - provides interface without introducing any dependency/new concept [bo ma 1 typ]
 
-- CL uzywamy glownie z vo-s
-- czasem mozesz miec e np. Employee z meth: GetSupervisor():Employee
+- c uzywamy glownie z vo-s
+- czasem [rzadko] mozesz miec e np. Employee z meth: GetSupervisor():Employee
 
-- type in/out moga byc abstract [a w realu jakies konkretne, rozne pod-typy]
+- type in/out moga byc abstract [a w realu rozne konkretne typy]
 
-- forma posrednia CL: metoda ma arg. identyczne jak 'this' ale zwracaja nowy typ
-- acz to nie sa closed operations ale maja jakies zalety closures
+- forma posrednia c: metoda ma arg. identyczne jak 'this' ale zwracaja nowy typ
+- to nie jest closed operation ale ma czesc zalet closures
 
 sample: selecting from collections
 // g: Java bezposrednio nie ma CL operations na listach, C# ma przez linq
@@ -220,13 +211,16 @@ sample: selecting from collections
 - myDotNetCollection.Where(i => i.cash > 100)   <<< zwraca inna kolekcje, tego samego typu
 
 
+vvv cont here
+
+
 ch10.7 declarative design
 
 
-vin ab assertions / intention revealing
+vin about assertions / intention revealing
 - ee wspomina ze assertions sa super ale nie mozna miec ZADNYCH gwarancji w hand-written sw
 - bo niektore assertions moga byc niepotrzebna lub moze ich brakowac
-// g: najblizsze tej idei 'ee-assetions' sa p/b asercja z unit tests
+// g: najblizsze idei 'ee-assetions' sa p/p asercja z unit tests
 // - UT cos robi i sprawdzasz co sie zmienilo
 // - ale to dosc HC w analizie [zeby zrozumiec co sie zmienia po call of method-command] i niepewne [jak w/w napisane]
 - intention revealing - moze tez miec ten problem - kod moze 'wprowadzac w blad'

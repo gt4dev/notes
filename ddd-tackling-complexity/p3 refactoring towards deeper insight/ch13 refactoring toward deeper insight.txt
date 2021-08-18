@@ -1,0 +1,63 @@
+ch13 refactoring toward deeper insight
+
+
+[remind] glowne pts w drodze do deeper model
+- live in the domain
+- look at things from diff PoV
+- continueous dialog with experts
+
+n: w/w to 'miekkie wymagania' [nie techniczne] - sa top w deeping model
+
+n: ch13 to podsumowanie "p3 refactoring towards deeper insight" - pewne rzeczy sie powtarzaja
+
+
+ch13.1 initiation
+
+
+[cut]
+ee mowi co moze byc initem do zmian w modelu:
+- niestrawnosci/sniespojnosci/nauczenie sie czegos nowego/ ... [bylo 'all' wczesniej]
+
+
+ch13.2 exploration teams
+
+
+zmiany w modelu moga byc
+- male - kilka godzin pracy 1 osoby
+- wieksze - "duuuzo czasu" wielu osob
+
+ee suggest
+- inicjator zmiany buduje zespol: 4-5 osob ktore znaja problem || expert doemenowy || dobrze modeluja ... [zalezy od potrzeb]
+- grupa robi BS przez 0.5 - 1.5 h
+  - rozpisuja scenariusze
+  - buduja nowy model
+- wynik sesji - jesli uwazaja za 
+  - dobry - zaczynamy kodowac
+  - zly - dajemy sobie kilka dni na przemyslenia i powtarzamy sesje
+  
+exploration b. practicies
+- scope and sleep - rob krotkie meeting'i przez kilka dni [niz 1 duzy i zakonczyc na stack'u]
+- exercise UL - cwicz rozne scenariusze na UL
+
+c: wg EE 'brainstorming session' is unstructured, dynamic and ... mega productive ;]
+// gt: do lot of BS with others, always, with anyone!!!!!
+
+
+ch13.3 prior art
+
+
+[cut]
+
+
+ch13.4 a design for developers
+
+
+[cut]
+- in short: use supple design
+c: wg EE: software is for user but also for developers!!!
+
+
+ch13.5 timing
+
+
+ch13.6 crisis as opportunity
