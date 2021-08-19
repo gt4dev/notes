@@ -1,0 +1,29 @@
+- w skomplikowanym systemie nie da sie znac kazdy szczegol
+- we need techs to understand big models/complex domains
+- p4 says about it
+
+- tu wiekszosc decyzji musi byc ustalona na poziomie zespolu lub miedzy zespolami
+
+- model duuuzego przedsiewziecia - nie da sie pokazac jako single unit
+- system musi byc podzielony na mniejsce na poziomie
+  - koncepcji
+  - implementacji [tak, impl tez ;]
+
+- wazne by miec modularity without loosing benefits of integration
+- moduly maja byc wyseparowane i jednoczesnie musza dobrze wspolpracowac
+
+- single big model bedzie nieporeczny, bedzie mial duzo contradictions, duplications ...
+- ale tez zbyt rozdrobnione system na moduly - bez zapewnienia integracji 
+  - nie bedzie dostarczal enterprise level answers
+  - beda consistency problems in 'integration points'
+  
+celem strategic design principles jest
+- redukcja zaleznosci miedzy partami systemu
+- utrzymanie interoperatibility miedzy ...
+
+duze tematy w strategic design principles
+- contexts
+- distillation
+- large scale structures
+
+16161644 "-1"

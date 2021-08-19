@@ -55,9 +55,40 @@ ch13.4 a design for developers
 [cut]
 - in short: use supple design
 c: wg EE: software is for user but also for developers!!!
+- bo devs tez sa "user'ami softu": dodaja nowe feats, refactor old ...
+
+supple design pros
+- easy to anticipate effect of running code
+- ...                consequences of changing the code
+- low mental overload - przez reducing deps [single class] and side-effects
 
 
 ch13.5 timing
 
 
+- c: wg EE jesli czekasz ze zmiana az bedzie ona w pelni uzasadniona - to czekasz za dlugo
+
+- cont. refactoring considered as best practice = caly czas refactor'uj
+  - chodzi glownie o r toward deeper insight
+  - acz tech. refactory tez sa wazne
+- c: wiekszosc zespolow jest zbyt ostrozna z r
+
+kiedy musisz r-owac
+- design nie pokazuje aktualnego zrozumienia domeny
+- wazne concepts sa implicit
+- widzisz mozliwosc r waznej czesci modelu na latwiejsza w uzyciu
+
+w/w to dosc agresywne podejscie do r
+nie zawsze warto tak ostro do tematu podchodzic ;]
+np. odpusc se kilka dni przed release, sa watpliwosci do nowego modelu, ...
+
+
 ch13.6 crisis as opportunity
+
+
+w sw jak w ewolucji
+- wiekszosc czasu jest normalne, powolny rozwoj
+- nagle nastepuje ostra zmiana
+
+- to zwykle wyglada bardziej jak crisis [a nie opportunity]
+- ale trzeba sie z tym zmierzyc
