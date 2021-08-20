@@ -21,9 +21,16 @@ celem strategic design principles jest
 - redukcja zaleznosci miedzy partami systemu
 - utrzymanie interoperatibility miedzy ...
 
-duze tematy w strategic design principles
-- contexts
-- distillation
+strategic design principles
+- context 
+  - the most fundamental principle
+  - dobry model [small or big] musi byc wewn. spojny, bez sprzecznych definicji
+  - wyznacz BC wewn. ktorego zbudujesz spojny model
+- [strategic] distillation
+  - redukuje balagan i fokusuje na waznych elementach
+  - czesty problem: wysilek jest wkladany w poboczne domeny, a musimy zrobic focus na top imp. stuff
+  - tu mamy "core domain" ktory dzieki 'czystosci/fokusowi' -> lepiej zaprojektuejy
+  - 2nd'ary sa 'supporting elements [domains]'
 - large scale structures
-
-16161644 "-1"
+  - ee soon pokarze LSS [da poglad w temat] a w detalach omowi tylko 1 of LSS = 'responsibility layers'
+  - c: nie ma katalogu LSS - to trzeba wymyslac on-demand/case

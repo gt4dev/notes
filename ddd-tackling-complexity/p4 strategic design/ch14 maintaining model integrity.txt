@@ -1,0 +1,69 @@
+ch14 maintaining model integrity
+
+
+przyklad
+- team1 [z domany: payments] - stworzyl obiekt Charge
+- team2 [z doemny: invoices] - stwierdzil ze im brakuje 'pola x' w Charge i dodali to pole
+- a to blad: oba zespoly powinny dogadac 
+  - czy dodac to pole do Charge 
+  - czy moze teams powinny miec osobne modele
+- finalnie: utworzono osobne modele i 2 osobne klasy: CustomerCharge / SupplierCharge
+
+mega fundamentalny req:
+model musi byc wewn. spojny, all terms maja to samo znaczenie, nie zawiera sprzecznych rules
+termy sa jednoznaczne [unambigous]
+
+unification - stanu 'internal consistency of model'
+
+model niespojny jest bezuzyteczny!
+
+w big systemach - nie da sie stowrzyc one big consistent model
+  tj: da sie ale to strasznie duuuuzo kosztuje time/money - i jest bez sensu
+musisz miec kilka mniejszych modeli
+jak masz kilka modeli to niektore moga sie rozjerzdzac [acz kluczowe elementy trzeba probowac zachowac spojne]
+
+c: ee sam kilka razy probowal kodowac 'one big model' i dzis uwaza ze to byl blad
+
+17161623
+
+ch14.1 bounded context
+
+
+ch14.2 continuous integration
+
+
+ch14.3 context map
+
+
+ch14.4 relationships between BCs
+
+
+ch14.5 shared kernel
+
+
+ch14.6 customer/supplier development teams
+
+
+ch14.7 conformist
+
+
+ch14.8 anticorruption layer
+
+
+ch14.9 separate ways
+
+
+ch14.10 open host service
+
+
+ch14.11 published language
+
+
+ch14.12 unifying elephant
+
+
+ch14.13 choosing you model context strategy
+
+
+ch14.14 transformations
+
