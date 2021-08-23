@@ -24,10 +24,74 @@ jak masz kilka modeli to niektore moga sie rozjerzdzac [acz kluczowe elementy tr
 
 c: ee sam kilka razy probowal kodowac 'one big model' i dzis uwaza ze to byl blad
 
-17161623
 
 ch14.1 bounded context
 
+
+- w big projects musimy miec many models
+- inaczej kod bedzie guggy, difficult to understand
+  - ciezko uzywac 1 big model
+
+c
+- czasem od razu widac ze mamy rozne modele [eg. system 1 integruje sie z systemem 2 - oba maja own models]
+- czasem nie widac, jak w sample z Suppliercharger i CustomerCharger
+
+c: czasem w 1 zespole uzywamy 2 modele np: stary i nowy model ...
+
+- technicznie translacja danych miedzy modelami zwykle jest prosta
+- wazniejsze jest uzgodnienie terms miedzy modelami etc..
+
+- kazdy model musi miec explicitly okreslony zakres/granice jego uzywania [context]
+- w ramach granic model musi byc unified [spojny]
+
+context = granice uzywania modelu, granice moga byc 'wyznaczone' przez 
+- org. zespolu
+- stwierdzenie ze model uzywamy w okreslonej czesci app
+- fizyczne granice w kodzie [folder, osobna schema w bazie lub wyizolowane struktury]
+
+- w ramach granic - trzymaj model striclty consistent
+
+- kodujac model "nie przejmu sie" co dzieje sie za modelem ;]
+
+
+example: booking context
+- n: kod integrujacy diff BC - nie siedzi w BC ale jest miedzy BC'ami
+
+w example pokazujemy zla praktyke
+- mamy 2 zepoly w ramach 1 project - typowy case
+- kazdy zespol pracuje na own BC
+- teams musza koordynowac dane, concepcje ...
+
+jest zle bo
+- zepsoly NIE widza ze pracuja na diff ctx'ach - dosc to typowy case
+- teams robia integracje 'nieregularnie/ad hoc' - jak jest potrzeba
+
+a powinny
+- okreslic BCe
+- zastosowac konkretna strategie integracji [ee tu propojuje shared kernel]
+- 1 of 1st tasks: okreslamy relacje miedzy oboma BC'ami [booking, voyage schedule]
+
+- n: dzielenie kodu/danych - powinno byc robione B. OSTROZNIE
+// g: ale powinno, zeby nie duplikowac stanow, kodu - just do it but ostroznie
+
+
+recog. splinters within BC
+- jest wiele symptomow - ze w 1 bc mamy zamurowane kilka bc'ow
+- top prob: interfejsy [obiektow domeny?] nie pasuja do siebie
+  - latwo to wylapac w fazie continuous integration
+- inny: confusions of UL
+
+zwykle sa 2 typy problemow - zw. z laczeniem 2 BC'ow w 1 BC
+- duplicated concepts
+  - mamy kilka miejsc w modelu ktore wyrazaja ten sam lub podobny concept
+  - jak sie zmienia 1 rzecz to aktualizujemy w kilku miejscach [!!!]
+- false cognates
+  - more tricky
+  - ludzie okreslaja tego samego term do okreslenia diff things
+  - przyklad "Charge" z ch start
+
+
+18160704
 
 ch14.2 continuous integration
 

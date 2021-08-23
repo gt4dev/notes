@@ -211,29 +211,27 @@ sample: selecting from collections
 - myDotNetCollection.Where(i => i.cash > 100)   <<< zwraca inna kolekcje, tego samego typu
 
 
-vvv cont here
-
-
 ch10.7 declarative design
 
 
 vin about assertions / intention revealing
-- ee wspomina ze assertions sa super ale nie mozna miec ZADNYCH gwarancji w hand-written sw
-- bo niektore assertions moga byc niepotrzebna lub moze ich brakowac
-// g: najblizsze idei 'ee-assetions' sa p/p asercja z unit tests
+- ee wspomina ze assertions sa super ale nie ma ZADNYCH gwarancji w hand-written sw
+  - bo niektore assertions moga byc niepotrzebne lub moze ich brakowac
+- intention revealing - moze tez miec ten problem - kod moze 'wprowadzac w blad'
+
+// g: pp najblizsze idei 'ee-assetions' sa asercje z unit tests
 // - UT cos robi i sprawdzasz co sie zmienilo
 // - ale to dosc HC w analizie [zeby zrozumiec co sie zmienia po call of method-command] i niepewne [jak w/w napisane]
-- intention revealing - moze tez miec ten problem - kod moze 'wprowadzac w blad'
 
 - declarative design to [posrednio] odpowiedz na w/w problemy ["klamania" w assetions/intention revealing interface]
 - dd = way of writing program as kind of executable specification
-- generowanie executable spec - moze miec wiele form - przez
+- generowanie "executable spec" - moze miec wiele form:
   - przez reflekscje
   - przez std generowanie kodu [ze specyfikacji]
 
 problemy z generowaniem kodu
 - languages nie sa wystarczajaca expresyjne zeby opisac domene
-- wygen. kod ciezko laczyc z 'hand written code' - jest hc
+- wygenerowany kod ciezko laczyc z 'hand written code'
 
 
 ch10.7.1 domain specific languages
@@ -244,7 +242,8 @@ ch10.7.1 domain specific languages
 - tworzymy jezyk z ktorego generujemy kod
 
 problem
-- trudno pisac dsl - zeby nadarzaly za zmianami w modelu [ciezko zmieniac gramatyke dsl, to wymaga skill'a]
+- trudno pisac dsl - a musi nadarzac za zmianami w modelu
+  - ciezko zmieniac gramatyke dsl, to wymaga skill'a
 
 
 ch10.8 declarative style of design
@@ -253,55 +252,51 @@ ch10.8 declarative style of design
 ch10.8.1 extending spec in a declarative style
 
 
-- c: pattern spec jest forma 'predykatu'
-
-- przy spec czesto chcesz je kombinowac, laczyc
-
-- spec to predykat a predykaty mozna laczyc [std operatorami and, or, not i innymi operacjami]
+- spec jest forma 'predykatu'
+- specs czesto chcesz laczyc
+- spec to predykat a predykaty laczysz operatorami: and, or, not [ale i "doemenowymi" operacjami]
 
 - bazowy interf. WSZYSTKICH spec
+
 public interface Specification {
   // v0
-  isSatisfiedBy(object o);
+  bool isSatisfiedBy(object o);
   // v1 - jesli laczysz specs; n: these are "closure opers"
   Specification and(Specification s);
-  ...            or(..);
+  ...           or (..);
   ...           not(); // n: bez param
 }
-- acz nie wszyskie w/w opers potrzebujes
-- a czasem potrzebujesz innych operacji laczenia specs, eg. subsume(Spec..)
-
+- acz pisz tylko operacje ktore realnie potrzebujesz
+- czasem potrzebujesz innych operacji laczenia, eg: subsume(Spec..)
 
 sample - laczenie specs
-Specification ventilated = new ....;
-Specification armored = new ....;
+Specification ventilated = new Spec1(.);
+Specification armored = new Spec2(.);
 
 Specification both = ventilated.and(armored);
 Specification either = ventilated.or(armored);
 
 
-sample - impl. or/and/.. -> see book
+- sample of impl. or/and/.. -> see book
+
 - rozne specs wymagaja roznych impls [vide sql spec ..]
 
 
 ch10.9 angles of attach
 
 
-wstep do calego ch10
-- all techs presented here maja na celu
+- all techs from ch10 maja na celu
   - clarify intention of code
-  - make consequences of calling it - transparent [know side effects?]
+  - make consequences of calling it - transparent
   - decouple model elements
-  
-// g: czy aktualna wiedza nt supple designs z ch10 sie zmienila od 2004?
 
 
 ch10.9.1 carve off subdomains
 
 
-- nie mozesz 'walczyc' z designem calej apki 'na raz'
-- znajdz fragment systemu, wydziel go i zastosuj supple designs [refactor code]
-- szukaj fragmentu domeny [calej subdomeny], a nie technicznego: jakies wyliczenia, rule bizneswoe ...
+- nie mozesz ulepszac designu calej apki 'na raz'
+- raczej: znajdz fragment systemu, wydziel go i refactor to use supple designs
+- ale szukaj fragmentu domeny, a nie technicznego, np: jakies wyliczenia, rule biznesowe ...
 
 c
 - lepiej dobrze i w calosci naprawic fragment
@@ -314,27 +309,28 @@ ch10.9.2 draw on estabilished formalizms, when you can
 // cut
 
 EXAMPLE
-- przyklad na bazie 'sindicated loan system' ["pozyczka dla intel'a"]
+- przyklad na bazie 'sindicated loan system' ["pozyczka dla intel"]
 
 separating commands and queries
-- problem to fix: Loan ma metode ktora robi i calcs i zmiania stan Loan
-- fix: rozbicie jej na command and query - client calls:
-                                                  // g: skoro metoda zwraca:
-  Map distribution = aLoan.calculateSth(sthElse); // cos - to jest pp query/SEFF
-  aLoan.applyPayments(distribution);              // nic - to jest pp cmd
+- problem: Loan ma metode ktora liczy i zmiania stan Loan
+- fix: rozbicie metody na command and query - client calls:
+                                                   // g n: metoda zwraca
+  Map distribution = aLoan.calculateSth(sthElse);  // - cos - to jest query/SEFF
+  aLoan.applyPayments(distribution);               // - nic - to jest cmd
 
-- TEN CASE SUPER POKAZUJE MOC CMD/Q[/IMMUT.] - jest super czytelnie!!!!!!!
-- c: w/w seff wcale nie musi uzywac immutable objects - to 2nd'ary problem
+- TEN CASE SUPER POKAZUJE MOC CMD/Q[/IMMUT.] - JEST SUPER CZYTELNIE!!!!!!!
+- c: SEFF i Q to nie to samo acz czesto laczone 
+  - w w/w SEFF nie musi zwracac immutable objects
 - sam cmd wcale nie musi byc "1 LoC"
-  - moze calkiem ostro grzebac po modelu
+  - moze calkiem ostro trawersowac po obiekcie
   - ale niech nic nie liczy
   
-// g:q: jakim typem metody [q czy c] jest klient - bo wywoluje on obliczenia a potem zmienia stan
+// g q: jakim typem metody [q czy c] jest klient - bo wywoluje on obliczenia a potem zmienia stan
 
 // g-btw
-- przyklad Loan fajnie pokazuje jak rozsiac kalkulacje po kilku obiektach
-- normalnie robiles metody 'kalkulatory' i przekazywales im dane wejsciowe [anemiczne klasy]
-- EE cale kalkulacje pieknie rodzielil na kilka klas
+- przyklad fajnie pokazuje jak rpzproszyc alg. kalkulacji na kilku obiektow
+- normalnie robiles metody 'kalkulatory' i przekazywales im dane wejsciowe [anemiczne struktury klas]
+- EE kalkulacje pieknie rodzielil na kilka klas
 
  | <e>  |          | <vo>      |               | <pp vo> |  
  | Loan |<>------->| Share Pie | owner ]<>---->|  Share  |
@@ -342,27 +338,26 @@ separating commands and queries
 
 
 making implicit concepts explicit
-- dodanie explicit klasy SharePie - uproscilo algs, model ... - obvious ;]
+- dodanie explicit klasy SharePie - uproscilo algs, model ...
 - mega c
   - caly alg kalkulacji kredytu dla intela jest rozdezielony na 3 w/w klasy!!! 
-  - zwykle robiles to alg w 1 metodzie - a tu - rodzielenie alg na 3 klasy - UPRASZCZA KOD!!!
+  - zwykle robiles alg w 1 metodzie - a tu - rodzielenie alg na 3 klasy - UPRASZCZA KOD!!!!!!
   
 
 SharePie becomes VO
-- ee refactors metody tak by zrobic z nich SEFF [plus 'closure' bo zwracaja SharePie]
+- ee refactors metody tak by zrobic z nich SEFF [i 'closure' -> zwracaja SharePie]
 - troche z tym roboty
-- ale kod jest duuuzo czytelniejszy [z seff]
+- ale kod jest duuuuuuzo czytelniejszy [z seff]
 
 // g: mega c
 - dla algs zaszytych w modelu - KOMPLETNIE nie ma znaczenia czy to e czy vo
-  - oprocz LL tech kwestii: modyfikacji e, ident. e by id ...
+  - oprocz LL tech kwestii: modyfikacji e, ident. e by id, immutability of vo, granice agregatu ...
 - alg cos po prostu liczy na bazie stanu klasy, ew. zmienia stan klasy ...
-- pomijam tu ew. technikalia jak immutability of vo, granice agregatu ... to detale ;]
 - a zapis stanu obiektu do bazy - to problem repo
 
 
 sample - po refactorze
-- udalo sie wyizolowac complex logic do VO [tak, do vo] i zamknac teo w SEFF
-// g: sample obliczen gdzie SEFF zwraca nowy obiekt zamiast modyfikowac 'this' 
-// - wygladaja REWELKA
+- udalo sie wyizolowac complex logic do VO [tak, do vo] i zamknac w SEFF
+// g n: ee sample gdzie SEFF zwraca nowy obiekt zamiast modyfikowac 'this':
+// - IT'S TOTAL REWELKA
 // - latwo sie to analizuje [nie wnikasz jakie inne metody obiekt modyfikuja, masz po each call "nowy obiekt" i na nim robisz next method call ..]
