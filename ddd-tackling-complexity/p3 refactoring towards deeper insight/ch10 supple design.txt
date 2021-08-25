@@ -214,18 +214,22 @@ sample: selecting from collections
 ch10.7 declarative design
 
 
+// g: declarative - mowisz co chcesz a nie jak program ma sie wykonac
+// samples: sql, prolog, html ...
+
+
 vin about assertions / intention revealing
-- ee wspomina ze assertions sa super ale nie ma ZADNYCH gwarancji w hand-written sw
-  - bo niektore assertions moga byc niepotrzebne lub moze ich brakowac
-- intention revealing - moze tez miec ten problem - kod moze 'wprowadzac w blad'
+- ee wspomina ze assertions sa super ale nie ma ZADNYCH gwarancji w hand-written sw np
+  - niektore assertions moga byc niepotrzebne lub moze ich brakowac
+  - intention revealing - tez moze 'wprowadzac w blad'
 
 // g: pp najblizsze idei 'ee-assetions' sa asercje z unit tests
-// - UT cos robi i sprawdzasz co sie zmienilo
+// - UT cos robi i sprawdza "co sie zmienilo"
 // - ale to dosc HC w analizie [zeby zrozumiec co sie zmienia po call of method-command] i niepewne [jak w/w napisane]
 
 - declarative design to [posrednio] odpowiedz na w/w problemy ["klamania" w assetions/intention revealing interface]
 - dd = way of writing program as kind of executable specification
-- generowanie "executable spec" - moze miec wiele form:
+- generowanie "executable spec" - moze miec wiele form
   - przez reflekscje
   - przez std generowanie kodu [ze specyfikacji]
 
@@ -242,7 +246,7 @@ ch10.7.1 domain specific languages
 - tworzymy jezyk z ktorego generujemy kod
 
 problem
-- trudno pisac dsl - a musi nadarzac za zmianami w modelu
+- trudno pisac dsl [really?]
   - ciezko zmieniac gramatyke dsl, to wymaga skill'a
 
 
@@ -256,7 +260,7 @@ ch10.8.1 extending spec in a declarative style
 - specs czesto chcesz laczyc
 - spec to predykat a predykaty laczysz operatorami: and, or, not [ale i "doemenowymi" operacjami]
 
-- bazowy interf. WSZYSTKICH spec
+- bazowy interf. WSZYSTKICH spec:
 
 public interface Specification {
   // v0
@@ -267,7 +271,7 @@ public interface Specification {
   ...           not(); // n: bez param
 }
 - acz pisz tylko operacje ktore realnie potrzebujesz
-- czasem potrzebujesz innych operacji laczenia, eg: subsume(Spec..)
+- czasem potrzebujesz innych operacji eg: subsume(Spec..)
 
 sample - laczenie specs
 Specification ventilated = new Spec1(.);
@@ -285,10 +289,10 @@ Specification either = ventilated.or(armored);
 ch10.9 angles of attach
 
 
-- all techs from ch10 maja na celu
-  - clarify intention of code
-  - make consequences of calling it - transparent
-  - decouple model elements
+all ch10 techs maja na celu
+- clarify intention of code
+- make consequences of calling it - transparent
+- decouple model elements
 
 
 ch10.9.1 carve off subdomains
@@ -296,7 +300,7 @@ ch10.9.1 carve off subdomains
 
 - nie mozesz ulepszac designu calej apki 'na raz'
 - raczej: znajdz fragment systemu, wydziel go i refactor to use supple designs
-- ale szukaj fragmentu domeny, a nie technicznego, np: jakies wyliczenia, rule biznesowe ...
+- szukaj fragmentu domeny, a nie technicznego, np: jakies wyliczenia, rule biznesowe ...
 
 c
 - lepiej dobrze i w calosci naprawic fragment
@@ -315,26 +319,34 @@ separating commands and queries
 - problem: Loan ma metode ktora liczy i zmiania stan Loan
 - fix: rozbicie metody na command and query - client calls:
                                                    // g n: metoda zwraca
-  Map distribution = aLoan.calculateSth(sthElse);  // - cos - to jest query/SEFF
-  aLoan.applyPayments(distribution);               // - nic - to jest cmd
+  Map distribution = aLoan.calculateSth(sthElse);  // - cos - tz. to jest query/SEFF
+  aLoan.applyPayments(distribution);               // - nic - tz. to jest cmd
 
 - TEN CASE SUPER POKAZUJE MOC CMD/Q[/IMMUT.] - JEST SUPER CZYTELNIE!!!!!!!
-- c: SEFF i Q to nie to samo acz czesto laczone 
-  - w w/w SEFF nie musi zwracac immutable objects
+- c: SEFF i Q to nie to samo acz b. czesto laczone 
+  - w w/w SEFF nie musi ale zwykle zwraca immutable object
 - sam cmd wcale nie musi byc "1 LoC"
   - moze calkiem ostro trawersowac po obiekcie
-  - ale niech nic nie liczy
+  - ale nic nie liczy
   
 // g q: jakim typem metody [q czy c] jest klient - bo wywoluje on obliczenia a potem zmienia stan
 
 // g-btw
-- przyklad fajnie pokazuje jak rpzproszyc alg. kalkulacji na kilku obiektow
+- przyklad fajnie pokazuje jak rozproszyc alg. na kilku obiektow
 - normalnie robiles metody 'kalkulatory' i przekazywales im dane wejsciowe [anemiczne struktury klas]
-- EE kalkulacje pieknie rodzielil na kilka klas
+- EE kalkulacje pieknie rodzielil na kilka klas domeny
 
  | <e>  |          | <vo>      |               | <pp vo> |  
  | Loan |<>------->| Share Pie | owner ]<>---->|  Share  |
- |      |          |           |               |         |  
+ |      |          |           |               |         | 
+ 
+ payments = calcPaymentShares(double):SharePie
+ applyPaymentShares(payments) // n: q result is directly applied to cmd
+ getAmount():double
+ 
+                    prorated(double):SharedPie // en:propcjonalnie
+                    plus(SharePie):SharePie
+                    minus(SharePie):SharePie
 
 
 making implicit concepts explicit
@@ -357,7 +369,7 @@ SharePie becomes VO
 
 
 sample - po refactorze
-- udalo sie wyizolowac complex logic do VO [tak, do vo] i zamknac w SEFF
+- udalo sie wyizolowac complex logic do VO [tak, do vo!!!] i zakodowac w SEFF
 // g n: ee sample gdzie SEFF zwraca nowy obiekt zamiast modyfikowac 'this':
 // - IT'S TOTAL REWELKA
 // - latwo sie to analizuje [nie wnikasz jakie inne metody obiekt modyfikuja, masz po each call "nowy obiekt" i na nim robisz next method call ..]

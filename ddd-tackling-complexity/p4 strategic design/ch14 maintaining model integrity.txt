@@ -91,10 +91,37 @@ zwykle sa 2 typy problemow - zw. z laczeniem 2 BC'ow w 1 BC
   - przyklad "Charge" z ch start
 
 
-18160704
-
 ch14.2 continuous integration
 
+
+- kiedy wiele osob procuje na 1 bc to model ma MOCNA tendencje do fragmentacji
+- przy 3-4 osoby to powazny problem, a wiecej = wiekszy problem
+
+- fragmentacja modelu na mniejsze - konczy na model coherency
+
+problemy gdy devs zmieniaja istniejacy kod [objawy fragmentacji?]
+- po zmianach - old obiekty/relacje nie dzialaja tak jak pierwotnie zakladano
+- dev nie wie ze dany feat istnieje - i duplikuja ten feat/lub robia podobny
+- dev     wie ...                   - ale i tak to duplikuje - zeby nie zepsuc istniejacych feats
+
+ci oznacza ze wszystkie prace sa czesto/ciagle merge'owane/integrowane w finalny produkt
+przez ci masz szyki feedback jesli cos nie dziala z integracja
+
+ci [jak WSZYSTKO!!! w DDD] operuje na 2 poziomach
+- model concepts
+  - mc are integrated by continues communication among team members
+  - by hammering out UL, ciagle ciczenia UL na roznych case'ach
+  // g: concepts are integrated!!! not only code; by team talks
+  - rzadko uzywana formalnie
+- implementacji
+  - done by contin: builds, tests
+  
+MUST DO
+- odpalaj testy automatyczne
+- bezlitosnie cwicz UL zeby zespol mial wspolny poglad na model
+  // g: pp nie da sie bez talks oprawocac shared concept [jak np. offline]
+
+18163409
 
 ch14.3 context map
 
