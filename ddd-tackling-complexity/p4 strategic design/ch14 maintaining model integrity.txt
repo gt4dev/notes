@@ -121,10 +121,82 @@ MUST DO
 - bezlitosnie cwicz UL zeby zespol mial wspolny poglad na model
   // g: pp nie da sie bez talks oprawocac shared concept [jak np. offline]
 
-18163409
 
 ch14.3 context map
 
+
+- ludzie w diff zespolach moga byc nieswiadomi granic BC'ow - moga nieswiadomie
+  - tworzyc nadmiarowe interakcje
+  - rozmywac granice miedzy bc'ami
+  
+- bc'e powinny miec interakcje - jesli ich model maja tendencje do przeciekania 1 to 2nd
+
+- avoid re-use code between bc'e - to dosc ryzykowne [ale chyba z wyjatkiem shared kernel]
+  // g: tu pewnie chodzi o kod modelu domeny, a nie infra or 'entity supertype' ...
+- integracje funkcjonalnosci i danych - musza przechodzic przez translacje
+
+- mozesz zredukowac niezrozumienie przez narycowanie context map z pokazaniem relationships miedzy bc'ami
+
+- identify each model in project and define its bounded context
+// g n: formalnie jest rozroznienie bc od modelu
+- nazwij kazdy bc [wg needs z UL]
+- opisz kazdy punkt interakcji miedzy bc'ami, pokaz translacje tej interakcji, pokaz any sharing [pp of model/impl]
+
+- map already existing terrain, not planned one
+
+mapa mozna dowolna forme
+- diagram
+  - tylko 'chmurki' z nazwami ctx
+  - 'chmurki' z wylistowanymi konkretnymi klasami w bc ...
+- opis
+- zwykla dyskusja // g: dosc ulotna forma mapy
+
+- mapa musi byc rozumiana przez wszystkich w projekcie
+
+c: jesli znajdziesz problem przy tworzeniu mapy [np. niekonsystentny bc]
+- moze oznacz taki bc na mapie, dragonem ;]
+- kontynuuj rozpisywanie calej mapy bc'ow
+- nie zatrzymuj sie na problemach - zaplanujesz ich fix po zrobieniu mapy
+
+
+example: two contexts in shipping app
+- app ma feat: podczas book'owania jest auto-gener. routing paczek
+- c: RoutingService 
+  - uzywa intent-revelaing i side effect free functions
+  - result from RS jest okreslony przez assertion: RS zwraca Itinerary ktore spelnie 'RouteSpecification'
+
+c: 
+- EE poczatkowo chcial zakodowac internals of RS uzywajac modelu caller'a [booking] ale to bylby blad
+- wyszlo - ze 
+  - RS uzywa klas modelu tylko na in/out
+  - internals robia bardzo 'dziwne' obliczenia - i kompletnie nie bazuje on na modelu 'caller'a'
+// g: wewn. alg. jest niezalezny od zewn. caller'a - czesto tez masz ten case!
+
+- n: niektore translacje miedzy bc'ami sa NIEMOZLIWE lub mega utrudnione [bo modele sa np. bardzo rozna i brakuje danych]
+
+bc: booking    |                             |  bc: transport network
+               |                             |
+ | Routing |------> | Booking-Transport |    |
+ | Service |   |    | Translator        |    |
+           |   |                             |   | Transport |
+           |------------------------------------>| Service   |
+               |                             |
+
+- budujemy translatory miedzy modelami [dla args and result of metods]
+- tutaj: Booking-Transport Translator
+- nad tym obiektem i jego test suite'm - pracuja zespoly z OBU BC'OW
+- translator NIE nalezy do zadnego BC'a
+- n: obiekt musi byc prosty [translator]
+- translator musi byc dobrze stestowany UT'ami - zeby uniknac problemow po zmianach w 1 z BC'ow
+
+- w example: RS jest z bc:booking i odpowiada za koordynacje dzialan miedzy BC'ami
+- RS dziala mega prosto/klasycznie
+  - RS wola metody TransportService z bc:transport!!! [zadnej magii, dodatkowych warstw ..]
+  - wczesniej oczywiscie RS wola translator - zeby przygotowac params dla TS i potem ocnvert response
+  
+// g n: zauwaz ze oba zespoly dzialaja w miare niezaleznie
+
+23170855
 
 ch14.4 relationships between BCs
 
