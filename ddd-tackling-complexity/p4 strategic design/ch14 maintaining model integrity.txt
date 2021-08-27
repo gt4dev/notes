@@ -196,12 +196,68 @@ bc: booking    |                             |  bc: transport network
   
 // g n: zauwaz ze oba zespoly dzialaja w miare niezaleznie
 
-23170855
+- c: RS latwo mega-przetestowac - bo sklada sie z SEFF
+
+- kluczem do sukcesu integracji sa UT'y RS
+- testy wolaja RS - podaja set RoutingSpecification i sprawdzaja result
+- to baza do wspolpracy obu zespolow
+
+
+- bez swiadomych dzialan - diff bc'e beda sie znieksztalcac, beda nachodzic na siebie
+// g: trzeba to pilnowac, nie jest to 'samograj'
+- sol:
+  - explicitly define BCs and ContextMap
+  - [g: iteratively] unify models and relations
+  
+// g q: jak testowac integracje
+// - oba zespoly buduja test suite na translator [ktory jest dosc prymitywna klasa]
+// - zespol od RoutingService - testuje ten service [ale pp w polaczeniu z mocked "2nd context service"]
+// - zespol od '2nd bc' - testouje ich serwis 'normalnie' [bez przejmowania sie RS etc]
+
+organizing and docing CMaps
+- dwa istotne pts
+  - nazwij BC [z UL]
+  - kazdy musi wiedziec gdzie leza granice BC'a [wrzucaj bc do osobnych pakietow, ..]
+- w kontrze VV - EE jednak doc'uje projekt 'nieformalnymi' diagramami etc [VV chce tylko kod]
+
 
 ch14.4 relationships between BCs
 
 
+cele strategii/patterns
+- providing targets for succesully org-ing dev work
+- giving vocabulary for desc-ing organization
+
+- if w realu 'exiting code' moze miec inne patterny niz pokazane przez ee
+- then 
+  - opisz to asis now
+  - z kazdym next refactorem - staraj sie zblizac do docelowego patternu [PC]
+  
+- patterns cover THE MOST COMMON cases [not all!]
+
+
 ch14.5 shared kernel
+
+
+- mamy 2x bc
+- integracja feats miedzy nimi jest baaardo mala
+- to overhead przez CI - moze byc zbyt wysoki
+- lub jesli takiego CI nie ma [bo nie ma skill'a, etc]
+
+- nieskordynowane zespoly pracuja na blisko dzialajacych apps // q: to mozliwe u ee?
+- mimo ze apps sa spokrewnione - to co teams produkuja - nie musi pasowac do siebie
+- z: mamy 2 rozlaczone bc'e
+  - zespoly traca kupe czasu na translacje
+  - jednoczesnie oba modele sa "slabe" bo nie uzywaja 'wspolnego [czesciowo] UL'
+
+- wyznacz podzbior domeny - dzielone przez oba zespoly
+- podzbior zawiera: kod, scheme db ...
+- podzbior NIE moze byc modyfikowany bez konsultacji miedzy teams
+
+- po zmianach SK - musza OBU zespolom przejsc testy [ktore pewnie sa obok SK]
+  
+- bc'e integruja sie przez shared-kernel 
+- a w innych czesciach moga sie dodatkowo integrowac przez 'translacje'
 
 
 ch14.6 customer/supplier development teams
