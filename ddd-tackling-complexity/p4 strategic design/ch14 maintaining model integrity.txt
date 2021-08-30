@@ -255,9 +255,17 @@ ch14.5 shared kernel
 - podzbior NIE moze byc modyfikowany bez konsultacji miedzy teams
 
 - po zmianach SK - musza OBU zespolom przejsc testy [ktore pewnie sa obok SK]
+
+??? o co chodzi
+- wg EE SK to czesto 'core domain' or podzbior 'generic domain' [or both at once]
+- acz z 2nd side - twierdzi ze SK musi byc maly - strange ...
   
 - bc'e integruja sie przez shared-kernel 
 - a w innych czesciach moga sie dodatkowo integrowac przez 'translacje'
+
+// ddd-reference-2015
+- SK powoduje baaardzo bliska relacje miedzy BC'ami
+- SK musi byc maly
 
 
 ch14.6 customer/supplier development teams

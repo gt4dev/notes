@@ -4,9 +4,9 @@ ch13 refactoring toward deeper insight
 [remind] glowne pts w drodze do deeper model
 - live in the domain
 - look at things from diff PoV
-- continueous dialog with experts
+- continuous dialog with experts
 
-n: w/w to 'miekkie wymagania' [nie techniczne] - sa top w deeping model
+n: w/w to 'miekkie wymagania' [nie techniczne] - a sa toppest w deeping model
 
 n: ch13 to podsumowanie "p3 refactoring towards deeper insight" - pewne rzeczy sie powtarzaja
 
@@ -15,8 +15,8 @@ ch13.1 initiation
 
 
 [cut]
-ee mowi co moze byc initem do zmian w modelu:
-- niestrawnosci/sniespojnosci/nauczenie sie czegos nowego/ ... [bylo 'all' wczesniej]
+ee mowi co moze byc initem do zmian w modelu
+- niestrawnosci/niespojnosci/nauczenie sie czegos nowego/ ... ['all' bylo wczesniej]
 
 
 ch13.2 exploration teams
@@ -31,12 +31,12 @@ ee suggest
 - grupa robi BS przez 0.5 - 1.5 h
   - rozpisuja scenariusze
   - buduja nowy model
-- wynik sesji - jesli uwazaja za 
+- wynik sesji - jesli
   - dobry - zaczynamy kodowac
   - zly - dajemy sobie kilka dni na przemyslenia i powtarzamy sesje
   
 exploration b. practicies
-- scope and sleep - rob krotkie meeting'i przez kilka dni [niz 1 duzy i zakonczyc na stack'u]
+- scope and sleep - lepiej robic krotkie meeting'i przez kilka dni, niz 1 duzy
 - exercise UL - cwicz rozne scenariusze na UL
 
 c: wg EE 'brainstorming session' is unstructured, dynamic and ... mega productive ;]
@@ -54,8 +54,8 @@ ch13.4 a design for developers
 
 [cut]
 - in short: use supple design
-c: wg EE: software is for user but also for developers!!!
-- bo devs tez sa "user'ami softu": dodaja nowe feats, refactor old ...
+c: wg EE: software is for user and ... developers!!!
+- bo devs sa user'ami softu: dodaja nowe feats, refactoruja ...
 
 supple design pros
 - easy to anticipate effect of running code
@@ -68,10 +68,11 @@ ch13.5 timing
 
 - c: wg EE jesli czekasz ze zmiana az bedzie ona w pelni uzasadniona - to czekasz za dlugo
 
-- cont. refactoring considered as best practice = caly czas refactor'uj
+- "cont. refactoring" considered as best practice = caly czas refactor'uj
   - chodzi glownie o r toward deeper insight
-  - acz tech. refactory tez sa wazne
-- c: wiekszosc zespolow jest zbyt ostrozna z r
+  - acz tech. r tez sa wazne
+  
+- wiekszosc zespolow jest zbyt ostrozna z r
 
 kiedy musisz r-owac
 - design nie pokazuje aktualnego zrozumienia domeny
@@ -87,7 +88,7 @@ ch13.6 crisis as opportunity
 
 
 w sw jak w ewolucji
-- wiekszosc czasu jest normalne, powolny rozwoj
+- wiekszosc czasu jest normalnie - nastepuje powolny rozwoj
 - nagle nastepuje ostra zmiana
 
 - to zwykle wyglada bardziej jak crisis [a nie opportunity]

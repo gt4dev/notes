@@ -1,17 +1,18 @@
 ch12 relating design patterns to the model
 
 
-- src patterns jest "Design Patterns by Gamma 95" [GoF?]
+- patterns src = "Design Patterns by Gamma 95" [GoF]
 - wiekszosc patterns to techniczne patterny
-- niektore mozna uzyc w domain modeling/design - jako domain pattern
+- acz niektore mozna uzyc jako domain pattern
 
-- tu pokazane przyklady tylko 2 patterns [strategy, composit] ale wiecej tez da sie uzyc
-- ee pokaze jak tech pattern uzyw w domain model
+- EE shows only 2 patterns [strategy, composit] but more can be used
+- EE shows how to use tech pattern in domain
 
 
 ch12.1 strategy [aka policy!!!]
 
-model:
+
+PATTERN
 
 abstract class Strategy {
   alg();
@@ -20,19 +21,21 @@ class ConcretStrategyA : Strategy { ... }
 class ConcretStrategyB : Strategy { ... }
 
 
-- s pozwala zmieniac alg [wewn. modelu] niezaleznie od klienta
+- s pozwala zmieniac alg [wewn. modelu] niezaleznie od klienta [acz klient wybiera strategie]
 
 - w modelu d mozesz miec alternatywne procesy
 - s bedzie pomagac w zarzadzaniu nimi - czysto i zrozumiale
 
-- proces ma czesto wiele prawidlowych drog wykonania go
+- proces ma czesto wiele prawidlowych drog wykonania
 - czesto jak dodajesz te alter ways do modelu - to proces staje sie nieczytelny/skomplikowany
 - alters czesto mieszaja sie z glownym procesem - to blad
 
 - odseparuj wariacje od glownego procesu
 
 
-EXAMPLE: ROUNT FINDING POLICIES
+EXAMPLE: ROUTE FINDING POLICIES
+
+bad sample:
 
 class RoutingService {
   findCheapest(Specification):Itinerary
@@ -45,11 +48,12 @@ problem
 - jak bedzie wiecej opcji findSth - to problem sie zwiekszy
 
 rozw [1 of many ;]
-- parametryzowac alg politykami
-- alg. uzywa abstract
+- parametryzuj alg politykami
+- mamy abstract policy
 
-  abstract class LegMagnitudePolicy
+  abstract class LegMagnitudePolicy {
     length(sth):long
+  }
 
 - klient wola alg. z konkretna policy
 
@@ -77,11 +81,12 @@ ch12.2 composite
 
 w complex domains czesto mamy hierarchie mega podobnych elementow:
 - top elem sklada sie z mniejszych
-- te skladaja sie z jeszcze mniejszych ... itc
+- te skladaja sie z jeszcze mniejszych etc...
 
 - jak nested objects - sa koncepcyjnie tego samego typu
 - ale to zignorujemy
-- to w kodzie bedzie sporo powtorzen, klienci beda uzywali roznych api do "tych samych" obiektow
+- to w kodzie beda powtorzenia, klienci beda uzywali roznych api do "tych samych" obiektow
+
 
 DIAGRAM COMPOSITE
 
@@ -105,8 +110,8 @@ class Composite : Component {
 }
 
 
-EXAMPLE: shipment routs make of routes
-- droga konetnera jest complex: najpierw droga ladowa, koleja, potem trafia do portu, na stated
+EXAMPLE: shipment ...
+- droga kontenera jest complex: najpierw droga ladowa, koleja, potem trafia do portu, na statek ...
 - elementy tej drogi modelujemy jako composite
 
 abst. class Route {
@@ -116,7 +121,7 @@ abst. class Route {
 class CompositeRount : Route // n: kompozyt zawsze wystepuje ;]
 {...}
 
-class DoorLeg : Route { // leaf, 1 z kilku typow
+class DoorLeg : Route { // leaf, 1 of many
 .. // kazdy leaf [oprocz metod Route] ma swoje specyficzne metody, assoc!!!
 }
 
@@ -128,6 +133,6 @@ class SthLeg : Route { // another leaf
 ch12.3 why not flyweight
 
 
-- pp NIE ma zastosowania w domain model - bo raczej nigdzie to nie pasuje [ale moze gdzies pasuje?]
+- pp NIE ma zastosowania w domain model - bo raczej nigdzie to nie pasuje [acz moze jednak?]
 - mozesz uzyc fly-weight w impl. VO etc .. ale to detale impl [niezalezne od modelu]
 

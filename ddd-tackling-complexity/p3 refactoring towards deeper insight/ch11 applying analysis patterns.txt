@@ -1,13 +1,13 @@
 ch11 applying analysis patterns
 
 
-- ee bazuje na 'analysis patterns' by fowler
+- ee bazuje na ksiazce 'analysis patterns' by fowler
 
-- to patterny HL, w porownaniu do patterns z Chapter10 lub Part2
+- w porownaniu do patterns z P3.Chapter10 lub Part2 - to patterny HL 
 
-- pozwalaja zaoszczedzic czas na extensive trials, errors and self-learning [inventing the wheel]
+- pozwalaja zaoszczedzic czas na extensive trials, errors and self-learning [re-inventing the wheel]
 
-- APs to 'starting point', do rozbudowania, zaleznie od potrzeb Your model
+- APs stanowia 'starting point', do rozbudowania, zaleznie od potrzeb
 
 
 EXAMPLE: earning interest with accounts
@@ -20,45 +20,46 @@ model
    balance
    
 - wartosc dodawana jest przez wstawianie entry
-- jak chcesz 'odjac' - dodaj entry z ujemna wartoscia
+- 'odjamowana' - przez dodanie entry z ujemna wartoscia
 
 
-c: podczas kodowanie modelu ustalonego z expertem - okazal sie zly
-- wyznaczyl on glowne kierunki dzialania
-- ale sporo detali trzeba bylo podorabiac
+c: podczas kodowanie - model ustalony z expertem okazal sie on zly, acz
+- wyznaczyl glowne kierunki dzialania
+- sporo detali trzeba bylo podorabiac
 
 
-c: podczas kodowania - okazalo sie ze devs musza zastosowac okreslone str. w DB 
+c: podczas kodowania - okazalo sie ze devs musza stosowac okreslone struktury w DB 
 - zeby baza byla czytelna [podobnie jak model]
 - to wymusilo tez konkretne struktury w modelu domenowym
+// g: to b. sensowne - zeby latwo transformowac model w db
 
 
 mega-c case
 figure 11.7
-- jest klasa FeeCalculator z metoda accrualFor(Date):Entry
-- ale model wyglada tak
-                                   fees
-  | Fee Calculator |-----| Asset |==========| Account |-----| Entry |
-                                   interest
-- FE nie jest na modelu zw. z Entry!!! a metoda zwraca Entry
-- w modelu pokazujemy trwale asocjacje
-- a w/w metoda to p/p fabryka
-- acz pewnie mozna by Entry wziasc jako param mtody w FE i tez na modelu tego NIE pokazemy
+                                           fees
+  | Fee Calculator         |---| Asset |==========| Account |-----| Entry |
+  |                        |             interest
+  | accrualFor(Date):Entry |
+    
+- FE nie jest na diagramie zw. z Entry a jego metoda zwraca Entry!!!
+// g: mozliwe ze to blad? czy moze w modelu pokazujemy "trwale asocjacje"
+- w/w metoda to p/p fabryka
+- acz pewnie mozna by Entry wziasc jako param metody w FE i tez na modelu tego NIE pokazemy
 
 c ab. SEFF
 - metoda FE.accrualFor(Date):Entry to SEFF
-- FE to e -thus-> SEFF moze byc na czymkolwiek [SEFF to idea || do immutability]
-- ta metoda zwraca Entry - tez [pp] e --thus--> SEFF moze zwracac cokolwiek, niekoniecznie vo ...
+- FE to e -thus-> SEFF moze byc na czymkolwiek
+- metoda zwraca Entry, [pp] e --thus--> SEFF moze zwracac cokolwiek, niekoniecznie immutable vo ...
 
 
 EXAMPLE [part 2]
 
 - zwykle po refactor [i wyklarowaniu pewnych concepts] inne problemy staja sie wyrazniejsze 
-- wymagaja next refactors
+- i tez wymagaja refactors ;]
 
 // cut, EE omawia detale patternu "posting rules" - ale dosc niejasno, brakuje przykladu
 
-- deverlopers zaczeli od 'posting rules' ale b. mocno odeszli od pierwotnego patternu
+- deverlopers zaczeli od "posting rules" ale b. mocno odeszli od pierwotnego patternu
 - i to ok
 
 
@@ -70,8 +71,8 @@ AP ARE KNOWLEDGE TO DRAW ON
 wazne zalety AP
 - super init w problem
 - wprowadzaja zrozumiale well distilled abstracts + ich nazewnictwo
-- informuja o konsewencjach - ktore zaoszczedza problems podczas impl
+- informuja o konsewencjach - ktore zaoszczedza problems [time/cash] podczas impl
 
 vin
-- uzywajac term z jakiegos pattern - to nie modyfikuj znaczenia tego term - niech opisuje <> ten sam koncept
-- inaczej - wymysl inna nazwe
+- jak uzywajasz term z jakiegos pattern - to nie modyfikuj jego znaczenia - niech opisuje <> ten sam koncept
+- wpp - wymysl inna nazwe
