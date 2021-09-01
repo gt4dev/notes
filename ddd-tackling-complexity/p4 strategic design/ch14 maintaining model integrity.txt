@@ -3,26 +3,30 @@ ch14 maintaining model integrity
 
 przyklad
 - team1 [z domany: payments] - stworzyl obiekt Charge
-- team2 [z doemny: invoices] - stwierdzil ze im brakuje 'pola x' w Charge i dodali to pole
-- a to blad: oba zespoly powinny dogadac 
-  - czy dodac to pole do Charge 
-  - czy moze teams powinny miec osobne modele
-- finalnie: utworzono osobne modele i 2 osobne klasy: CustomerCharge / SupplierCharge
+- team2 [z doemny: invoices] - stwierdzil ze brakuje 'pola x' w Charge i je dodali
+- blad bo oba zespoly powinny dogadac
+  - czy dodac nowe pole do Charge 
+  - czy teams powinny miec osobne modele
+- finalnie: utworzono osobne modele z klasami: CustomerCharge / SupplierCharge
 
 mega fundamentalny req:
-model musi byc wewn. spojny, all terms maja to samo znaczenie, nie zawiera sprzecznych rules
-termy sa jednoznaczne [unambigous]
+- model musi byc wewn. spojny
+  - termy sa jednoznaczne [unambigous]
+  - nie ma sprzecznych rules
 
-unification - stanu 'internal consistency of model'
+- unification - stan 'internal consistency of model'
 
-model niespojny jest bezuzyteczny!
+- model niespojny jest bezuzyteczny!
 
-w big systemach - nie da sie stowrzyc one big consistent model
-  tj: da sie ale to strasznie duuuuzo kosztuje time/money - i jest bez sensu
-musisz miec kilka mniejszych modeli
-jak masz kilka modeli to niektore moga sie rozjerzdzac [acz kluczowe elementy trzeba probowac zachowac spojne]
+- w big systemach - nie da sie stworzyc "one big consistent model"
+- tz. da sie ale to strasznie duuuuzo kosztuje time/money = jest bez sensu
 
-c: ee sam kilka razy probowal kodowac 'one big model' i dzis uwaza ze to byl blad
+- c: jak masz kilka modeli to niektore moga sie rozjerzdzac [acz kluczowe elementy trzeba probowac zachowac spojne]
+
+- c: ee sam kilka razy probowal kodowac 'one big model' i dzis uwaza ze to byl blad
+
+
+vvvv cont. here
 
 
 ch14.1 bounded context

@@ -103,7 +103,7 @@ ch10.3 assertions
 - to szczgolnie wazne dla commands ktore wywoluje inne commands etc... 
 
 problem:
-- SE of C are implicitly visible in impl.
+- SE of C are implicit in impl.
 - nie widzimy SE patrzac na interfejs obiektu
 
 - to see SE w/o analysing operataion code - we can use elems of design by contract

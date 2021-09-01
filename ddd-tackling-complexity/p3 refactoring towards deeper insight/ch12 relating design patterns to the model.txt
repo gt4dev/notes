@@ -6,7 +6,7 @@ ch12 relating design patterns to the model
 - acz niektore mozna uzyc jako domain pattern
 
 - EE shows only 2 patterns [strategy, composit] but more can be used
-- EE shows how to use tech pattern in domain
+- EE shows how to use "tech pattern" in domain
 
 
 ch12.1 strategy [aka policy!!!]
@@ -35,7 +35,7 @@ class ConcretStrategyB : Strategy { ... }
 
 EXAMPLE: ROUTE FINDING POLICIES
 
-bad sample:
+bad init:
 
 class RoutingService {
   findCheapest(Specification):Itinerary
@@ -45,7 +45,7 @@ class RoutingService {
 
 problem
 - alg wyszukania drogi bedzie mial wiele conditionals [zeby uwzgl. warianty wyszukania]
-- jak bedzie wiecej opcji findSth - to problem sie zwiekszy
+- jak bedzie wiecej metod findSthYet - to problem sie zwiekszy
 
 rozw [1 of many ;]
 - parametryzuj alg politykami

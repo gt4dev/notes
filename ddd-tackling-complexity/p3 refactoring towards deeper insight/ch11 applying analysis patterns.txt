@@ -2,8 +2,7 @@ ch11 applying analysis patterns
 
 
 - ee bazuje na ksiazce 'analysis patterns' by fowler
-
-- w porownaniu do patterns z P3.Chapter10 lub Part2 - to patterny HL 
+- to patterny HL - vso patterns z Part2 lub P3.Chapter10 [supple design]
 
 - pozwalaja zaoszczedzic czas na extensive trials, errors and self-learning [re-inventing the wheel]
 
@@ -16,11 +15,11 @@ EXAMPLE: earning interest with accounts
 
 model
 - w wielu biznesach sledzimy account i zmiany na account
- | Account |<>-----*--| Entry |--2------| Transaction |
+ | Account |<>-----*--| Entry |--2--------| Transaction |
    balance
    
 - wartosc dodawana jest przez wstawianie entry
-- 'odjamowana' - przez dodanie entry z ujemna wartoscia
+- odejmowana - przez dodanie entry z ujemna wartoscia
 
 
 c: podczas kodowanie - model ustalony z expertem okazal sie on zly, acz
@@ -31,7 +30,7 @@ c: podczas kodowanie - model ustalony z expertem okazal sie on zly, acz
 c: podczas kodowania - okazalo sie ze devs musza stosowac okreslone struktury w DB 
 - zeby baza byla czytelna [podobnie jak model]
 - to wymusilo tez konkretne struktury w modelu domenowym
-// g: to b. sensowne - zeby latwo transformowac model w db
+// g: tu to sensowne zeby drive'owac domain na bazie schema - zeby latwo transformowac model w db
 
 
 mega-c case
@@ -42,19 +41,19 @@ figure 11.7
   | accrualFor(Date):Entry |
     
 - FE nie jest na diagramie zw. z Entry a jego metoda zwraca Entry!!!
-// g: mozliwe ze to blad? czy moze w modelu pokazujemy "trwale asocjacje"
+// g: na modelu pokazujemy tylko asocjacje miedzy obiektami [a nie paramy/returned value]
 - w/w metoda to p/p fabryka
 - acz pewnie mozna by Entry wziasc jako param metody w FE i tez na modelu tego NIE pokazemy
 
 c ab. SEFF
 - metoda FE.accrualFor(Date):Entry to SEFF
-- FE to e -thus-> SEFF moze byc na czymkolwiek
-- metoda zwraca Entry, [pp] e --thus--> SEFF moze zwracac cokolwiek, niekoniecznie immutable vo ...
+- FE to e --thus--> conc: SEFF moze wisiec na czymkolwiek: e, vo
+- metoda zwraca Entry, [pp] e --thus--> SEFF moze zwracac cokolwiek [e,vo], niekoniecznie immutable vo ...
 
 
 EXAMPLE [part 2]
 
-- zwykle po refactor [i wyklarowaniu pewnych concepts] inne problemy staja sie wyrazniejsze 
+- zwykle po refactor [i wyklarowaniu pewnych concepts] inne problemy staja sie wyrazniejsze
 - i tez wymagaja refactors ;]
 
 // cut, EE omawia detale patternu "posting rules" - ale dosc niejasno, brakuje przykladu
@@ -65,13 +64,13 @@ EXAMPLE [part 2]
 
 AP ARE KNOWLEDGE TO DRAW ON
 
-- nie zawsze masz szczesie by moc uzyc AP
-- a nawet jak trafisz - to i tak najp/p bedziesz musial zmodyfikowac AP do wlasnego case'a
+- nie zawsze masz szczescie by moc uzyc AP
+- nawet jak trafisz - to i tak najp/p bedziesz musial zmodyfikowac AP do wlasnego case'a
 
 wazne zalety AP
 - super init w problem
-- wprowadzaja zrozumiale well distilled abstracts + ich nazewnictwo
-- informuja o konsewencjach - ktore zaoszczedza problems [time/cash] podczas impl
+- wprowadzaja zrozumiale well distilled abstracts + nazewnictwo
+- informuja o konsewencjach - ktore zaoszczedza problems [& time & cash] podczas impl
 
 vin
 - jak uzywajasz term z jakiegos pattern - to nie modyfikuj jego znaczenia - niech opisuje <> ten sam koncept

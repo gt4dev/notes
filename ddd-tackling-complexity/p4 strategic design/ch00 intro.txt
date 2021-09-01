@@ -1,36 +1,37 @@
-- w skomplikowanym systemie nie da sie znac kazdy szczegol
-- we need techs to understand big models/complex domains
-- p4 says about it
+- p4 = strategic design
+
+- w skomplikowanym systemie nie da sie znac all szczegolow
+- p4 says desc how to understand big models/complex domains
 
 - tu wiekszosc decyzji musi byc ustalona na poziomie zespolu lub miedzy zespolami
 
 - model duuuzego przedsiewziecia - nie da sie pokazac jako single unit
-- system musi byc podzielony na mniejsce na poziomie
+- system musi byc podzielony na mniejsze na poziomie
   - koncepcji
   - implementacji [tak, impl tez ;]
 
-- wazne by miec modularity without loosing benefits of integration
-- moduly maja byc wyseparowane i jednoczesnie musza dobrze wspolpracowac
+- moduly maja byc odseparowane i jednoczesnie musza dobrze wspolpracowac
 
 - single big model bedzie nieporeczny, bedzie mial duzo contradictions, duplications ...
-- ale tez zbyt rozdrobnione system na moduly - bez zapewnienia integracji 
-  - nie bedzie dostarczal enterprise level answers
-  - beda consistency problems in 'integration points'
+- ale zbyt rozdrobniony system na moduly - bez dobrej integracji 
+  - nie dostarczy enterprise level answers
+  - beda consistency problems [chyba chodzi o sync duplikowanych danych, propagacje zmian ..]
+// g: anyway - modularity 'wymusza' async updates wiec jakies problems zawsze tu beda ;]
   
-celem strategic design principles jest
-- redukcja zaleznosci miedzy partami systemu
-- utrzymanie interoperatibility miedzy ...
+cele strategic design principles
+- redukcja zaleznosci miedzy elementami systemu
+- utrzymanie miedzy nimi interoperatibility
 
-strategic design principles
-- context 
+3 strategic design principles
+- context
   - the most fundamental principle
   - dobry model [small or big] musi byc wewn. spojny, bez sprzecznych definicji
-  - wyznacz BC wewn. ktorego zbudujesz spojny model
+  - BC-e maja wewn. spojny model
 - [strategic] distillation
   - redukuje balagan i fokusuje na waznych elementach
-  - czesty problem: wysilek jest wkladany w poboczne domeny, a musimy zrobic focus na top imp. stuff
-  - tu mamy "core domain" ktory dzieki 'czystosci/fokusowi' -> lepiej zaprojektuejy
-  - 2nd'ary sa 'supporting elements [domains]'
+  - czesty problem: wysilek idzie w 2n-ary domeny, a musimy w 1st imp. stuff
+  - tu mamy 'core domain' i 2nd-ary sa 'supporting elements [domains]'
 - large scale structures
-  - ee soon pokarze LSS [da poglad w temat] a w detalach omowi tylko 1 of LSS = 'responsibility layers'
+  - ee da poglad w temat LSS 
+  - w detalach omowi tylko 1 of LSS = 'responsibility layers'
   - c: nie ma katalogu LSS - to trzeba wymyslac on-demand/case

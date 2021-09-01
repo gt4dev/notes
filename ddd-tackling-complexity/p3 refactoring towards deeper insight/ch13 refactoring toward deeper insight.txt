@@ -34,7 +34,7 @@ ee suggest
 - wynik sesji - jesli
   - dobry - zaczynamy kodowac
   - zly - dajemy sobie kilka dni na przemyslenia i powtarzamy sesje
-  
+
 exploration b. practicies
 - scope and sleep - lepiej robic krotkie meeting'i przez kilka dni, niz 1 duzy
 - exercise UL - cwicz rozne scenariusze na UL
