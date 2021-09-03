@@ -26,157 +26,130 @@ mega fundamentalny req:
 - c: ee sam kilka razy probowal kodowac 'one big model' i dzis uwaza ze to byl blad
 
 
-vvvv cont. here
-
-
 ch14.1 bounded context
 
 
-- w big projects musimy miec many models
-- inaczej kod bedzie guggy, difficult to understand
-  - ciezko uzywac 1 big model
+- big project musi byc podzielony na many models
+- inaczej bedzie buggy, difficult to understand
 
 c
-- czasem od razu widac ze mamy rozne modele [eg. system 1 integruje sie z systemem 2 - oba maja own models]
-- czasem nie widac, jak w sample z Suppliercharger i CustomerCharger
+- czasem od razu widac ze mamy rozne modele, eg: system A integruje sie z systemem B
+- czasem nie widac, eg: sample z SupplierCharger i CustomerCharger
 
-c: czasem w 1 zespole uzywamy 2 modele np: stary i nowy model ...
+c: czasem w 1 zespole [!!!] uzywamy 2 modele eg: stary i nowy model, etc ..
 
 - technicznie translacja danych miedzy modelami zwykle jest prosta
-- wazniejsze jest uzgodnienie terms miedzy modelami etc..
+- trudniejsze jest uzgodnienie terms miedzy modelami [co na co sie transformuje] etc...
 
-- kazdy model musi miec explicitly okreslony zakres/granice jego uzywania [context]
-- w ramach granic model musi byc unified [spojny]
+- kazdy model ma explicitly okreslony zakres/granice jego uzywania [context]
+- w ramach granic model jest unified [spojny]
 
 context = granice uzywania modelu, granice moga byc 'wyznaczone' przez 
 - org. zespolu
-- stwierdzenie ze model uzywamy w okreslonej czesci app
+- 'powiedzenie' ze model uzywamy w danej czesci app
 - fizyczne granice w kodzie [folder, osobna schema w bazie lub wyizolowane struktury]
+- ...
 
-- w ramach granic - trzymaj model striclty consistent
-
-- kodujac model "nie przejmu sie" co dzieje sie za modelem ;]
+- kodujac model "nie przejmu sie" stanem poza nim ;]
 
 
 example: booking context
-- n: kod integrujacy diff BC - nie siedzi w BC ale jest miedzy BC'ami
+- kod integrujacy BC'e - 'siedzi' miedzy BC'ami, nie siedzi w BC
 
-w example pokazujemy zla praktyke
-- mamy 2 zepoly w ramach 1 project - typowy case
-- kazdy zespol pracuje na own BC
-- teams musza koordynowac dane, concepcje ...
+zla praktyke
+- mamy 2 zepoly w ramach 1 project [to jest typowy i ok]
+- kazdy zespol pracuje nad own BC - ale o tym nie wiedza [dosc typowy case]
+- teams musza koordynowac dane, koncepcje ...
+- ale integracje robia 'nieregularnie/ad hoc'
 
-jest zle bo
-- zepsoly NIE widza ze pracuja na diff ctx'ach - dosc to typowy case
-- teams robia integracje 'nieregularnie/ad hoc' - jak jest potrzeba
+good praktyka - zespoly powinny
+- okreslic BCe [graice]
+- zastosowac konkretna strategie integracji BC'ow, np. shared kernel
+  - okreslamy relacje miedzy oboma BC'ami to 1 of 1st tasks
 
-a powinny
-- okreslic BCe
-- zastosowac konkretna strategie integracji [ee tu propojuje shared kernel]
-- 1 of 1st tasks: okreslamy relacje miedzy oboma BC'ami [booking, voyage schedule]
-
-- n: dzielenie kodu/danych - powinno byc robione B. OSTROZNIE
-// g: ale powinno, zeby nie duplikowac stanow, kodu - just do it but ostroznie
+- dzielenie kodu/danych - powinno byc robione BARDZO OSTROZNIE
+// g: ale powinno, zeby nie duplikowac stanow, kodu - do it but ostroznie
 
 
-recog. splinters within BC
-- jest wiele symptomow - ze w 1 bc mamy zamurowane kilka bc'ow
-- top prob: interfejsy [obiektow domeny?] nie pasuja do siebie
-  - latwo to wylapac w fazie continuous integration
-- inny: confusions of UL
-
-zwykle sa 2 typy problemow - zw. z laczeniem 2 BC'ow w 1 BC
+2 typowe problemy - zw. ze zlaczeniem 2 BC'ow w 1 BC
 - duplicated concepts
   - mamy kilka miejsc w modelu ktore wyrazaja ten sam lub podobny concept
   - jak sie zmienia 1 rzecz to aktualizujemy w kilku miejscach [!!!]
 - false cognates
   - more tricky
   - ludzie okreslaja tego samego term do okreslenia diff things
-  - przyklad "Charge" z ch start
+  - przyklad "Charge" z poczatku ch 
 
 
 ch14.2 continuous integration
 
 
-- kiedy wiele osob procuje na 1 bc to model ma MOCNA tendencje do fragmentacji
-- przy 3-4 osoby to powazny problem, a wiecej = wiekszy problem
+- kiedy wiele osob pracuje na 1 bc to model ma MOCNA tendencje do fragmentacji
+- juz przy 3-4 osoby to powazny problem!
 
-- fragmentacja modelu na mniejsze - konczy na model coherency
+- fragmentacja modelu niszczy model coherency
 
-problemy gdy devs zmieniaja istniejacy kod [objawy fragmentacji?]
+problemy devs przy zmienie istniejacego kodu
 - po zmianach - old obiekty/relacje nie dzialaja tak jak pierwotnie zakladano
-- dev nie wie ze dany feat istnieje - i duplikuja ten feat/lub robia podobny
-- dev     wie ...                   - ale i tak to duplikuje - zeby nie zepsuc istniejacych feats
+- dev nie wie ze dany feat istnieje - i duplikuje go lub robi podobny
+- dev wie o feat ale i tak go duplikuje - zeby nie zepsuc istniejacego kodu
 
-ci oznacza ze wszystkie prace sa czesto/ciagle merge'owane/integrowane w finalny produkt
-przez ci masz szyki feedback jesli cos nie dziala z integracja
+CI oznacza ze wszystkie prace [modele?] sa ciagle integrowane (czesto merge'owane) w finalny produkt
+CI daje szyki feedback jak integracja nie dziala
 
-ci [jak WSZYSTKO!!! w DDD] operuje na 2 poziomach
-- model concepts
-  - mc are integrated by continues communication among team members
-  - by hammering out UL, ciagle ciczenia UL na roznych case'ach
-  // g: concepts are integrated!!! not only code; by team talks
-  - rzadko uzywana formalnie
-- implementacji
-  - done by contin: builds, tests
+CI [jak WSZYSTKO!!! w DDD] operuje na 2 poziomach
+- model concepts - integration is done by
+  - continues talks among team members
+  - ciagle ciczenie/testowanie UL na roznych case'ach
+  // g: concepts are also integrated!!!
+  - c: tech. rzadko zformalizowana
+- implementtion - integr. is done by conti. builds, tests
   
 MUST DO
 - odpalaj testy automatyczne
-- bezlitosnie cwicz UL zeby zespol mial wspolny poglad na model
-  // g: pp nie da sie bez talks oprawocac shared concept [jak np. offline]
+- "bezlitosnie" cwicz UL zeby zespol mial wspolny poglad na model
+// g: pp nie da sie bez talks oprawocac big, "cross team" concept [jak np. offline w mobi]
 
 
 ch14.3 context map
 
 
-- ludzie w diff zespolach moga byc nieswiadomi granic BC'ow - moga nieswiadomie
-  - tworzyc nadmiarowe interakcje
-  - rozmywac granice miedzy bc'ami
+ludzie w diff zespolach moga byc nieswiadomi granic BC'ow, moga
+- tworzyc niezaplanowane interakcje
+- rozmywac granice miedzy bc'ami
   
-- bc'e powinny miec interakcje - jesli ich model maja tendencje do przeciekania 1 to 2nd
+- bc'e maja tendencje do "przeciekania" miedzy soba 
 
-- avoid re-use code between bc'e - to dosc ryzykowne [ale chyba z wyjatkiem shared kernel]
-  // g: tu pewnie chodzi o kod modelu domeny, a nie infra or 'entity supertype' ...
+- avoid re-use code between bc'e - to dosc ryzykowne [pp z wyjatkiem shared kernel]
+// g: pp chodzi o kod modelu domeny, a nie infra ...
+
 - integracje funkcjonalnosci i danych - musza przechodzic przez translacje
 
 - mozesz zredukowac niezrozumienie przez narycowanie context map z pokazaniem relationships miedzy bc'ami
 
 - identify each model in project and define its bounded context
 // g n: formalnie jest rozroznienie bc od modelu
-- nazwij kazdy bc [wg needs z UL]
-- opisz kazdy punkt interakcji miedzy bc'ami, pokaz translacje tej interakcji, pokaz any sharing [pp of model/impl]
+- nazwij kazdy bc [zgodnie z UL]
+- opisz kazdy punkt interakcji miedzy bc'ami, pokaz translacje interakcji, pokaz sharings [pp of model/impl]
 
 - map already existing terrain, not planned one
 
-mapa mozna dowolna forme
+mapa mozna DOWOLNA forme
 - diagram
-  - tylko 'chmurki' z nazwami ctx
+  - 'chmurki' z nazwami ctx
   - 'chmurki' z wylistowanymi konkretnymi klasami w bc ...
-- opis
-- zwykla dyskusja // g: dosc ulotna forma mapy
+- text
+- zwykla dyskusja // g: dosc ulotna forma ;]
 
 - mapa musi byc rozumiana przez wszystkich w projekcie
 
 c: jesli znajdziesz problem przy tworzeniu mapy [np. niekonsystentny bc]
-- moze oznacz taki bc na mapie, dragonem ;]
-- kontynuuj rozpisywanie calej mapy bc'ow
-- nie zatrzymuj sie na problemach - zaplanujesz ich fix po zrobieniu mapy
+- oznacz taki bc na mapie "dragonem" ;]
+- dokonczy rozpisywanie reszty mapy
+- zaplanujesz fix "dragonow"
 
 
 example: two contexts in shipping app
-- app ma feat: podczas book'owania jest auto-gener. routing paczek
-- c: RoutingService 
-  - uzywa intent-revelaing i side effect free functions
-  - result from RS jest okreslony przez assertion: RS zwraca Itinerary ktore spelnie 'RouteSpecification'
-
-c: 
-- EE poczatkowo chcial zakodowac internals of RS uzywajac modelu caller'a [booking] ale to bylby blad
-- wyszlo - ze 
-  - RS uzywa klas modelu tylko na in/out
-  - internals robia bardzo 'dziwne' obliczenia - i kompletnie nie bazuje on na modelu 'caller'a'
-// g: wewn. alg. jest niezalezny od zewn. caller'a - czesto tez masz ten case!
-
-- n: niektore translacje miedzy bc'ami sa NIEMOZLIWE lub mega utrudnione [bo modele sa np. bardzo rozna i brakuje danych]
 
 bc: booking    |                             |  bc: transport network
                |                             |
@@ -186,32 +159,46 @@ bc: booking    |                             |  bc: transport network
            |------------------------------------>| Service   |
                |                             |
 
+- app ma feat: podczas book'owania jest auto-gener. routing paczek
+- c: RoutingService 
+  - uzywa intent-revealing + seff
+  - result from RS jest okreslony przez assertion: RS zwraca Itinerary ktore spelnie 'RouteSpecification'
+
+c: 
+- EE poczatkowo chcial zakodowac internals of RS uzywajac modelu caller'a [booking] ale to bylby blad
+- wyszlo - ze
+  - RS uzywa klas modelu caller'a tylko na in/out
+  - internals robia skomplikowane obliczenia - thus nie pasuja one do modelu caller'a
+// g n: wewn. alg. jest niezalezny od zewn. caller'a - Twoj czeste case!
+
+- n: czasem translacje miedzy bc'ami sa NIEMOZLIWE lub mega trudne [bo np. modele sa bardzo rozne, brakuje danych ..]
+
 - budujemy translatory miedzy modelami [dla args and result of metods]
 - tutaj: Booking-Transport Translator
-- nad tym obiektem i jego test suite'm - pracuja zespoly z OBU BC'OW
+- nad BTT i jego test suite - pracuja zespoly z OBU BC'OW
 - translator NIE nalezy do zadnego BC'a
-- n: obiekt musi byc prosty [translator]
+- translator musi [i jest] prosty
 - translator musi byc dobrze stestowany UT'ami - zeby uniknac problemow po zmianach w 1 z BC'ow
 
-- w example: RS jest z bc:booking i odpowiada za koordynacje dzialan miedzy BC'ami
-- RS dziala mega prosto/klasycznie
-  - RS wola metody TransportService z bc:transport!!! [zadnej magii, dodatkowych warstw ..]
+- w example RS jest z booking i koordynuje dzialan miedzy BC'ami
+- RS dziala mega prosto
+  - wola metody TransportService z bc:transport!!! [zadnej magii, dodatkowych warstw ..]
   - wczesniej oczywiscie RS wola translator - zeby przygotowac params dla TS i potem ocnvert response
   
 // g n: zauwaz ze oba zespoly dzialaja w miare niezaleznie
 
-- c: RS latwo mega-przetestowac - bo sklada sie z SEFF
+- RS latwo przetestowac - bo sklada sie z SEFF!
 
 - kluczem do sukcesu integracji sa UT'y RS
 - testy wolaja RS - podaja set RoutingSpecification i sprawdzaja result
 - to baza do wspolpracy obu zespolow
+// g t: doczytaj jak test dzialaja
 
-
-- bez swiadomych dzialan - diff bc'e beda sie znieksztalcac, beda nachodzic na siebie
+- bez dzialan bc'e beda sie psuc, nachodzic na siebie
 // g: trzeba to pilnowac, nie jest to 'samograj'
-- sol:
+- thus
   - explicitly define BCs and ContextMap
-  - [g: iteratively] unify models and relations
+  - [iteratively] unify models and relations
   
 // g q: jak testowac integracje
 // - oba zespoly buduja test suite na translator [ktory jest dosc prymitywna klasa]
@@ -221,21 +208,21 @@ bc: booking    |                             |  bc: transport network
 organizing and docing CMaps
 - dwa istotne pts
   - nazwij BC [z UL]
-  - kazdy musi wiedziec gdzie leza granice BC'a [wrzucaj bc do osobnych pakietow, ..]
+  - kazdy wie gdzie sa granice BC'a [wrzucaj bc do osobnych pakietow, ..]
 - w kontrze VV - EE jednak doc'uje projekt 'nieformalnymi' diagramami etc [VV chce tylko kod]
 
 
 ch14.4 relationships between BCs
 
 
-cele strategii/patterns
+cele strategi/patterns
 - providing targets for succesully org-ing dev work
 - giving vocabulary for desc-ing organization
 
-- if w realu 'exiting code' moze miec inne patterny niz pokazane przez ee
+- w realu 'exiting code' moze miec inne patterny niz pokazane przez ee
 - then 
   - opisz to asis now
-  - z kazdym next refactorem - staraj sie zblizac do docelowego patternu [PC]
+  - z kazdym next refactorem - staraj sie zblizac do docelowego patternu
   
 - patterns cover THE MOST COMMON cases [not all!]
 
@@ -245,22 +232,22 @@ ch14.5 shared kernel
 
 - mamy 2x bc
 - integracja feats miedzy nimi jest baaardo mala
-- to overhead przez CI - moze byc zbyt wysoki
-- lub jesli takiego CI nie ma [bo nie ma skill'a, etc]
+- thus overhead rom CI - moze byc zbyt wysoki
 
 - nieskordynowane zespoly pracuja na blisko dzialajacych apps // q: to mozliwe u ee?
 - mimo ze apps sa spokrewnione - to co teams produkuja - nie musi pasowac do siebie
 - z: mamy 2 rozlaczone bc'e
   - zespoly traca kupe czasu na translacje
-  - jednoczesnie oba modele sa "slabe" bo nie uzywaja 'wspolnego [czesciowo] UL'
+  - jednoczesnie oba modele sa "slabe" bo nie uzywaja 'czesciowo wspolnego UL'
 
+sol
 - wyznacz podzbior domeny - dzielone przez oba zespoly
 - podzbior zawiera: kod, scheme db ...
-- podzbior NIE moze byc modyfikowany bez konsultacji miedzy teams
+- podzbior jest modyfikowany TYLKO po konsultacjach miedzy teams
 
 - po zmianach SK - musza OBU zespolom przejsc testy [ktore pewnie sa obok SK]
 
-??? o co chodzi
+???
 - wg EE SK to czesto 'core domain' or podzbior 'generic domain' [or both at once]
 - acz z 2nd side - twierdzi ze SK musi byc maly - strange ...
   
