@@ -261,6 +261,54 @@ sol
 
 ch14.6 customer/supplier development teams
 
+// ddd-ref-2015
+- mamy 2 zespoly: upstream [wysyla dane] / downstream [pobiera dane]
+- US moze miec sukces niezaleznie od DS
+- DS - zeby miec sukces - potrzebuje wsparcia US [zeby jakies uslugi wystawic ..]
+
+- DS moze byc zdany na 'laske' US
+- US moze byc hamowany przez DS [bo boi sie ze przez zmiany cos zepsuje w DS]
+
+sol
+- ustal jasna relacje cust-supp miedzy teams
+- potrzeby z DS - sa planowane, budzetowane i impled w US
+- mamy scheduler, commitment [kazdy wie co robic] ...
+
+- us moze traktowac ds jako customer [podczas planowania, prac ..]
+
+- opracuj WSPOLNIE automated acceptance tests - ktore beda testowac wystawiany z upstream interfejs
+// g: upstream wystawia 'interfejs'
+- us dodaje testy do swojego 'test suite' - i nie martwi sie wiecej ze cos spieprzy swoimi zmianami w ds
+
+
+// book
+- glowny flow danych: od us do ds
+- ale moze byc tez (lekki) flow w 2nd side
+// g: n ze oba kierunki integracji moga byc obsluzone przez 1 interfajs [w us]
+
+typowo: oba systemy 
+- obsluguja innych users [maja mocno rozdzielne modele, bc-e]
+- sa napisane w innych technologiach [co wymusza rozdzielnosc]
+
+czesto ds ma prawo veta na zmiany w us  
+albo kooper. jest cumbersome
+i utrudnia to rozwij obu bc'ow/modeli
+
+podczas planowania w us - just address ds needs, plan works for some iteration 123 ...
+
+// g: c: ut'y sa po stronie upstream, chociaz to ds bedzie pp wolal serwis us i to ds [pp] powinien testowac us [?]
+// ale nie - testy akcept. sa po stronie us
+// dzieki temu us od razu widzi jak cos spieprzy w 'kontrakcie'
+
+ds ma sie zachowywac jak 'customer'
+us dopytuje ds jak co ma dzialac ... std relacja z customer'em
+
+testy sa UBER CRUCIAL!!!
+uruchamiane po stronie us ale kodowane razem z ds
+
+cust/supp - moze byc uzywany miedzy firmami [na zasadzie std relacji z cust - ktorego 'powazamy' ;]
+
+
 
 ch14.7 conformist
 
