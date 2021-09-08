@@ -394,9 +394,28 @@ sciezki integracji
 
 ch14.8 anticorruption layer
 
+// ref15
+- w std relacjach miedzy bc'ami mamy 'std translations' [g: q what it means?]
+- ale podczas intergracji z trydnym zespolem/systemem - to translacja ma 'agresywny ch-er' - ACL
+
+how it works
+- ds client tworzy 'isolating layer' ktory wyrazi features of us w termach 'ds UL'
+// gq:  to znaczy ze bez ACL nie ma dostosowania UL? sprawdz examples: vv, library ...
+
+- pp us ma slaby model i nie chcesz go wlaczac w Twoj bc
+- albo just nie chcesz od zewn. modelu zalezec
+
 
 ch14.9 separate ways
 
+// ref15
+
+- c: musisz byc ruthless jesli chodzi o def. wymagan ;]
+- jesli BC'a maja malo znaczaca relacje - to nalezy ja przeciac i znalezienie work-around [prostszy niz integracja]
+- integr. jest ZAWSZE EXPENSIVE a czasem zyski sa male
+
+
+//7233609
 
 ch14.10 open host service
 
