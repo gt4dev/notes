@@ -3,17 +3,17 @@
 - w skomplikowanym systemie nie da sie znac all szczegolow
 - p4 says desc how to understand big models/complex domains
 
-- tu wiekszosc decyzji musi byc ustalona na poziomie zespolu lub miedzy zespolami
+- tu wiekszosc decyzji musi byc ustalona na poziomie zespolu/miedzy zespolami
 
 - model duuuzego przedsiewziecia - nie da sie pokazac jako single unit
 - system musi byc podzielony na mniejsze na poziomie
   - koncepcji
-  - implementacji [tak, impl tez ;]
+  - implementacji
 
 - moduly maja byc odseparowane i jednoczesnie musza dobrze wspolpracowac
 
-- single big model bedzie nieporeczny, bedzie mial duzo contradictions, duplications ...
-- ale zbyt rozdrobniony system na moduly - bez dobrej integracji 
+- single big model bedzie trudny w utrzymaniu, bedzie mial duzo contradictions, duplications ...
+- ale tez zbyt rozdrobniony - bez dobrej integracji 
   - nie dostarczy enterprise level answers
   - beda consistency problems [chyba chodzi o sync duplikowanych danych, propagacje zmian ..]
 // g: anyway - modularity 'wymusza' async updates wiec jakies problems zawsze tu beda ;]
@@ -26,12 +26,11 @@ cele strategic design principles
 - context
   - the most fundamental principle
   - dobry model [small or big] musi byc wewn. spojny, bez sprzecznych definicji
-  - BC-e maja wewn. spojny model
 - [strategic] distillation
   - redukuje balagan i fokusuje na waznych elementach
-  - czesty problem: wysilek idzie w 2n-ary domeny, a musimy w 1st imp. stuff
-  - tu mamy 'core domain' i 2nd-ary sa 'supporting elements [domains]'
+  - czesty problem: wysilek idzie w 2n-ary domeny, a nie w 1st-ary
+  - mamy 'core domain' i 2nd-ary sa 'supporting elements [domains]'
 - large scale structures
-  - ee da poglad w temat LSS 
+  - ee da poglad na LSS 
   - w detalach omowi tylko 1 of LSS = 'responsibility layers'
   - c: nie ma katalogu LSS - to trzeba wymyslac on-demand/case
