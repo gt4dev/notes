@@ -415,12 +415,51 @@ ch14.9 separate ways
 - integr. jest ZAWSZE EXPENSIVE a czasem zyski sa male
 
 
-//7233609
-
 ch14.10 open host service
 
 
+// ref15
+- dla kazdego bc-a z ktorym sie integrujesz - stworzysz 'integration layer'
+// g: trans-layer zawsze jest ale czy zawsze transluje UL miedzy BC'ami? t: sprawdz other projs
+- jak bc-e integruja sie pojedynczo miedzy soba - robienie osobnych translacji miedzy nimi ma sens 
+  - kazdy ("bc caller") zachowuje spojny wewn. model
+- ale jak jakis bc integruje sie z wieeeloma innymi bc'ami 
+  - to robienie indywidualnych tranlacji nie ma sensu, zwalnie development
+  - potem trzeba to jeszcze utrzymywac ...
+
+sol
+- wystaw wszystkim podsystem jako "protokol", serie serwisow
+- jak trzeba - to dodawaj nowe feats - na potrzeby all clients
+
+- ale jak masz wsrod klientow - 1 special - to dla niego mozesz przygotowac translotor, zeby ten need obsluzyc ...
+// g: cos tu nie rozumiem
+
+- w tej relacji all clients sa ds, wiekszosc w roli conformisty, ale czesc zbuduje ACL
+// g: moze conformista nie jest zly jak masz w miare dobre relacje miedzy zespolami - acz uzywasz UL z us ...
+// g: in worst case zrob just ACL ;]
+
+
 ch14.11 published language
+
+// ref15
+- dodajemy common lang miedzy 2 bc'ami [kazdy BC ma own UL, transformujemy go na PL i potem na UL of next BC]
+useful - jesli ktorys z bc'ow jest
+- zbyt skomplikowany
+- zbyt 'biedny'
+
+n: jesli ktorys z modeli uzyjemy jako PL - to trudno go potem rozwijac, zostaje zamrozony
+
+// g: p-lang - jako forma UL?
+
+sol
+- use WELL-DOCED shared language
+- to jezyk POSREDNI miedzy BC'ami wiec robimy translacje z BC1 na PL i z PL na BC2
+
+- many industreis - have ready to use data interchange PLs
+- ale wewn. firmy tez mozna zdef. own PL
+
+- PL jest czesto uzywany z OHS
+// g: OHS bez PL to pp "zwykle serwisy"
 
 
 ch14.12 unifying elephant
@@ -456,3 +495,19 @@ sol
   - udowadnial ze dobrze dzialaja i spelniaja wymagania klientow [2nd side]
 // g: takie testy to baza [chyba] all integracji
 // g: pp testy powinny byc po stronie supplier'a - odpalane jako czesc CI serwera
+
+
+BIG BALL OF MUD **
+
+- w old big systems - modele sa mixed, boundries are inconsistent/vague
+- proba zrozumienia tego jest helpless
+
+btw
+- dobrze zdef. granice bc'ow to efekt wysilkow [a nie samograj]
+- inaczej bc'e sie rozjerzdzaja, termy staja sie niejednoz, sprzeczne!
+- tworzy sie BBOM
+
+sol
+- otoczyc caly syf granica i oznaczyc jako BBOM
+- ABSOLUTNIE NIE baw sie wewn BBOM jakiegos sophisticated modeling
+- ten syf czesto przechodzi do innych bc'ow!!!
