@@ -405,6 +405,55 @@ how it works
 - pp us ma slaby model i nie chcesz go wlaczac w Twoj bc
 - albo just nie chcesz od zewn. modelu zalezec
 
+// book
+- acl = tranlation layer z dodatkowymi fasadami, trnaslatorami, adapterami
+
+- z: mamy system w budowie ktory integruje sie przez duuuzy interfejs z innym systemem
+- trudnosc z "polaczeniem i rozdzieleniam" obu modeli moze overwhelm intencje o dobrym modelu w new system
+- finalnie new model bedzie przypominal model z old systemu
+
+- old systems maja zwykle week models
+- acz integracja czesto jest MUST HAVE i musimy sie integrowac
+- acz integracja jest mega dobra forma re-use'a old systemu
+
+c
+- czesto nowy system musi cooper z wieeeeloma old systemami
+- tu nowy model bedzie pod wplywem modeli ze starych systemow
+- moze nastapic 'corruption' of new model!!!
+
+- w integracji czesto skupiamy sie na technikalaich [uzgodnienie transportu, modeli danych ...]
+- czesto jest pomijane upewnienie sie ze modele pasuja do siebie semantycznie
+- czesto devs sa w bledzie kiedy wymieniamy mega podobne dane miedzy systemami - i mysla ze znacza one 'to samo'
+- zwykle NIE jest to to samo!!!
+- zwykle wystepuja subtelne ale wazne roznice w znaczeniu danych
+
+c
+- jesli widzimy wrecz identyczne dane w 2 systemach
+- to zwykle BLEDEM jest robienie interfejsu do 2nd systemu i operaowanie na LL [bo to pp rozne dane]
+
+n: wg interface = interkacja, polaczenie miedzy systemiami a nie Java syntax
+
+operowanie na LL interfajsie spowoduje ze
+- nie wyrazimy dobrze termow z 2nd systemu
+- zabrudzimy nasz model - ze 'zle zrozumianymi' termami z 2nd systemu
+
+sol
+- musisz stworzyc acl ktory wystawi feats of 2nd system - uzywajac terms naszego systemu
+
+- acl - to nie jest warstwa tech laczaca 2 systemy [nie jest to glowny cel acl'a]
+- acl to translator koncepcji / zachowan z jednego bc w inny bc
+
+- acl sam z siebie moze byc calkiem big/complex piece of soft
+// g: i to rozroznia acl od 'translation layers' w innych integracjach
+
+DESIGNING INTERF. OF ACL
+- zwykle ma forme kilk serwisow [juz wyrazonych w 'local UL']
+- c: czasem ma forme entity [tak, entity]
+
+IMPLING ACL
+- acl zawiera: fasady, adaptery, translatory, serwisy ...
+// g: acl zawiera 'translator' wiec pp 'translator' wg ee to mech. ktory transformuje dane z 1 to other class
+
 
 ch14.9 separate ways
 
@@ -510,4 +559,4 @@ btw
 sol
 - otoczyc caly syf granica i oznaczyc jako BBOM
 - ABSOLUTNIE NIE baw sie wewn BBOM jakiegos sophisticated modeling
-- ten syf czesto przechodzi do innych bc'ow!!!
+- ten syf czesto przechodzi do innych bc'ow!!!!!
