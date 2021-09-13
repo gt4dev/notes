@@ -452,10 +452,50 @@ DESIGNING INTERF. OF ACL
 
 IMPLING ACL
 - acl zawiera: fasady, adaptery, translatory, serwisy ...
+- ta struktura to propozycja od ee - moga byc inne struktury acl
+- detale w book
+- fasada - wystawia 'raw methods' of external system, wola wolany system, dziala na modelu outer system
+- adapter - transformuje wywolania i dane z naszego systemu na outer i odwrotnie
+- serwis - wystawiony do wywolan dla naszego bc, wola adaptery etc...
+- translator 
+  - adapter wie jak wywolac fasade
+  - transformacje danych sa robione w translatorze
+- str. 
 // g: acl zawiera 'translator' wiec pp 'translator' wg ee to mech. ktory transformuje dane z 1 to other class
+
+// g: global n: detale patternow etc ... doczytuj w ksiazce, sam tego nie wymyslaj
+
+n-s
+1 your bc wola zewn. system, ale czasem zewn. system wola your bc [bo jakis event moze byc etc]
+  - robisz wtedy 2-directed acl
+2 gdzie wrzucic acl
+  - czasem jest na serwerze z your bc, czasem dziala na serwerze z outer system, 
+  - czasem czesci dziala tu i tu [linia podzialu jest np. na adapter'ach - roznie]
+// g: remember ze acl - glownie oddziela od CONCEPTUAL CORRUPTION [a nie tech. problems]
+3 if possible - zlec po stronie outer-system wykonanie serwisow pod twoje potrzeby
+  - zaoszczedzisz w cholere roboty
+4 olewasz to, a to blad - szeroka integracja jest czaslochlonna
+  - kupa roboty z translatorami, przemodelowaniem outer model na nasz ...
+    - duza zadan = moze sie to wymknac z kontroli
+  - mozna zniszczyc integrity of our bc model
+  - a moze trzeba to uproscic i uzyc conformist'y???
+5 do acl mozesz dodac features [rozszerz. relacja a ni ebiznes]: logging calls, auditing ..
+
+acl uzywamy glownie gdy nie mamy wyplywu na zewn. system
+ale czasem mozemy uzyc do integracji z outer OWN system - szczegolnie gdy outer system ma inny model
+
+EXAMPLE: LEGACY BOOKING APP
+- acl glownie chroni nasz model przed zewn. wplywami
+- nasz model jest 'mega-odizolowany' od outer system
+- thus: mozemy poczatkowo sie z kims zintegrowac acl'em, a z czasem odciac od niego [przejac czesc feats]
+
+chinski mor
+- dynastia ktora go budowala - upadla finansowo przez to
+- w przypadku acl podobnie - koszty izolacji moga byc wyzsze niz benefity
 
 
 ch14.9 separate ways
+
 
 // ref15
 
@@ -463,12 +503,39 @@ ch14.9 separate ways
 - jesli BC'a maja malo znaczaca relacje - to nalezy ja przeciac i znalezienie work-around [prostszy niz integracja]
 - integr. jest ZAWSZE EXPENSIVE a czasem zyski sa male
 
+// book
+
+- przykladowe koszty integracji
+  - koniecznosc koordynacji zespolow
+  - wymuszenie kompromisow w zespolach
+- inny problemy
+  - zespol moze nie byc gotowy organizacyjnie, moze nie wypuszczac reqed feats na czas ...
+  - ciezko przygotowac model ktory zaadresuje 'own needs' i needs of outer team
+    // g: tu EE jest niespojny bo pisal ze nie patrzysz poza bc
+
+- czesto integracji nie warto robic [na poziomie modeli, bc'ow]
+// g: czesto jako model widzisz dane - ale pamietaj ze to tez behaviours
+
+- pozwol dev'om znalezc "inne rozwiazanie"
+- zintegruj features na poziomie ui, middleware ...
+  - ale tez na tym wyzszym poziomie - minimalizuj wymiane danych miedzy BC'ami
+  - to turbo wygodne [vs integr. na poziomie modelu]
+  
+EXAMPLE: INSURANCE ...
+- byl projekt ktory chcial zintegrowac feats dla agantow, wyplaty odszkodowan ...
+- po roku byl fail - nie wypracowali rozwiazania - pp bylo za trudne
+- sol: stworzyli set malych apps - ktore integrowaly sie na poziomie 'ui'
+- tu byl sukces!
+- ale potem wrocili do old way - i znowu byl fail ;]
+// g: Ty masz ciagatki do laczenia diff models na poziomie models
+// a czesto nie ma potrzeby, lacz modele na poziomie ui
+
 
 ch14.10 open host service
 
 
 // ref15
-- dla kazdego bc-a z ktorym sie integrujesz - stworzysz 'integration layer'
+- dla kazdego bc-a z ktorym sie integrujesz - tworzysz 'integration layer'
 // g: trans-layer zawsze jest ale czy zawsze transluje UL miedzy BC'ami? t: sprawdz other projs
 - jak bc-e integruja sie pojedynczo miedzy soba - robienie osobnych translacji miedzy nimi ma sens 
   - kazdy ("bc caller") zachowuje spojny wewn. model
@@ -486,6 +553,14 @@ sol
 - w tej relacji all clients sa ds, wiekszosc w roli conformisty, ale czesc zbuduje ACL
 // g: moze conformista nie jest zly jak masz w miare dobre relacje miedzy zespolami - acz uzywasz UL z us ...
 // g: in worst case zrob just ACL ;]
+
+// book
+- to calkiem complext - stworzyc interfejs uzywany przez wiele zespolow
+- thus - rob to tylko jesli masz duzo klientow
+- mozliwe ze 'tysiace klientow'
+
+- klienci sa coupled do modelu OH
+// g: acz klient moze uzyc acl?
 
 
 ch14.11 published language
@@ -511,8 +586,76 @@ sol
 // g: OHS bez PL to pp "zwykle serwisy"
 
 
+// book
+sample cases
+- integrujemy 2 stare systemy, nie wiemy jakim modelem wymieniac dane/interakcje
+- app A i B maja wymieniac dane, nie wiemy ktora app do ktorej ma sie dostosowac
+  - moze nie moga sie wzajemnie uzalezniac - thus uzyj PL
+  - uzycie modelu jednej z apps - zamrozi jej model na zmiany
+  
+- c: OHS uzywa model domeny do wymiany danych miedzy systemami // g: really?
+- w PL publikujemy specjalny jezyk/protokul
+
+c
+- xml i dtd defs wiele standards w przemysle/biznesie
+- to forma PL
+
+EXAMPLE: ..
+- EE robil system ze many users mialo laczyc sie do DB2 - ale majac tylko 1 lic. na DB2
+- EE opracowal PL [podzbior sql'a db2] i dzialalo [n: tu PL byl 'techniczny', nie domanowy - ale przyklad oddaje intencje PL ;]
+
+EXAMPLE: CHEMISTRY
+- jest PL do opisu czastek chemicznych Chemical Markup Language
+- use it do wymiany danych (o str. checmicznych) miedzy apps
+
+c: jak mamy protokul PL - to mega giga duuuuzo outer tools moze z niego korzystac
+np. w/w CML jest uzywany przez apps do wizualizacji czastek etc...
+daje to mega potencjal
+
+// g: moze PL ma sens w przypadku gdy tych integracji jest duuuuzo [jak ohs]
+
+
 ch14.12 unifying elephant
 
+
+example
+- few blind men - ma inna wizje elephant - jeden widzi sciane, inny waz ...
+- jesli oni sie nie integruja - to nie ma znaczenia ta wizja
+
+- n: mamy jeden model [elephant] roznie opisany = not unified
+
+- each blind men - creates own bc with it's model of elephant
+
+zintegrujmy w/w bc-e
+- sample bc-e
+  - | elephane |-------|> | wall |
+  - | elephane |-------|> | tree |
+  - | elephane |-------|> | snake |
+  - ...
+- men chca share'owac infa o elephant [np. lokacja]
+- aktualnie each bc ma juz own property for location [rozne: location, positions, gps-metrics ..]
+- kazdy bc ma own PoV 'czym jest elephant'
+- c: kazdy men bedzie twierdzil ze to jego model jest ok
+- ale all bc-e maja wspoldzielic elephant-location
+
+- z: po dluuugich i ciezkich dyskusjach men zauwazyli ze rozmawiaja o czyms jednym
+- powstal nowy diagram relacji miedzy bc'ami [dosc hc]
+
+- vin: diff apps can desc the same reality but from diff PoV
+- to implikuje problems - jak apps maja sie dogacac, jak update'owac
+
+n
+- model polaczonych bc-ow jest 'bez sensu' ale dziala [owner'zy nie odkryli jeszcze calej prawdy o modelu]
+- nowe insighe sie pojawia i trzeba do zrefaktoryzowac
+
+- jak masz wiele bc'ow do integracji to dopracuj ich perspektywy patrzenia w domain - zeby byly spojne [unified] - zeby kazdy widzial 'slonia'
+
+c
+- there is no way for blind men to see whole elephant
+- this prob can be fixed - if they realize their view on bc's are incomplete
+
+
+1118181546
 
 ch14.13 choosing your model context strategy
 
