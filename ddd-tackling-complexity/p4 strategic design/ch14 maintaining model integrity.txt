@@ -394,18 +394,19 @@ sciezki integracji
 
 ch14.8 anticorruption layer
 
+
 // ref15
-- w std relacjach miedzy bc'ami mamy 'std translations' [g: q what it means?]
-- ale podczas intergracji z trydnym zespolem/systemem - to translacja ma 'agresywny ch-er' - ACL
+- w typowo miedzy bc'ami mamy only translations
+- ale podczas intergracji z trydnym zespolem/systemem - translacja ma 'agresywny ch-er' - ACL
 
 how it works
 - ds client tworzy 'isolating layer' ktory wyrazi features of us w termach 'ds UL'
-// gq:  to znaczy ze bez ACL nie ma dostosowania UL? sprawdz examples: vv, library ...
+// g: ale std translacje - tez zmieniaja lang [chyba]
 
-- pp us ma slaby model i nie chcesz go wlaczac w Twoj bc
-- albo just nie chcesz od zewn. modelu zalezec
+zwykle nie chcesz zalezec od zewn. modelu [bo np. jest niespojny]
 
 // book
+
 - acl = tranlation layer z dodatkowymi fasadami, trnaslatorami, adapterami
 
 - z: mamy system w budowie ktory integruje sie przez duuuzy interfejs z innym systemem
@@ -417,8 +418,8 @@ how it works
 - acz integracja jest mega dobra forma re-use'a old systemu
 
 c
-- czesto nowy system musi cooper z wieeeeloma old systemami
-- tu nowy model bedzie pod wplywem modeli ze starych systemow
+- czesto nowy system musi cooper z wieeeeeeeloma old systemami
+- pp nowy model bedzie pod wplywem modeli starych systemow
 - moze nastapic 'corruption' of new model!!!
 
 - w integracji czesto skupiamy sie na technikalaich [uzgodnienie transportu, modeli danych ...]
@@ -431,55 +432,54 @@ c
 - jesli widzimy wrecz identyczne dane w 2 systemach
 - to zwykle BLEDEM jest robienie interfejsu do 2nd systemu i operaowanie na LL [bo to pp rozne dane]
 
-n: wg interface = interkacja, polaczenie miedzy systemiami a nie Java syntax
+n: wg ee: interface = interkacja, polaczenie miedzy systemiami (a nie Java syntax)
 
-operowanie na LL interfajsie spowoduje ze
+operowanie na LL interfajsie powoduje ze
 - nie wyrazimy dobrze termow z 2nd systemu
-- zabrudzimy nasz model - ze 'zle zrozumianymi' termami z 2nd systemu
+- zabrudzimy nasz model 'zle zrozumianymi' termami z 2nd systemu
 
-sol
+SOL
 - musisz stworzyc acl ktory wystawi feats of 2nd system - uzywajac terms naszego systemu
 
-- acl - to nie jest warstwa tech laczaca 2 systemy [nie jest to glowny cel acl'a]
-- acl to translator koncepcji / zachowan z jednego bc w inny bc
+- acl to translator koncepcji / zachowan z jednego bc w inny
 
 - acl sam z siebie moze byc calkiem big/complex piece of soft
-// g: i to rozroznia acl od 'translation layers' w innych integracjach
+// g: i to rozroznia acl od 'std translation layers'
 
-DESIGNING INTERF. OF ACL
-- zwykle ma forme kilk serwisow [juz wyrazonych w 'local UL']
+interf. wystawiony z acl
+- zwykle ma forme kilku serwisow [uzywajacych w 'local UL']
 - c: czasem ma forme entity [tak, entity]
 
 IMPLING ACL
 - acl zawiera: fasady, adaptery, translatory, serwisy ...
-- ta struktura to propozycja od ee - moga byc inne struktury acl
-- detale w book
-- fasada - wystawia 'raw methods' of external system, wola wolany system, dziala na modelu outer system
+- ta struktura to tylko propozycja od ee 
+- fasada - wystawia 'raw methods' of external system, wola extern system, dziala na outer system model
 - adapter - transformuje wywolania i dane z naszego systemu na outer i odwrotnie
 - serwis - wystawiony do wywolan dla naszego bc, wola adaptery etc...
 - translator 
   - adapter wie jak wywolac fasade
   - transformacje danych sa robione w translatorze
-- str. 
-// g: acl zawiera 'translator' wiec pp 'translator' wg ee to mech. ktory transformuje dane z 1 to other class
+
+// g: acl zawiera 'translator' 
+// thus 'translator' to mech. ktory transformuje dane z 1 to other class
 
 // g: global n: detale patternow etc ... doczytuj w ksiazce, sam tego nie wymyslaj
 
-n-s
-1 your bc wola zewn. system, ale czasem zewn. system wola your bc [bo jakis event moze byc etc]
+notes
+1 your bc wola zewn. system, ale czasem zewn. system wola your bc [np. jakis event zwrotny etc]
   - robisz wtedy 2-directed acl
 2 gdzie wrzucic acl
   - czasem jest na serwerze z your bc, czasem dziala na serwerze z outer system, 
   - czasem czesci dziala tu i tu [linia podzialu jest np. na adapter'ach - roznie]
 // g: remember ze acl - glownie oddziela od CONCEPTUAL CORRUPTION [a nie tech. problems]
 3 if possible - zlec po stronie outer-system wykonanie serwisow pod twoje potrzeby
-  - zaoszczedzisz w cholere roboty
+  - zaoszczedz to w cholere roboty
 4 olewasz to, a to blad - szeroka integracja jest czaslochlonna
   - kupa roboty z translatorami, przemodelowaniem outer model na nasz ...
     - duza zadan = moze sie to wymknac z kontroli
   - mozna zniszczyc integrity of our bc model
-  - a moze trzeba to uproscic i uzyc conformist'y???
-5 do acl mozesz dodac features [rozszerz. relacja a ni ebiznes]: logging calls, auditing ..
+  - czsem lepiej uproscic integracje = uzyc conformist
+5 do acl mozesz dodac features: logging calls, auditing ..
 
 acl uzywamy glownie gdy nie mamy wyplywu na zewn. system
 ale czasem mozemy uzyc do integracji z outer OWN system - szczegolnie gdy outer system ma inny model
@@ -503,90 +503,93 @@ ch14.9 separate ways
 - jesli BC'a maja malo znaczaca relacje - to nalezy ja przeciac i znalezienie work-around [prostszy niz integracja]
 - integr. jest ZAWSZE EXPENSIVE a czasem zyski sa male
 
+
 // book
 
-- przykladowe koszty integracji
+nieoczywiste:
+- koszty integracji
   - koniecznosc koordynacji zespolow
   - wymuszenie kompromisow w zespolach
-- inny problemy
+- problemy
   - zespol moze nie byc gotowy organizacyjnie, moze nie wypuszczac reqed feats na czas ...
   - ciezko przygotowac model ktory zaadresuje 'own needs' i needs of outer team
     // g: tu EE jest niespojny bo pisal ze nie patrzysz poza bc
 
 - czesto integracji nie warto robic [na poziomie modeli, bc'ow]
-// g: czesto jako model widzisz dane - ale pamietaj ze to tez behaviours
+// g: czesto jako model widzisz dane - ale pamietaj tez o BEHAVIOURS!!!
 
-- pozwol dev'om znalezc "inne rozwiazanie"
+- zamiast integrowac - pozwol dev'om znalezc "inne rozwiazanie"
 - zintegruj features na poziomie ui, middleware ...
-  - ale tez na tym wyzszym poziomie - minimalizuj wymiane danych miedzy BC'ami
+  - ale tu tez na tym wyzszym poziomie - minimalizuj wymiane danych miedzy BC'ami
   - to turbo wygodne [vs integr. na poziomie modelu]
   
 EXAMPLE: INSURANCE ...
-- byl projekt ktory chcial zintegrowac feats dla agantow, wyplaty odszkodowan ...
+- byl projekt ktory integrowal feats dla agantow, obsluge odszkodowan ...
 - po roku byl fail - nie wypracowali rozwiazania - pp bylo za trudne
 - sol: stworzyli set malych apps - ktore integrowaly sie na poziomie 'ui'
 - tu byl sukces!
 - ale potem wrocili do old way - i znowu byl fail ;]
-// g: Ty masz ciagatki do laczenia diff models na poziomie models
-// a czesto nie ma potrzeby, lacz modele na poziomie ui
+// g: Ty czesto laczysz diff models na poziomie models - a to bez sensu
 
 
 ch14.10 open host service
 
 
 // ref15
-- dla kazdego bc-a z ktorym sie integrujesz - tworzysz 'integration layer'
-// g: trans-layer zawsze jest ale czy zawsze transluje UL miedzy BC'ami? t: sprawdz other projs
-- jak bc-e integruja sie pojedynczo miedzy soba - robienie osobnych translacji miedzy nimi ma sens 
+
+- jak bc-e integruja sie pojedynczo miedzy soba - robienie osobnych translacji miedzy nimi ma sens
   - kazdy ("bc caller") zachowuje spojny wewn. model
-- ale jak jakis bc integruje sie z wieeeloma innymi bc'ami 
+  - dla kazdego bc-a z ktorym sie integrujesz - tworzysz 'integration layer'
+- ale jak 1 bc integruje sie z wieeeeeloma innymi bc'ami
   - to robienie indywidualnych tranlacji nie ma sensu, zwalnie development
   - potem trzeba to jeszcze utrzymywac ...
+// g: trans-layer zawsze jest ale czy zawsze transluje UL miedzy BC'ami? 
+// t: sprawdz projs of vv, pilo ...
 
-sol
-- wystaw wszystkim podsystem jako "protokol", serie serwisow
-- jak trzeba - to dodawaj nowe feats - na potrzeby all clients
+SOL
+- wystaw dany podsystem jako "protokol" / serie serwisow
+- jak trzeba - dodawaj nowe feats - na potrzeby all clients
 
 - ale jak masz wsrod klientow - 1 special - to dla niego mozesz przygotowac translotor, zeby ten need obsluzyc ...
 // g: cos tu nie rozumiem
 
 - w tej relacji all clients sa ds, wiekszosc w roli conformisty, ale czesc zbuduje ACL
-// g: moze conformista nie jest zly jak masz w miare dobre relacje miedzy zespolami - acz uzywasz UL z us ...
+// g: moze conformista nie jest zly jak masz w miare dobre relacje miedzy zespolami, dobry model z us ...
 // g: in worst case zrob just ACL ;]
 
 // book
-- to calkiem complext - stworzyc interfejs uzywany przez wiele zespolow
-- thus - rob to tylko jesli masz duzo klientow
-- mozliwe ze 'tysiace klientow'
 
+- to calkiem complex - stworzyc interfejs uzywany przez wiele zespolow
+- thus - rob to tylko jesli masz duzo klientow [tysiace?]
 - klienci sa coupled do modelu OH
-// g: acz klient moze uzyc acl?
+  // g: acz moga uzyc acl
 
 
 ch14.11 published language
 
+
 // ref15
-- dodajemy common lang miedzy 2 bc'ami [kazdy BC ma own UL, transformujemy go na PL i potem na UL of next BC]
-useful - jesli ktorys z bc'ow jest
-- zbyt skomplikowany
-- zbyt 'biedny'
+
+- dodajemy common lang miedzy 2+ bc'ami [kazdy BC ma own UL, transformujemy go na PL i potem na UL of next BC]
+
+- useful - jesli ktorys nie mozemy korzystac z modelu z bc'ow bo jest too complex or too poor
 
 n: jesli ktorys z modeli uzyjemy jako PL - to trudno go potem rozwijac, zostaje zamrozony
 
-// g: p-lang - jako forma UL?
+// g: pub-LANG - to forma UL?
 
-sol
-- use WELL-DOCED shared language
+SOL
+- use WELL-DOCED shared [published] language
 - to jezyk POSREDNI miedzy BC'ami wiec robimy translacje z BC1 na PL i z PL na BC2
 
-- many industreis - have ready to use data interchange PLs
-- ale wewn. firmy tez mozna zdef. own PL
+- many industreis have ready to use "data interchange PLs"
+- firmy wewn. tez moga zdef taki PL
 
 - PL jest czesto uzywany z OHS
-// g: OHS bez PL to pp "zwykle serwisy"
 
 
 // book
+
 sample cases
 - integrujemy 2 stare systemy, nie wiemy jakim modelem wymieniac dane/interakcje
 - app A i B maja wymieniac dane, nie wiemy ktora app do ktorej ma sie dostosowac
@@ -642,25 +645,162 @@ zintegrujmy w/w bc-e
 - powstal nowy diagram relacji miedzy bc'ami [dosc hc]
 
 - vin: diff apps can desc the same reality but from diff PoV
-- to implikuje problems - jak apps maja sie dogacac, jak update'owac
+- to implikuje problems - jak apps maja sie dogadac, jak update'owac
 
 n
 - model polaczonych bc-ow jest 'bez sensu' ale dziala [owner'zy nie odkryli jeszcze calej prawdy o modelu]
 - nowe insighe sie pojawia i trzeba do zrefaktoryzowac
 
-- jak masz wiele bc'ow do integracji to dopracuj ich perspektywy patrzenia w domain - zeby byly spojne [unified] - zeby kazdy widzial 'slonia'
+- jak masz wiele bc'ow do integracji to dopracuj ich perspektywy patrzenia w domain 
+- zeby byly spojne [unified] - zeby kazdy widzial 'slonia'
 
 c
 - there is no way for blind men to see whole elephant
 - this prob can be fixed - if they realize their view on bc's are incomplete
 
 
-1118181546
-
 ch14.13 choosing your model context strategy
 
 
+n/w to lista opcji jak mozesz rozwinac context map - jak juz masz zdef. curr. CM
+
+1. team decission or higher
+- zespoly okreslaja granice bc'ow i relacje miedzy nimi
+- ew. ktos "z gory" podejmuje taka decyzje
+- zespoly MUSZA znac granice bc'ow i relacje miedzy nimi
+
+c: czesto polityczne decyzje wplywaja na granice bc'ow i ich relacje
+
+2. putting ourselves in context
+przyklad zawezenia obszaru dzialania
+- typowo bedziesz w proj. 'under change' i bedzie sie on komunikowal z 2nd system
+- your system bedzie skaldal sie z 2x bc i beda one gadac z 2x inne bc'e
+- in 1st you will be interested in your bc's, as 2nd: relacjami z other bc's
+
+3. transforming boundries
+- jest nieograniczona liczba przesuwania granic bc'ow
+- ale bedziesz mial czynniki
+  - favoring large bc
+    - 1 unified model [UM] pozwala plynniej realizowac zadania z user PoV
+    - latwiej zrozumiec 1 UM niz 2 rozdzielone i zintegrowane
+    - translacja miedzy M moze byc trudna a wrecz NIEMOZLIWA!!!
+    - ..
+  - favoring small bc
+    - no overhead w komunikacji miedzy devs [mniejsze modele, latwiej uzgodnic zmiany]
+    - mniejsze CI [bo mniej kodu, mniejsze zespoly ..]
+    - latwiej ogarnac kognitywnie maly model - mniejsze "IQ" wymagane do devs
+
+4. accepting that ...
+- czesto twoja app zalezy od innych, legacy systems
+  - i to ok [bo re-use]
+- czesto w legacy mamy contradictions - i nie bardzo mozna je uznac ze 'formalne bc-e'
+// g: czym zatem jest legacy system, not-bc?
+
+5. relationships with exter. systems
+// g: bo masz relations to other bc [ale w Twojej app] i other bc w innych apps
+mozliwe drogi
+- separated ways
+- if must integrate
+  - conformist
+    - use if have large legacy i dorabiasz do niego extension
+    - nie modyfik. tego large system
+    - c: ee podaje sample of excell spreadsheet - jako 'legacy' i dodajesz do niego extension
+    - oplaca sie jesli translacje miedzy bc'ami byly by wieksze niz dodanie samej funkcjonalnosci
+    - c: wg ee w confo tez da sie zrobic good design [mimo weak model]
+    - c: ee zaleca w confo przerobic src model na bardziej explicite w kierunku Twoich needs
+  - acl
+    - jak nowy system pp bedzie duuuzy to moze warto oddzielic sie od legacy przez acl
+    
+    
+6. the system under design
+
+- sud - to projekt ktory budujesz
+- w sud decydujesz ile ma byc bc i jakie relacje
+example
+- do 1 bc jak masz < 10 osob i funkcje sa highly related
+
+z czasem, jak system robi sie wiekszy to moze 
+- podziel go na osobne bc'e integrated with shared-krenel
+- gdzie kazdy BC ma < 10 osob
+
+ale teams moge sie clash'owac
+- bo modele sie rozjechaly i maja inne needs
+- bo management sie nie dogaduje
+- ...
+jak nie da sie clash rozwiazac [albo nie chcesz ich rozw.] to idz w 'separated ways'
+
+- typowo 1 team robi 1 bc [or many bc-s]
+- odwrotnie: n-teams robi 1 bc jest raczej klopotliwe
+
+
+7. caterging to special needs
+
+- w ramach 1 biznesu - rozne grupy moga miec rozny zargon [ul]
+- mimo ze all ma wspolna baze
+- ustandaryzowanie zargonu moze byc hard i nieefektywne
+
+- jak masz diff modele ale nie integrujace sie - to nie ma problemu - kazdy gada po swojemu i ok
+
+- acz czasem integracja 'zargonow' pozwala oszczedzic bo ulepszamy model w 1 bc a nie kilku
+- i pp integracja bedzie robic translacje [bez acl] or shared-kernel [totalnie bez translacji]
+// g: w SK totalnie oszczedzasz na tranlacjach
+
+
+8. deployment
+
+- uzgadniasz w cust/supp - kto, co, kiedy wypuszcza
+- warto miec "translation layers" w 1 procesie zeby miec ich 1 wersje 
+// g: acz to czasy pre-microserive'owe - to sie moglo zmienic
+
+
+9. trade-off
+
+- nice chart 
+  - x - poziom komunik. miedzy teams
+  - y - poziom kontroli nad bc'ami
+- if x,y max -> maybe use single bounded context
+- if x,y weaker -> to moze: sk, if weaker - cust/supp
+- if x,y = zero -> separated ways
+
+
+10. proj. under way
+
+// cut, nothing
+
+
 ch14.14 transformations
+
+czesto bedziesz musial
+- przesuwac granice bc'ow
+- zmieniac relacje miedzy bc'ami
+
+- podziel bc na mniejsze - to proste
+- merge'owanie i zmiana relacji - to trudne
+
+- ee pokaze kilka 'representative' big changes
+
+1. merge 'separated ways' -> 'shared kernel'
+- bc warto merge'owac gdy duplikacja data/behaviours miedzy bc'ami jest duza
+- sk warto uzyc gdy translations overhead jest za wysokie
+
+etapy
+e1: upewnij sie ze kazdy model jest unified
+e2: ustaw proces tech. build'owania/ci obu projektow
+  - SK musi miec test suite - ktory testuje model fragment SK po wbudowaniu w part. bc
+e3: wydziel do sk jakis maly fragment, zduplikowany w obu bc'ach
+e4: eliminuj dalsze duplikacje
+... etc
+
+2. merge to CI
+// cut
+
+3. phasing out legacy system
+- legacy konczy zywot i go wycinamy
+- to kilkuletni proces
+// cut ...
+
+4. ohs to public language
+// cut ...
 
 
 
@@ -682,7 +822,7 @@ sol
 - zespoly kooperuja nad dostarczaniem interfejsow for needs of both systems
 - trza zrobic schedul poszczeg. features zeby calosc byla zaplanowana i gotowa do integracji na czas
 
-- zbuduj test suite ktory bedzie 
+- zbuduj test suite ktory bedzie
   - definiowac interfejsy miedzy bc'ami
   - udowadnial ze dobrze dzialaja i spelniaja wymagania klientow [2nd side]
 // g: takie testy to baza [chyba] all integracji

@@ -1,0 +1,67 @@
+ch15 distillation
+
+
+ch15.1 core domain
+
+
+ch15.1.1 choosing the core
+
+
+ch15.1.2 who does the work
+
+
+ch15.2 an escalation of distillation
+
+
+ch15.3 generic subdomains
+
+
+ch15.3.1 generic doesn't mean reusable
+
+
+ch15.3.2 project risk management
+
+
+ch15.4 domain vision statement
+
+
+ch15.5 higlighted core
+
+
+ch15.5.1 the distillation document
+
+
+ch15.5.2 the flagged core
+
+
+ch15.5.3 the distillation doc as process tool
+
+
+ch15.6 cohesive mechanisms
+
+
+ch15.6.1 generic subdomain versus cohesive mech
+
+
+ch15.6.2 when a mech is part of the core domain
+
+
+ch15.7 distilling to a declarative style
+
+
+ch15.8 segregated core
+
+
+ch15.8.1 the cost of creating seg. core
+
+
+ch15.8.2 evovving team desision
+
+
+ch15.9 abstract core
+
+
+ch15.10 deep models distill
+
+
+ch15.11 choosing refactorings targets
