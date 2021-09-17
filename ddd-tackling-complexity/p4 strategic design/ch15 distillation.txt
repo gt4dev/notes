@@ -1,8 +1,33 @@
 ch15 distillation
 
 
+// ref
+- ch o tym jak sfokusowac sie na main problem i nie utonac w side issues
+- model is a distillation of knowledge
+- kolejne refactory ulepszaja domain knowledge i model
+
+
 ch15.1 core domain
 
+
+// ref
+- large systems maja many components, each important, each complex - w rezultacie 'essence of business model' staja niejasny i zaniedbane [przez inne works]
+- nie mozna all components keep refined [hq], musisz ustalic priorytety
+- zeby model domeny super-good sluzyl biznesowi - to CRITICAL CORE of that model - musi byc wypolerowany na max'a
+- prob: devs lubia kodowac
+  - tech. infrastructure
+  - proste problemy domenowe - nie wymagajace skompl. wiedzy domenowej
+  
+sol
+- zdef. core domain i wyroznij go z wielu supporting models/code
+- najbardziej specjalizowane koncepty domeny - zrob je "wyrazne"
+- core should be small
+
+- zatrudnij do core domain 'top talents'
+- laduj energie w CD [zeby polepszyc model]
+- use supple design - zeby kod byl clear
+
+ 
 
 ch15.1.1 choosing the core
 
@@ -16,6 +41,21 @@ ch15.2 an escalation of distillation
 ch15.3 generic subdomains
 
 
+// ref
+- niektore elementy modelu dodaja complexity a nie dodaja 'specialized knowledge'
+- all unnecessary elems - powoduja ze core jest trudny do zrozumienia
+- model czesto jest overloaded jakimis ogolnymi elementami - robi sie chaos
+- acz te dodatkowe elems - sa ISTOTNE do dzialania doemny
+
+SOL
+- ident. subdomains ktore NIE sa motywacja do robienie your proj
+- wydziel modele w subdoms i umiesc w osobnych modulach
+
+- w subdom NIE ma byc sladu o twojej spec!
+- subdom maja lower prio niz core dom
+- rozwaz kupno: off-the-shelve app or only model of geeric problem
+
+
 ch15.3.1 generic doesn't mean reusable
 
 
@@ -25,7 +65,48 @@ ch15.3.2 project risk management
 ch15.4 domain vision statement
 
 
+// ref
+- gdy model jest juz rozwiniety - istnieje potrzeba wyjasnienia wartosci systemu bez potrzeby studiowania detali modelu
+- uber-wazne feats modelu moga byc oparte na kilku bc'ach
+- i tu nie zobaczysz 'szybko' HL value dostarczanej przez model
+// g: 1 model moze rezydowac w kilku bc'ach
+
+sol
+- opisz na 1 stronie 'core domain' i wartosci ktora wnosi
+- napisz 'statement' w miare wczesnie i update'uj po zmianach modelu/koncepcji
+
+
 ch15.5 higlighted core
+
+
+// ref
+- vision statement opisuje ogolne termy core domain
+- brak detali - powoduje ze zrozuemienie szcz. zalezy od interpretacji czytelnikow
+
+c: 
+- w zespole devs beda mieli zwykle 'ogolna znajomosc' core domain, bez znajomosci detali
+- devs zwykle znaja tylko ich wycinek CoreDomain
+
+c: 
+- codzienne przebijanie sie przez detale modelu - angazuje energie/czas - ktora mozna by poswiecic na 'designing model' 
+- a 'designing model' wymaga szczegolowej znajomosci modelu
+- model CORE DOMAIN musi byc prosty do zrozumienia
+
+SOL1
+- opisz w doku [3-7 pages] elements and main interactions of core domain
+SOL2
+- flag the elements of the core domain within primary repo of the model
+- bez podawaia detali - just flag core domain elements
+// g: to moze byc wydrukowany modelu w ksiazce i oznaczony markerem, komentarze JavaDocs oznaczajace CoreDomain ...
+
+- n: doc nazywa sie distillation document [pp]
+- zmiany w modelu wymagaja zmiany doku
+- dok opisuje tylko NAJistotniejsze elems of CORE DOMAIN [ktora sama juz jest "wydestylkowana"]
+- risk: dok moze sie zdezaktualizowac - trzeba tego pilnowac
+
+// g: moze da sie zrobic gherkin/feature [or anotacje ArchUnit or C4?] - ktore tworza distillaiton doc?
+
+- n: vision statement / highlighted core - nie tworza modelu/doku - tylko informuja
 
 
 ch15.5.1 the distillation document
@@ -40,6 +121,17 @@ ch15.5.3 the distillation doc as process tool
 ch15.6 cohesive mechanisms
 
 
+// ref
+- czasem jest problem bo alg. sa tak skomplikowane ze zaciemniaja design
+- zamiast 'what' widzimy 'how'
+- example: wieeeele metod tworzy alg - i te ktore wyrazaja 'jak cos robic' overwhelms te ktore mowi 'co robic'
+
+SOL
+- wyszukaj w alg. jakis 'cohesive mech' i wydziel go do light framework
+- feats of framework wystaw korzystajac z intentin-revelaing-interface
+- domena teraz focus'uja sie na wyrazaniu problemu ['what' to do] delegujac detale jak to zrobic - do framework
+
+
 ch15.6.1 generic subdomain versus cohesive mech
 
 
@@ -48,6 +140,7 @@ ch15.6.2 when a mech is part of the core domain
 
 ch15.7 distilling to a declarative style
 
+//16215312
 
 ch15.8 segregated core
 
