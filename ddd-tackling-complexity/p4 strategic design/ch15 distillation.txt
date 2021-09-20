@@ -6,8 +6,19 @@ ch15 distillation
 - model is a distillation of knowledge
 - kolejne refactory ulepszaja domain knowledge i model
 
+// book
+c: 
+- layered arch - rodziela domene od technical logic - i to ok
+- ale w duuuzych systemach - 1 domena moze byc 'unmenagable complex'
 
-ch15.1 core domain
+- distillation = proces wydzielania komponentow z mikstury do postaci esencji ktora bedzie turno wartosciowa
+- turbo celem d - jest odkrycie 'core domain'
+- bo core domain - jest jedynym celem dla ktorego budowanie danego softu ma sens
+
+- c: ch15 omawia glownie "d. of core domain", wpp to efekt uboczny [generic/supporting/..]
+
+
+ch15.1 core domain [cd]
 
 
 // ref
@@ -27,15 +38,69 @@ sol
 - laduj energie w CD [zeby polepszyc model]
 - use supple design - zeby kod byl clear
 
- 
+// book
+c
+- system ktory trudno zrozumiec = trudno zmienic, trudno przewidziec efekt zmiany ;]
+- devs specjalizuja sie w danym obszarze - nie wiedza co sie dzieje poza nim = BAD
+- thus: nie ma transferu wiedzy, cierpi integracja, tworza sie duplikacje ...
+
+c
+- wg ee 'best devs' lubia grzebac w technologies [ze wzg. na CV]
+- a 'rest of devs' - robi domene
+- a powinno byc odwrotnie
+
+- w trakcie planowania - fokusuj sie na zadaniach zw. z core domain
+- a czesto robione sa np proste lub poboczne zadania
+
+- distilling CD nie jest proste
+- ale to meeeega ulatwia pozniejsze decyzje
+
 
 ch15.1.1 choosing the core
+
+
+- szukamy elems ktore reprez. business domain i ROZWIAZUJA business problems
+
+- co laduje w CD - zalezy od PoV
+
+example: model money
+- wiele apps wymaga generycznego modelu money
+- ale apps do currency trading - moze wymagac more complex logic i money bedzie w core
+  - c: ale i tu: czesc wspolna money moze byc w generic
+
+example: shipping app
+cd = consolidating cardos for shipping, routing container through the way ...
+
+- jak wszystko w ddd - ident. CD i zakres CD - ewoluuje iteracyjnie
+- np. w v0 mozemy myslez ze cos nalezy do CD a sie okaze ze ma supporting role i odwrotnie
+- do core'a naleza tez relacje
+// g: jak je pokazac? chyba na zasadzie jak wazna relacja to pokaz both sides
+// g: wg ee KAZDA czesc ewoluuje iteracyjnie
 
 
 ch15.1.2 who does the work
 
 
+- czesto best devs robia infra a powinni modelowac domene
+- przypisz devs z long term commitment do CD
+- long term - bo zespol musi akumulowac knowledge
+- c: wg ee domain is challanging work - zacheca devs do pracy w tym obszarze ;]
+- c: do short term changes - mozesz brac devs z zewn.
+- c: doradcow mozna brac do mentoringu 'jak co robic' a nie rozkminiania domeny
+
+c
+- nie da sie kupic CD ;]
+- byly proby robienia generic tools do budowy CD - ale nieudane
+// g: acz some business [sklep, warsztat ..] nie potrzebuja CD
+
+- tworzenie distincting sw - pochodzi od stabilnego zespolu akumulujacego spec wiedze i cruch'ujacego te wiedze w rich model
+- nie ma tu skrotow, magic bullets
+
+
 ch15.2 an escalation of distillation
+
+
+// cut
 
 
 ch15.3 generic subdomains
@@ -48,18 +113,101 @@ ch15.3 generic subdomains
 - acz te dodatkowe elems - sa ISTOTNE do dzialania doemny
 
 SOL
-- ident. subdomains ktore NIE sa motywacja do robienie your proj
-- wydziel modele w subdoms i umiesc w osobnych modulach
+- IDENT. SUBDOMAINS KTORE NIE SA MOTYWACJA DO ROBIENIE YOUR PROJ
+- WYDZIEL GENERIC MODELS OF THESE SUBDOMS I UMIESC W OSOBNYCH MODULACH
+// g: pewnie subd zawiera 'generic models' i troche 'core/supp domain'
 
 - w subdom NIE ma byc sladu o twojej spec!
 - subdom maja lower prio niz core dom
 - rozwaz kupno: off-the-shelve app or only model of geeric problem
 
+// book
+- mamy to 'generic SUBDOMAINS' podczas gdy wyzej bylo 'core DOMAIN'
+// g: jaka jest diff miedzy subd i domain?
 
+- czesc modelu oparta jest na koncepcjach uzywanych przez many businesses
+- eg: corpo org chart [struktura org], sledzenie przesylek, ksiegowosc ...
+
+- too many efforst are spenton perferial issues in the domain
+- eg: walki z time-zones/czasami
+
+- trudno rozdzielic core od mixed in other elems
+- ale da sie wg w/w SOLs
+
+***
+
+option 1: off-the-shelve solution
+adv
+- mniej kodu do skumania
+- wydzielony na zewn. koszt maintananceu
+- pp more mature code than homegrown
+disadv
+- potrzebujesz czas na sprawdzenie kodu i zrozumienie
+- quality moze byc low
+- overengineering - bo integracja moze byc kosztowniejsza niz mini homegrown impl
+- outer elems - zwykle nie integruja sie smoothly [pobranie danych z innych twoich pakietow ..]
+- uzaleznienie od konkretnych wersji libs, tools ...
+summary: rather good
+
+option 2: published design or model
+- masz gotowy model i go 'kodujesz'
+avd
+- model zeykle opracowany przez input wielu ludzi = better tha homegrown
+disadv
+- nie pasuje do needs, jest overengineering dla your needs
+summary: ogolnie ok podejscie, jak z Analisys Patterns fowler'a
+
+option 3: outsourced impl
+- zlec impl. generic domain do outer devs
+adv
+- core team stays on CD
+disadv
+- wymaga to supportu z core team [ws wystawienia interfaces, coding standards ..]
+- quality can be low
+  - turbo wazne sa testy autom.
+    - my dajemy acceptance tests
+    - dostawca - dodatkowo dostarcza jego internal tests
+summary: swietnie sie komponuje z "published design/model"
+
+option 4: in house impl
+adv
+- latwa integracja
+disadv
+- latwo niedoszacowac kosztow
+
+c
+- wg ee z czasem bedzie gener. coraz wiecej generic modeli, impls ...
+// g: czy to sie sprawdzilo?
+
+
+example: tale of 2 time-zones
+- byly 2 projekty - mialy rozne podejscie do kodowania generic w CD
+- oba teams potrzebowaly reprez. "czasu z time-zone"
+- team-a: 
+  - stworzyl w CD w v0 klase z fake time reprez.
+  - jak sie okazalo ze nie spelnia reqs - zrobili RAD
+- team-b [od banku]
+  - zanim stworzyli CD - to juz zaczeli rozkminiac ten problem
+  - a to blad - bo za wczesnie sie na tym skupili, powinni 
+- acz dobrze ze oba teams wydzielily generic z CD
+  
+  
 ch15.3.1 generic doesn't mean reusable
 
 
+- [pp] kod z generic - nie musi byc re-usable
+- put all your efforts w CD - w generic subd - tylko tyle ile potrzeba
+
+c
+- wg ee najwaz. jest re-use na poziomie modelu [a nie kodu]
+- acz jak sie da zrobic code re-use - to super
+
+
 ch15.3.2 project risk management
+
+
+- wg 'agile' - the most risky stuff should be tried the sooner
+- wg ee powinno to dotyczyc tylko 'core domain'
 
 
 ch15.4 domain vision statement
@@ -69,11 +217,24 @@ ch15.4 domain vision statement
 - gdy model jest juz rozwiniety - istnieje potrzeba wyjasnienia wartosci systemu bez potrzeby studiowania detali modelu
 - uber-wazne feats modelu moga byc oparte na kilku bc'ach
 - i tu nie zobaczysz 'szybko' HL value dostarczanej przez model
-// g: 1 model moze rezydowac w kilku bc'ach
+// g: 1 model rezyduje zwykle w kilku bc'ach
 
 sol
 - opisz na 1 stronie 'core domain' i wartosci ktora wnosi
 - napisz 'statement' w miare wczesnie i update'uj po zmianach modelu/koncepcji
+
+
+// book
+- on dev start - zwykle model nie istnieje - ale trzeba sfokusowac prace
+- later - trzeba wyjasnic wartosc systemu - bez zglebiania sie w model
+- more: niektore turbo-wazne aspekty modelu sa rozlozone na wiele bc's - stad OOTB nie zobaczymy latwo ich wartosc
+
+- tu mowimy o 'DOMAIN vision statement' - a nie typowym 'vision statement' = notatka dla managmentu na start projektu
+- domain vs - jest typowo tworzony po 'init vision statement'
+
+- dvs - opisuje ogolne wymagania na model - co apka ma robic
+- bez detali
+- dvs identifies [g: pomaga szukac] the core domain in broad terms [bo dvs jest dosc ogolne]!!!
 
 
 ch15.5 higlighted core
@@ -108,15 +269,54 @@ SOL2
 
 - n: vision statement / highlighted core - nie tworza modelu/doku - tylko informuja
 
+// book
+- KAZDA tech. ktora wyszuka CD jest ok
+// g: n/w to tylko propozycje pasujace ee
+- nw to 2 techs [of highlighted core]
+
+distillation doc
+- opisuje CD
+- dok moze byc w any form
+  - turno prosty: lista essential concepts
+  - zbior diagrams pokaz. core elems z core relations
+  - ...
+- to NIE jest complete design doc
+// g: moze $root/read.me moze tez wystarczy - w glownej solucji?
+- std problems
+  - moze byc nieaktualizowany - thus trzymaj go w abs. minimalnej postaci
+  
+// g: sam masz z tym problem w own projs
+// - masz mnustwo papers i wszedzie chaos ;]
+// - a istotne sa core'aowe n-s, reszta to support/generic
+
+the flagged core
+- example: 
+  - ee dostal kiedys doc 200 stron z opisem modelu
+  - markerem/stick'ami oznaczyl istotne elems tego modelu
+  - i z tego zrobili 1st app
+- mozesz oznaczyc core elems - zaleznie co masz
+  - diagramy UML - opisz stereotypem 'core'
+  - kod - w javadoc dodaj komentarz 'to jest core elem'
+- cel: oznaczyc elem. CD
+- n: nie wyjasniaj detali of flagged element!
+- cel: tylko oznaczenie elem z CD
+
 
 ch15.5.1 the distillation document
 
 
+- jak zmieniasz elem wylistowany w 'destil doc' to - musisz zmiane skonslutowac z reszta zespolu
+- to dot. zmian inicjowanych w
+  - modelu
+  - kodzie
+  
 ch15.5.2 the flagged core
 
 
 ch15.5.3 the distillation doc as process tool
 
+
+// 9202346
 
 ch15.6 cohesive mechanisms
 
@@ -140,9 +340,22 @@ ch15.6.2 when a mech is part of the core domain
 
 ch15.7 distilling to a declarative style
 
-//16215312
 
 ch15.8 segregated core
+
+
+// ref
+- elems modelu moga miec role: core / supporting
+- core elems moga byc scisle zwiazane z generic elems
+- now: conceputal cohesion of core can be less visible
+- nie widzimy waznych rzeczy - design moze byc weak
+- thus: core can be not unified, nieczytalny, nieoptymalny ...
+
+SOL
+- refactor model - separate core and supporting concepts
+- increase cohesion of the core and reduce coupling to others
+- generic or supporting elems - przenies do innego pakiety 
+  - nawet jesli oznacza to rodzielenie highly coupled elements [g: core elems?]
 
 
 ch15.8.1 the cost of creating seg. core
@@ -152,6 +365,18 @@ ch15.8.2 evovving team desision
 
 
 ch15.9 abstract core
+
+// ref 
+- nawet core domain moze miec tyle detali ze pokazanie big picture moze byc trudne
+- moze byc duzo interakcji miedzy modulami
+- albo stworzymy many refs miedzy modulami = zniszczymy wartosc tworzona przez partitioning [pp z segregated core AND cohis. mechs]
+- albo interakcje beda indirect - i model bedzie obscure
+
+SOL
+- identif. w modelu the most fundamental concepts ktore maja maja rozne wersje - wyciagnij ich wspolny abstrakt
+- project abstract model - ktory wyrazi wiekszosc interakcji miedzy komponentami
+- umiesc abst. model we wlasnym module
+- particular/specialized class versions - zostaja w their own modules
 
 
 ch15.10 deep models distill
