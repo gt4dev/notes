@@ -317,28 +317,35 @@ ch15.5.1 the distillation document
   - kodzie
   
   
-ch15.5.2 the flagged core
-
-
-ch15.5.3 the distillation doc as process tool
-
-
-################################
-
-// 9202346
-
 ch15.6 cohesive mechanisms
 
 
 // ref
-- czasem jest problem bo alg. sa tak skomplikowane ze zaciemniaja design
-- zamiast 'what' widzimy 'how'
+- czasem jest problem bo alg. sa skomplikowane i zaciemniaja design
+- zamiast 'what' widzimy duzo 'how'
 - example: wieeeele metod tworzy alg - i te ktore wyrazaja 'jak cos robic' overwhelms te ktore mowi 'co robic'
 
+// book
+c
+- baza w oo jest enkapsulacja
+- w met. z intention revealing names [nazwy mowia co jet robione a nie jak] - chowasz complex algs ktore wiedza JAK robic CO
+- deklaratywnosc jest na poziomie nazwy metody
+// g: moze alg zawsze jest imperative a poszczeg. kroki sa deklaratywne?
+
+c
+- jak jest duzo metod i sie gubimy
+- tz. ze model pp ma problem
+- potrzebny jest refactor 'toward deeper insight'
+- pp sol
+  - albo uproszczenie obliczen
+  - albo podzielenie calcs na mniejsze i 'conceptual coherent' czesci
+  
 SOL
-- wyszukaj w alg. jakis 'cohesive mech' i wydziel go do light framework
-- feats of framework wystaw korzystajac z intentin-revelaing-interface
-- domena teraz focus'uja sie na wyrazaniu problemu ['what' to do] delegujac detale jak to zrobic - do framework
+- wydziel koncepcyjnie spojne mechs w 'lightway framework'
+- fwk w sensie: cos do pozniejszego uzycie [niekoniecznie interf. ktory implujesz ..]
+- exposes fwk through intention revealing interface
+
+- w cohisive mech pp chodzi glownie o 'computation algs'
 
 
 ch15.6.1 generic subdomain versus cohesive mech

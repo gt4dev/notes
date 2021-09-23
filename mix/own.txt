@@ -1,0 +1,3 @@
+- kiedy myslisz o fragmencie domeny w nowych terms/konceptach - to pp jest to oddzielny bc
+- bc to 1st of all ul z granicami jego stosowania
+- acz w 1 subdomain - moze byc wiele bc, moga na siebie 'nachodzic'

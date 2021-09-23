@@ -27,7 +27,7 @@ optimistic concurrency
 - CSE impls optimistic concurrency
 - CSE zawiera pole concurrencyVersion (tabela ma kolumne concurrency_version)
 - podczas zapisu E - jesli numer wersji w obiekcie jest starszy niz w bazie -> update jest odrzucany
-- hbm uzywa elem <version> do cfg OC (i wskazania pola z ver)
+- hbm uzywa elem <version> do konf OC (i wskazania pola z ver)
 sample
 - user A i B pracuja na tym samym obiekcie Product,ver=1
 - A dodaje BacklogItem i robi commit, teraz P.ver=2
@@ -52,15 +52,15 @@ consider model
 
 comparing to "large model"
 - signature of Product agg methods have mega changes
-  large agg - jest command
+  w large agg - jest command
     void ScheduleSprint("params desc sprint, w/o any IDs")
     ^^^^
-  small agg - jest query [factory: tworzy i zwraca agg]
+  w small agg - jest query [factory: tworzy i zwraca agg]
     Sprint ScheduleSprint("params identyczne")
     ^^^^^^
 
 uzycie "way: small agg"
-class SampleAppService { // it's AS
+class MyApplicationService {
   public void planProductBacklogItem(
     aTenantID, aProductID,
     aSummary, aCategory, aBacklogItemType, aStoryPoint
@@ -68,12 +68,12 @@ class SampleAppService { // it's AS
 }
 - all params = primitives / strings
 // g: similar form is in DB
-- AS konwertuje primitives/strings do VO
+- AS konwertuje params do VO
   - ID'kie przez "new TenantId(tenandId)"
   - reszta przez "static methods/factorie" w VO
-    BacklogItemType.valueOf(backlogItemType):BacklogItemType
+      BacklogItemType.valueOf(backlogItemType):BacklogItemType
 - z repo wyszukujemy agg Product
-- do call
+- call [zwraca nowy BI]
     product.planBacklogItem("params jako VO"):BacklogItem
 - agg BI dajemy do repo
     biRepo.Add(bi)
@@ -111,15 +111,16 @@ przykład
 - inwariant c = a + b
 - cokolwiek się dzieje, niezależnie jakie operacje sa wywołane = invariant zawsze [on commit] jest spełniony
 
-- agregat w szczegolnosci okresla TC boundary (obszar zawsze konsystentnych danych)
+- agregat w szczegolnosci okresla TC boundary
+  - obszar zawsze konsystentnych danych - // g: w sensie inwariantu
 
-- consistency zwykle dostarcza TX z DB
+- consistency zwykle pochodzi z TX z DB
 - podczas commit wszystko wewn. granic agregatu musi byc consistent
 - acz w "tmp  state" inwariant nie musi byc zachowany, acz powinien
 
 - BC modyfikuje tylko 1 agg w 1 tx
 
-- aby wyznaczyc granice agg trzeba zrobic analize tx-es - co kiedy ma byc T-consistent
+- aby wyznaczyc granice agg trzeba zrobic analize tx-es - co kiedy ma byc TC
 
 duzo zalezy od UserInterface
 - ile aggs modyf. 1 use case
@@ -176,7 +177,7 @@ c: w "avg" projekcie biznesowym
   - realnie potrzeba 1 big tx
 
 n
-- if you modify many aggs in 1 tx - to moze ze zle ustaliles invariant
+- if you modify many aggs in 1 tx - to moze zle ustaliles invariant
   - moze trzeba przemodelowac kilka aggs w nowy "koncept" (z nowymi granicami)
 - or use eventual consistency
   - but check if delay is acceptable
