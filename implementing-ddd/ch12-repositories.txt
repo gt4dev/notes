@@ -5,12 +5,11 @@ wg EE
 - provide illusion of 'in-memory' access
 - access r through interface
 
-- czasem jak kilka aggs ma wspolna hierarchie - to sa wyciagane z 1 repo
+- czasem jak kilka aggs ma wspolna hierarchie - to uzywaja 1 repo
 
-c: to idea vv - podzial repos na 
+c: to idea vv - podzial repos na oriented on
 - collection
 - persistance 
-.. oriented
 
 
 ## 1 COLLECTION ORIENTED REPOS [COR]
@@ -42,8 +41,7 @@ typowe zachowania repo
 - don't save objs already held by repo
 - po get obj z repo i modyf - nie wstawiaj go z powrotem do repo
 
-c: vv troche sp*l
-po co tu rozszerzal HashSet w sample? 
+c: vv troche sp*l = po co rozszerza HashSet w sample? 
 class MyRepo extends HashSet<Calendar>
   add(Calendar c) {..}
 }
@@ -145,6 +143,7 @@ cascade delete
 
 ### 1.2 CONSIDERTIONS TO TOP-LINK
 
+
 - w top-link jest oddzielnie session + unit of work
 - w hbm jest to "polaczone" w session [and tx'y]
 
@@ -160,9 +159,6 @@ way2: MyRepo.UseEditingMode():void
 
 - to nadal styl 'collection oriented repo'
 - chociaz juz dosc mocne przegiecie z dodatkowym callem
-
-
-vvvvv cont here
 
 
 ## 2 PERSISTENCE ORIENTED REPOS

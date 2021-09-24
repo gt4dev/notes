@@ -233,9 +233,9 @@ way 2 sample: call <agg>BacklogItem.assignTeamMemberToTask(TeamMemberId, Team, T
 - method <AS>MyAppService.assignTeamMemberToTask(..)
   - prepare params needed by agg's method
   - read agg Team from repo
-  - call BI agg with am data
+  - call w/w BI method
     - nie wnikam - ale pp BI potrzebuje calego Team zeby cos wyliczyc?
-  - n: ciekawe ze Team potrzebuje w calosci a task - tylko id, hmmm
+  - n: ciekawe ze Team potrzebuje calosci a task - tylko id, hmmm
 
 - way 1 is ok for complex domains
   - pass to called method ref to repo/DS 
@@ -249,7 +249,7 @@ way 2 sample: call <agg>BacklogItem.assignTeamMemberToTask(TeamMemberId, Team, T
 c: ui and navigations
 - using IDs for refing between aggs make navigation hard
 - but navigation is useful in UI, thus
-  - either: read data req on UI from few repos [but it's slow]
+  - either: read data req on UI from few repos [it's slow]
   - or: use "HBM theta joins" or CQRS
 
 c: hbm and theta joins
@@ -263,7 +263,7 @@ c: hbm and theta joins
 - aggs ref themselves by ID
 - amazon guy says: "almost infinity scalability can be achieved"
 
-other plus
+next plus
 - in app there are many BCs
 - as refs are done by ID then you easy ref aggs from other BCs
 - useful if you
@@ -279,11 +279,11 @@ other plus
 
 wg EE 
 - to keep consistency and modify many aggs in 1 request - use eventual consistency
-- this rule applyies to all 'modify aggs scenarios':
+- this rule applies to all scenarios - like:
   - few aggs modified "in 1 req"
   - many aggs modified in batch processing
 
-- you must agree with domain experts that delayed txes (changes) are ok
+- domain experts must agree that delayed txes (changes) are ok
 
 EC sample
 - agg has command BacklogItem.commitTo(Sprint s)
@@ -320,7 +320,7 @@ c: do non-linear retires
 
 
 - czasem można zapisać kilka aggs w 1 tx
-- ponizsze 4 powody nie sa jedyne ;]
+- n/w 4 powody nie sa jedyne
 
 
 ### 6.1 reason1: user interface convinience
@@ -328,8 +328,8 @@ c: do non-linear retires
 
 - user na 1 ekranie tworzy kilka nowych aggs np. BacklogItems
 - such UC handle w 1 method  
-- np. AS.planBatchOfBacklogItems[productId, tenantId, BItemDesc[] newItems]
-- AS.plan... tworzy klika instancji agg: BItems i dodaje je kolejno do BItemRepo, >w 1 tx<
+- np. AS.planBatchOfBacklogItems(productId, tenantId, BItemDesc[] newItems)
+- AS.plan... tworzy klika instancji agg:BItems i dodaje je kolejno do BItemRepo, >w 1 tx<
 
 - nie ma problemu z niezachowaniem invariants - bo tworzymy nowe BItems
 
@@ -359,7 +359,7 @@ way2
 ### 6.4 reason4: query performance
 
 
-- sometimes you must have "living/active" ref from agg1 to agg2
+- sometimes you must have "active" ref from agg1 to agg2
 - eg. because of ease doing fetching data ...
 - you can do it but remember about problems with performance, etc.
 
@@ -454,7 +454,7 @@ idea: Task jako osobny agg (poza agg BI)
 // q: jak robione jest message redelivery (after failure)
 
 example - use EC to set BI as 'done'
-- there is command Task.estimatedHoursRemaining()
+- command method = Task.estimatedHoursRemaining()
 - on end it sends event EventTaskHoursRemainingEstimated
 - event has attrs BacklogItemID, TaskID, hoursRemaining, ...
 - suber of a/m event - calls DS which
@@ -472,7 +472,7 @@ waiting for EC and refresh UI
 - app quickly update Task but BI with delay (due to EC)
 - problem: what to show on UI: task is modified but BI not yet
 - maybe message: "BI state is being calculated, refresh soon"
-// gt: slabe, lepiej owrapowac calosc w await
+// gt: slabe, lepiej owrapowac calosc w await?
 
 
 ### 7.7 is it the team member's job?
@@ -561,8 +561,8 @@ both promo hiding infos
 LOD
 - promotes using 'least needed knowledge'
 - sample: client (C), server (S)
-- when C calls S - C should
-  - only know how to call command/querry on S
+- when C calls S - C should:
+  - only know how to call command/query on S
   - NOT know S internals [properties ...]
 - esp: C should not call internal parts of S
 - if such call is needed then
@@ -585,12 +585,12 @@ SAMPLES
 - client calls 'command'
     void Product.reorderFrom(BacklogItemId anId, int anOrdering) { ... }
 - client has "least knowledge" to perfom call
-  - params are "primitive", 100% needed [no polution]
-  - internals of Product are not know to client
+  - params are "primitive", 100% needed [no pollution]
+  - internals of Product are not know to the client
   
 - client calls 'query'
     Set<ProductBI> Product.backlogItems() { ... }
-- n: it's return ProductBI [VO] not BI [E]
+- n: it returns PBI [VO] not BI [E]
   - PBI is small [least knowledge]
   - it doesn't publish "internals" of P
 
