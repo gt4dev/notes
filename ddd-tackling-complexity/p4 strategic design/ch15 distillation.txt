@@ -345,16 +345,57 @@ SOL
 - fwk w sensie: cos do pozniejszego uzycie [niekoniecznie interf. ktory implujesz ..]
 - exposes fwk through intention revealing interface
 
-- w cohisive mech pp chodzi glownie o 'computation algs'
+- w cohesive mech pp chodzi glownie o 'computation algs'
+
+example: org. chart
+- org. potrzebowala failrly elaborated model of org. chaft
+- they needed to search kto jest uprawniony do zatwierdzenia sth etc
+- zadanie zlecono zewn. firmie - ktora zakodowala wyszukiwanie na teroii grafow
+- nazwy w module pochodzily z teorii grafow np: nodes -> people, edge -> arc
+- nie mozna bylo lib bezp. wpiac w domene bo
+  - przywiazalo by to domene do konkr. lib
+  - [najwazniejsze] nazewnictwo przeniesone do modelu bylo by nieczytelne
+- sol: model i w/w lib nie byly mieszane
+// g: pp nie powinnismy uzywac slownictwa z zewn. libs - all powinno byc 'nasze'
+
+example: obsluga specyfikacji
+- w core/supporting domains mozemy tworzyc specyfikacje z jezykiem 'domeny' [and, or ..]
+- impl. specyfiakcji [laczenie spec. z OR, AND ..] - to juz cecha framework - poza modelem
+// g: w modelu mamy zatem tylko INTERFEJS biblioteki
+
+- CM uzywamy w core/generic/support
 
 
 ch15.6.1 generic subdomain versus cohesive mech
 
 
+- generic i CM maja zadanie = odciazyc core domain
+- roznia sie tym ze
+  - gener/supp - reprezentuja aspekt subdomains
+  - CM nie reprezentuje subdom.
+
+
 ch15.6.2 when a mech is part of the core domain
 
 
+- prawie zawsze chcesz usunac mechs z CoreDomain
+- wyjatek: mechanizm jest "rozw. wlasnym firmy" i jest kluczowy w domenie
+  - np. jakis mega specjalizowany alg. liczenia "sth" ["firowy" alg lieczenia ryzyko w kredycie ..]
+
+
+example - cd org. chart
+- po roku trza bylo zmienic alg. wyszukiwania chart - dodac nowe pola
+- devs wciagneli mech do core'a
+- to czasem jest ok - jesli po zmianie mamy 'deeper model'
+- acz any mechs - warto wydzielic poza core d
+
+
 ch15.7 distilling to a declarative style
+
+
+- CM best sprawdza sie jak jest wystawiony przez 'intention revealing interfaces' z 'concept. cohesive asseritons' i SEFF
+- cala core - mozna [pp] utrzymac w stylu deklarative - trzeba uzywac tego stylu
+- na cale core mozna narzucic 'supple design' - wowczas elementy core d mozna laczyc jak zdania
 
 
 ch15.8 segregated core
@@ -365,22 +406,98 @@ ch15.8 segregated core
 - core elems moga byc scisle zwiazane z generic elems
 - now: conceputal cohesion of core can be less visible
 - nie widzimy waznych rzeczy - design moze byc weak
-- thus: core can be not unified, nieczytalny, nieoptymalny ...
+- thus: core can be not unified, can be nieczytalny, nieoptymalny ...
 
 SOL
 - refactor model - separate core and supporting concepts
 - increase cohesion of the core and reduce coupling to others
 - generic or supporting elems - przenies do innego pakiety 
   - nawet jesli oznacza to rodzielenie highly coupled elements [g: core elems?]
+  
+// book
+
+- usuniecie generic - powoduje ze core staje sie prostsza
+- zwykle to trudne - i nie zawsze jest to warte trudu
+
+- SegCore - to zasadniczo to samo co wyciaganie generic subd ale w SC zaczynamy od 2nd strony
+- cohesive subd moga byc wydzielone do own packages
+
+***
+
+kroki przy refactorze SegCore
+1 ident. core domain - pp jest opisana/naszkicowana w distillation doc
+2 przenies klasy zw. z Core do nowego module [nazwanego po nazwie koncepcji]
+3 refactor - znajdz dane/metody - ktore nie sa zw. z core 
+  - wrzuc ja do innych klas w innych pakietach
+n
+- nie badz perfekcyjny w supp. dom. - nie trac na to duzo czasu
+- focus on cleaning core - make refs z core do innych modules - explicit [beda refactored later]
+4 refactor seg. core module - uprosc interakcje wewn. i do zewn. modulow [bo tak, sa takie moduly]
+5 clean next core
 
 
 ch15.8.1 the cost of creating seg. core
 
 
+- czasem wydzielenie SegCore powoduje ze refs do non-core elems stana sie niejasne
+- ale ta wada bedzie przewazona przez zalety oczyszczenie CD
+
+- czasem trzeba przegrzebac calkiem cohesive module - zeby wydzielic CD
+- ale to jest warte tego - zeby miesc cohesive CD
+- bo biggest added-value dla firmy pochodzi z CD
+
+- typowo wydzielenie SegCore to duzo pracy
+
+kiedy warto SegCore
+- gdy BC staje sie duzy
+- BC jest krytyczny dla systemu
+- model jest obscured by sporo 'supporting capabilities'
+
+
 ch15.8.2 evovving team desision
 
 
+vin
+- wszystkie decyzje w obszarze 'strategic' musza byc robione przez caly team
+- incl. decision o robieniu SegCore
+
+- core d [jak wszystko] ewoluuje
+- podczas robienia SegCore - beda pp jakies 'insights' = baza do refactors
+- decyzje o tym gdzie sa granice SegCore, CD - one beda sie zmieniac
+
+// g: diff miedzy SegCoreModule and CD
+- SCM - to modul
+- CD - to domena
+
+
+example: seg-core of cargo model
+- przyklad jest prosty
+- w realu model bedzie moooocno skomplikowany - zeby zmotywowac nas do budowy seg-core
+- 1st: think co jest esencja modelu - ktora funkcjonalosc
+  - btw. mozesz sprawdzic domain vision statement - co jest core'm modelu
+- na poczatku mamy moduly [i bc'e]: shipping, billing
+- tworzymy pakiet delivery i wydzielamy tam the most core classes z shipping
+  - w example - klasy zwyczajnie zostaly przeniesione do 'delivery'
+- n: miedzy pakietami shipping i delivery jest 1 relacja [miedyz klasami Cargo - Customer]
+- vin: pakiet delivery ma oznaczenie <<core>> - stal sie core'm
+
+czesto przy przenoszeniu klas do SegCoreModule - trzeba bedzie rozdzielic klase na resps
+- mocno biznesowa [idzie do SegCore]
+- generyczna/supporting [zostaje w old packae]
+
+- 1st step w SegCore refactor - to wydzielenie 'new core'
+- 2nd step - to oczyszczenie old packages [z ktorych wyciagnales SegCore]
+- example
+  - ee z shipping wydzielil 'logistic' ...
+  
+finalnie mamy modules/subdomains
+- delivery - seg-core
+- billing - generic subdomain
+- 2x supporting "roles" [subdomains]
+
+
 ch15.9 abstract core
+
 
 // ref 
 - nawet core domain moze miec tyle detali ze pokazanie big picture moze byc trudne
@@ -393,6 +510,26 @@ SOL
 - project abstract model - ktory wyrazi wiekszosc interakcji miedzy komponentami
 - umiesc abst. model we wlasnym module
 - particular/specialized class versions - zostaja w their own modules
+
+// book
+- nawet CoreDom - moze miec tyle detali ze trudno to ujac w BigPicture
+- zwykle podzial complex domain na mniejsze - wystarczy zeby zrobic model czytelnym
+- ale czasem interackje moga byc obscure [miedzy modulami]
+
+- consider slicing horizontally than vertically [zeby zastosowac poliformizm, dziedziczenie]
+- jesli wiekszosc interkacji miedzy modulami dziala na jakichs abstrakacjach - to moze warto te abstrakty + interakcje wydzielic do "abstract core"
+
+n
+- nie szukamy 'tech. triki' na dziedziczenie
+- astract core - jesli abstr. inferfesc realnie wyrasta z koncepcji domeny
+
+wydzielenie AC daje
+- mniejszy coupling miedzy innymi modulami
+- mamy more cohesive CD
+
+po refactorze w kier. AC
+- spec. klasy beda refowac ACModule [a nie inne spec. modules]
+
 
 
 ch15.10 deep models distill
