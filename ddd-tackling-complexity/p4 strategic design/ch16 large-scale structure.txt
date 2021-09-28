@@ -1,0 +1,152 @@
+ch16 large-scale structure
+
+// ref
+- w large systems musimy miec mozliwosc zrozumienia roli single part w calosci - bez wnikania w detale calosci
+- LSS = jezyk ktory pozwala rozmawiac o systemie w 'szerokim rozumieniu'
+- otrzymujemy shared big picture - widzimy jak single elems buduja calosc
+
+- wymysl pattern, zespol rol ktore beda opisywac caly system
+- pozwola zrozumiec role kazdej czesci w calosci - bez wnikania w detale
+
+// book
+- przyklad: jest do zbudowania system do symulacji komunikacji satelit
+- byl duuuzy prob: symulowanie duzego zakresu stanu sieci i ich failures
+- on init: system podzielono na coherent modules [o sensownych sizes] ale modulow bylo b. duuuzo
+- byl prob: devs nie wiedzieli gdzie szukac danych funkcjonalnosci, gdzie dodawac kod - a do konca projektu jeszcze bylo sporo ;]
+- tnx of good communication - devs byli w stanie ogarnac sie w tych modulach
+- ale leaders chcieli uproscic to complexity
+- main prob: essential concepts of domain as a whole was missing - means: structure for the model as a whole
+
+// g
+// pp taki problem - jak brak pokazanie 'essential concepts of domain as a whole was missing'
+// trzeba rozpykac w sesjach BS - spotykamy sie za kilka dni na 30 mins
+
+// g
+// rzeczywiscie - metafora warstw sieci jest wciagnieta w UL LSS [o ile taki UL istnieje]
+// zauwaz ze ten UL to taki HL'owy UL [ale jednak to NIE jest UL] - nie siedzi w zadnym BC'u ... 
+
+cd example
+- devs podzielili system na layers - odpowiedzialne za poszczeg. aspekty komunikacji [cos jak ISO: phisical comm, packages routing ..]
+- vi: zrobiono refactor w kierunku LSS [tak, byl potrzebny refactor!]
+  - ustalono ze modul moze nalezec tylko do 1 layer
+- c: z czasem koncepcja layers ewoluowala
+
+- w/w layers to nie byly zadne artefakty w kodzie
+- layers to byly nadrzedne reguly organizowaly bc-e, relacje miedzy bc'ami i all elems of this system
+- HL wizja - spowodowala ze system latiwej bylo zrozumiec, complexity zmalalo
+
+n
+- sama distillation czasem nie wystarczy
+  - gdzie d = wydzielenie core i subdoms ...
+- nadal musimy zrozumiec relacje miedzy core i other domains
+
+n
+- bez nadrzednych rol [big picture] - beda zgrzyty - gdzie co ma pasowac etc ...
+
+- lss - jezyk ktory pozwala omawiac system w szerokim aspekcie
+
+- taka struk. zwykla naklada sie na wiele powiazanych bc'ow
+
+- WIEKSZOSC LSS NIE WYSTEPUJA ANI W MODELU ANI W DESIGN
+// g: choc to troche dziwne - bo jednak wciagnal to na poziom UL, hmm?
+
+
+1. evolving order
+
+
+// ref
+- design typu 'free-for-all' [wszyscy robia co chca] - tworzy system ktory nie ma sensu jako calosc, ciezko te systemy utrzymac
+- ale zbyt rigid arch - moze ograniczyc moc developmentu systemu
+
+sol
+- pozwol koncepcjom z LSS - ewoluowac wraz z aplikacja - z opcja ze nawet sama LSS sie to przeewoluuje w kompetnie cos nowego
+- nie narzucaj zbyt detalicznych wymagan arch - bo pewne dec. mozna podjac dopiero po poznaniu detali systemu
+// g: na poczatek pp wytyczasz bc-e, integracje ale pp nie wnikasz w detale impl
+// g: acz kiedys bedziesz te detale musial narzucic - ale potem -
+
+- LSS use ONLY when it clarify arch of app, model ...
+
+c: wg ee: bad strucure jest GORSZA od jej braku - wiec nie przekombinuj
+
+- znajdz minimalny set LSS - ktory rozwiazuje realne problemy systemu
+
+C: LESS IS MORE ;]
+
+n: dalej ee pokaze 4 wybrane patterny of LSS, sa dosc reprezentatywne dla all LSS patterns
+
+// book
+- sub-ch pokazuje koniecznosc ewolucji [systemu] + wprow. do lss
+
+- many proj. - zeby uniknac chaosu narzuca jakas strukture
+- np: narzucaja persistance - i to jest ok
+- ale jak wchodza w obszar app/domain - to moga powodowac problemy
+- bo ogr. devs w rozw. problemow domeny
+
+- narzucenie ogr. wizji etc na LSS - to pp bedzie kosztowne [za wczenie i nieoplacalne]
+- bo przy dev - zmienia knowledge, dokad ma isc app, zmienia sie wizja lss
+- inic. lss moze sie okazac czystym zlem
+
+- ale some HL rule - moga wpowadzic consitency w projekcie
+
+c
+- dobra lss - powoduje ze ll design/coding staje sie duzo prostszy - bo eliminuje to duzo pytan/opcji
+
+- lss - typowo stosujemy na many bc
+
+- c: z czasem lss ewoluuje of conceptual countours of the domain
+
+// g: acz uspojnienie struktury bc-ow ulatwi przelaczanie dev'ow miedzy bc'ami
+
+- lss jest opcjonalna - bo czasem podzielony na moduly jest juz czytelny
+
+
+2. system metaphore
+
+
+// ref
+- myslenie metaformi jest szeroko przyjete w developmencie, szczegolnie modeli
+- w XP 
+
+p
+- design of SW ma tendencje do bycia dosc abstract i 'hard to grasp'
+- trudno zrozumiec system 'as a whole'
+sol
+- kiedy pojawia sie analogia ktora dobrze oddaje imagination 'jak system powinien wygladac'
+- to zaadpotuj te 'analogie' jako LSS
+- design app w okolo tej metafory i WCIAGNIJ ja w UL
+- metafora ulatwi rozmowy o app
+
+- ale all metafory sa inexact - wiec ciagle egzaminuj current meta zeby w razie w ja poprawic lub PORZUCIC
+
+// book
+- dobra metafora - firewall w sieciach - wszyscy wiedza o co chodzi
+- acz jest ona niedokladna bo mimo firewall mamy podatnosci w sieci [zatem nie ma full firewall]
+
+inna metafora
+- layers [sa warstwy apki]
+- kernels [cos jest w srodku]
+
+- SM to LSS, to analogia do domeny z reala
+
+- pr. z SM = ludzie przekladaja rule z SM do domeny a to nie zawsze jest prawda
+- SM pokazuja general structure
+
+c: LSS is not essential acz czysci zrozumienie domain
+
+- SM moze zostac zastapiony przez UL
+- SM moze dodac termy do UL [if ma to sens]
+
+
+2.1 the 'naive metaphore' and why we don't need it
+
+
+3. responsibility layers
+
+
+3.1 choosing appropriate layers
+
+
+4. knowledge level
+
+
+5...

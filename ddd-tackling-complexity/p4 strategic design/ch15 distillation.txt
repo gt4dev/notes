@@ -321,8 +321,8 @@ ch15.6 cohesive mechanisms
 
 
 // ref
-- czasem jest problem bo alg. sa skomplikowane i zaciemniaja design
-- zamiast 'what' widzimy duzo 'how'
+- CZASEM JEST PROBLEM BO ALG. SA SKOMPLIKOWANE I ZACIEMNIAJA DESIGN
+- ZAMIAST 'WHAT' WIDZIMY DUZO 'HOW'
 - example: wieeeele metod tworzy alg - i te ktore wyrazaja 'jak cos robic' overwhelms te ktore mowi 'co robic'
 
 // book
@@ -454,7 +454,7 @@ kiedy warto SegCore
 - model jest obscured by sporo 'supporting capabilities'
 
 
-ch15.8.2 evovving team desision
+ch15.8.2 evolving team desision
 
 
 vin
@@ -495,6 +495,9 @@ finalnie mamy modules/subdomains
 - billing - generic subdomain
 - 2x supporting "roles" [subdomains]
 
+doubt: dziwne ze moduly refuja do siebie [przez ref. cargo-customer]
+- tz. ze uzywaja 1 UL [na pewno na termu: customer]
+
 
 ch15.9 abstract core
 
@@ -521,7 +524,8 @@ SOL
 
 n
 - nie szukamy 'tech. triki' na dziedziczenie
-- astract core - jesli abstr. inferfesc realnie wyrasta z koncepcji domeny
+- ABSTRACT CORE - JESLI ABSTR. INFERFESC REALNIE WYRASTA Z KONCEPCJI DOMENY
+- to ze klasa jest czesto refowana w innych modulach - NIE znaczy ze mamy ja wydzielic do core
 
 wydzielenie AC daje
 - mniejszy coupling miedzy innymi modulami
@@ -531,8 +535,32 @@ po refactorze w kier. AC
 - spec. klasy beda refowac ACModule [a nie inne spec. modules]
 
 
-
 ch15.10 deep models distill
 
 
+- ee podkresla - ze distillation [this ch15 = distill] to 
+- oddzielania od core'a domen supportujacych
+- refinowanie tych domen
+
+- the goal is acheive design - that create model obvious!!!
+
+c:
+- breakthrough - ulepsza model wszedzie
+- ale ... w CD - moze nawet zmienic cele projektu
+
+
 ch15.11 choosing refactorings targets
+
+
+co jesli large system jest zle zaprojektowany
+a musisz go zmienic
+
+1 pain driven refactoring 
+- kiedy musisz cos zrobic w kodzie ale jest tam taki syf ze musisz go przedtem poprawic
+- if zmiany dot. CD - to robisz w CD refactor
+
+2 free to choose refactor
+- wtedy refact. CD
+
+
+// 9.26.15.49.15
