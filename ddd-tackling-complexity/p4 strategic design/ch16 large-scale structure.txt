@@ -142,11 +142,287 @@ c: LSS is not essential acz czysci zrozumienie domain
 
 3. responsibility layers
 
+c
+- w calej ksiazce jest stosowana zasada ze pojedynczym obiektom przypisujemy waski zakres responsibilities
+- kluczem na arch jest podzial layers wg resposibility
+
+- w large scales - takze dzielimy wg responsibilities
+
+***
+
+- jesli individual objects maja 'ad hoc' nadawane resps to nie ma guidlines, uniformity - ciezko ogarnac cala domain w jednosc
+- zeby wprowadzic coherence do large model - to warto wprwadzic HL strukture zw. z przypisywaniem resps
+
+// g: ok, dzielimy HL/LL structs wg responsibilities - ale pytania jakie resps wybrac? moze realnie: potential, operations, ...
+
+c: zeby zobaczyc HL scale patterns - to musisz miec glebokie zrozumienie domeny // g: zatem dopiero po pracy na modelu mozna zobaczyc LSS
+
+c: niektore domany maja naturalna stratyfikacje/uwarstwienie
+
+layering - najpop. pattern arch
+warstwy sa swiadomie i zalezne od warstw nizej, ale kompletnie nie sa swiadomo warstw wyzej [i sa od nich niezalezne]
+
+warto wydzielic do warstw 'major resps'
+zasada dot. kazdej skali LL i HL
+// g: zatem ustal 2-4 main resps in app i zrob warstwy
+// w HL typowo to bedzie: capabs, opers ...
+
+c: idea 'major resps' i 'layers' sa rozdzielne - ale warto je polaczyc - zrobic resp. layers ;]
+
+c: layer resp must be a bit broader than resp of individual objects it contains [tak ze kazdy obiekt pasuje do majro resp]
+
+SOL
+- spojrz na zaleznosci w modelu z PoV koncepcji [ktore sa w tym modelu]
+- jesli widzisz naturanle uwarstwienie - to zrob z niego resp. layers
+- refactor model tak ze obiekty wewn. layer [agregaty, serwisy ...] - robia tylko to czym jest 'major resp. of layer'
+
+***
+
+nw example pokaze jak odkrywac LSS of any sort [nie tylko resp. layers]
+
+example: layering a shipping system
+- z: mamy shipping system, dobrze rozwiniety, wydzielilismy core domain ...
+- problem: system jest duzy i nie wiemy jak pracowac zeby poszczeg. elems dobrze pasowaly do siebie
+- sol: szukamy LSS ktora system ujednolici
+- diagrag 16.3 - basic/init model
+- z: team po miesiacach pracy nad modelem - zauwazyl stratyfikacje koncepcji w modelu
+	- operations
+	- capabilities [pl: zdolnosc]
+		- podloze ww operacji
+
+operational resps
+- w 'opers layer' umieszczamy wszelkie activities of the company [przeszle, biezace, przyszle/planowane]
+- wg ee Cargo to OCZYWISTY 'oper object' - reprez. on day to day ACTIVITY of the company
+- inne oper objects: Itinerary, RoadSpec [to wewn. czesci agg Cargo]
+
+capability resps
+- layer represents resources in company - needed to perform operations
+- wg ee TransportLeg to KLASYCZNY przyklad capability - bo reprez. statek ktory ma okreslona pojemnosc do przewozenia Cargo etc..
+
+vi
+- w innym ctx TransportLeg moze byc w warstwie operacji!!!
+- np. w app gdzie firma mialaby flote statkow i TransportLeg reprezentowal by operujace na statku
+- conc: all zalezy od ctx uzycia - ta sama klasa raz moze byc w opers a raz w capabs
+- a nawet model moze adresowac oba ww case: wowczas model powinien moze wyroznic layers TransportOperations i CargoOperations
+- i transportLeg raz bylby w opers a raz w capabs
+
+co z customer?
+- czy oper czy capab - zalezy TYLKO i wylacznie od domeny i jak traktujemy customer'a
+- czasem customer jest obiektem transient - np. potrzebnym tylko do ustalenia adresu dostarczenia paczki - tu bedzie w opers
+- w 'shipping domain' - z customerem mamy long-term relacje i dlatego dajemy go do 'capabs/potential'
+
+- customer jest w capabs
+- cargo jest w opers
+- to wymusza ze musi byc kierunkowa relacja cargo ----> customer [chociaz ona tez wynika z innych needs]
+	- bo warstwy musza zalezec we wlasciwym kieruku
+	
+- n: po wydzieleniu warstw: opers/capabs - w diagrami/modelu mamy zachowane wlasciwe kierunki zaleznosci
+
+- z warstw wynika ze customer nie wie ze cargo go uzywa
+- stad: nie mozna zrobic trawersa z customer do cargo [ale w druga strone - da sie]
+- ale zawsze mozeny w cargo-repo poszukac cargo by customer [Id,CustName,..] [no issue at all]
+
+decission support
+- kilka tygodni dalej - zbieranie wiedzy - nastepuje ewolucja
+- okazuje sie ze Router nie jest czaescia operacji
+- DS dostarcza tools do planowania i podejmowania decisions
+	- czesc decisions moze zautomatyzowac np auto-re-route cargo kiedy zmieni sie schedule
+- Router to serwis [!] - pomaga wybrac best route do wyslania cargo - to pasuje do DS layer
+- teraz Router jest w opers i refuje TransportLeg z capab
+- problem TransportLeg ma attr 'isPrefered' [sluzy do oznaczania 'own ships' of company, zeby prefereowac te statki przy zaladunku]
+	- ale isPrefered nie ma NIC wspolnego z capab - to policy ktora nalezy do DS
+	- trz zref. problem - przeniesc kod do wlasciwych resp. layers
+- po refact
+	- powstal klas RouteBiasPolicy [ktory informs czy dany TransportLeg jest prefered] - refuje ona do TransportLeg
+	- klasa jest w DS layer
+	- TransportLeg nie ma juz paramu 'isPrefered'
+	- Router do niej refuje
+
+conc
+- mamy 3 warstwy lss: ds, opers, capabs
+- mamy czystszy/zrozumialszy model = latwiej go devowac
+- c: ta czystosc bedzie bardziej widoczna jak complexity modelu wzrosnie!
+
+
+c
+- zauwaz ze Router ma metode z param RouteSpecification i zwraca Itenerary
+- RS jest widoczna na diagramie/modelu ale NIE jest ona na diagramie refowana przez R
+- identycznie z I - nie ma relacji z R do I
+- conc: pp transient refs - nie sa pokazane na modelu
+// g: q: to ciekawe dlaczego R ma ref do TranpsortLeg - bo tego tez pp uzywa jako transient ref?
+
+c
+- R jako jedyny na diagramie jest serwisem
+- bo R ma metode - inne klasy maja tylko pola
+- n ze serwisy tez pokazujemy na diagramach modelu
+
+
+how it affects ongoing design
+- sprawdzmy jak ww lss wplynie na dev nowych feats
+- new feat: dla hazardous materials beda restrykcje - nie mozna ich przewozic na okreslonych statkach i wplywac do okreslonych portow
+- zmieniamy Router - zeby byl swiadom nowych regulacji
+- jest duuuzo opcji impl new reqs
+- wpiszemy new feat w lss
+- dodamy new service HazMatRouteService.Route(kod HazMat)
+- dodaj do Cargo - prop HazMatCode // kod ten jest czescia Cargo - nie wszystko jest czescia DecisionSupport
+- podczas wyznaczania trasy Cargo:
+	- app tworzy obiekt Cargo
+	- wola Router.route(cargo)
+	- R dopypuje Cargo o HazMatCode
+	- potem R pyta nowy serwis HazMazRouteService o stworzenie specyfikacji ...
+	- potem ta spec. jest AND'owana z innymi spec. okreslajacymi wymagania na route
+	- R zwraca Itinerary
+- n: 
+- ten model NIEkoniecznie jest lepszy czy gorszy od innych
+- acz jesli wszyscy beda uzywac layers - caly model bedzie bardziej spojny
+
+- jesli okaze sie ze uzywanie warstw tworzy 'cumbersome code' to moze trzeba bedzie te warstwy zmiejic lub porzucic
+
 
 3.1 choosing appropriate layers
+
+
+- odnalezienie dobrych resps [layers] wymaga DOBREJ ZNAJOMOSCI DOMENY I EKSPERYMENTOWANIA
+- ww dot. kazdej lss
+- n: ze [zgodnie z evolving order] ta lss bedzie i tak ewoluowal
+- n: moze byc ze bez lss bedzie ewoluowal w CHAOS
+
+to have evolution - in good direction do
+- storytelling 
+	- warstwy musze mowic o waznych elems doemny
+	- wybieranie lss to more business decission than techical
+- conceptual dependency
+	- kazda warstwa musi byc meaningful - bez wyzszych warstw
+	// g: to good test of layers capabs/opers - czy maja one sens bez wyzszych warstw
+	// g: w example w capab mamy tylko Customer i TransportLeg
+- conceptual contours
+	// g: nie wiem o co chodzi
+	
+c: w example DecSupp bezposrednio wola Capab [bez posrednictwa Supp] - czyli nie musisz miec all warstw
+
+- pewne warstwy b czesto powtarzaja sie w pewnych domenach
+- np. w sw do zarzadzania 'capital assets' [cargo ship, factory ..] - zwykle beda capabilities/operaitons
+- n: capab ma tez nazwe = potential
+
+pot/capab
+- daja A na Q: co moze byc zrobione [w sensie: jakie mamy resy i co mozemy z nimi zrobic]
+- typow reprez. resy organizacji [ludzi, ..] sposob org. tych resow
+- praktycznie ZAWSZE wystepuje w modelu
+
+oper
+- daje A na Q: co jest robione
+- repre. activities organizacji
+- typowo oper refuje do capab/poten [ale NIGDY odwrotnie]
+- c: wrecz obiekty oper moga towrzyc compose of capab objects
+
+
+in most cases oper/cabap - pokrywaja all layers [acz moga byc wyjatki]
+
+dec-sup
+- jesli potrzeba: asysty usera do podjecia decyzji lub automatyzajic decyzji - to potrzeba DesSupport
+- daje A na Q: jakie akcje podjac, jaka policy ustawic // g: w sensie patternu policy
+- c: many impl DecSup w technologi DataWarehouse - jest wowczas osobnym BC'em, wola Opers [osobny BC] przez relacje Customer/Supplier
+
+policy
+- czasem potrzeba layer do reprez. legal requirements or special business rules
+- daje A na Q: jakie sa rules or goals
+- typowo rules/goals sa bierne [g: ze nie licza nic?] - i tylko nakladaja constrains na zachowania innych layers
+- czasem poli jest impl. z uzyciem rule-engines
+- czasem jako embedded w BC z opers
+
+
+w grupie apps finansowych [np. ubezp, financial services] potential jest okreslony przez current operations
+wtedy zwykle pot jest laczona z layer:opers
+dodatkowo pojawia sie layer:commitment - w sensie: na co sie skomitowalismy, co obiecalismy userom
+typowe layers w financial apps
+- decission
+- policy
+- commitment
+- operations
+
+acz wszystko zalezy od biznesu
+
+vi: stosuj max 4-5 warstwy, acz lepiej mniej
+
+warstwy musze 1st of all - ulatwiac zrozumienie domeny/kodu
+thus musi to byc proste i naturalne dla danego biznesu
 
 
 4. knowledge level
 
 
-5...
+n: tu jest 'level', w resps byly 'layers'
+
+zdef. w MFowler Analysis Patts
+KL is a group of objects that describe how other group of objects should behave
+KL upraszcza design gdy czesc modelu - gdzie role/relacje miedzy encjami moga byc zmienione w config/run-time
+
+KL to nie pattern a raczej 'struktura nakladana na analysis pattern
+
+bez KL - jesli app nie bylaby pod user'a skonfigurowana - to zaczal by uzywac app 'niezgodnie z intencja', porobil by workaroundy na behaviouirs ...
+
+w modelu mamy
+- KL
+- operational LEVEL
+... ale to ze oper jest pod knowledge - nie znaczy ze sa layers i kieunek zaleznosci
+- K moze miec bi-direct relacje z Oper
+
+
+example: employee payroll, part 1
+
+- z: company ma sw do wyliczania payroll and pansion contributions
+- szukamy modelu gdzie w zaleznie od typu pracownika - przypiszemy konkretny payroll lub retirement plan
+- po refacts - ee wydzielil klase EmployeeType, ta klasa bedzie zarzadzal 'super-user', zarzadza on KL [g: chyba robi instancje nowych EmpTypes ..]
+- user przypisuje EmpType do Employee - i to okresla jego payrolls etc...
+
+- gdy role i relacje moga sie zmieniac - complexity can explode
+// g: ee uzywa def. role jak vv 'interfejsu role'
+- NIE rob general model ktory ogarnie needs - to skomplikuje sol, za duzo bedzie relacji
+- do: wprowadz KL
+
+SOL
+- utworz osobny zbior obiektow ktory opisze strukture i zachowania of basic model [oper. level]
+- keep KL i OL rozdzielone
+- obiekty w KL sa customizowane przez [super-]user'a
+
+if KL is complex to bedzie to trudno skonf. przez user'a -> stad KL musi byc proste
+
+c: po re-cfg KL - co ze starymi danymi zapisanymi w old-cfg?
+
+example: ..., part 2
+- w part 1 - nie bylo jeszcze explicit podzialu na KL i OL
+- teraz to wprowadzamy
+- w KL jest EmpType, typy payrolls, retirment plan ...
+- w OL jest Employee, Department 
+
+- n ref od Empl [OL] do EmpType [KL]
+- vi: caly KL jest config. przez 'super-user' = ze dany EmpType ma okreslony rodzaj payrolls, retirement ...
+- ale przypisanie Emp do Emp type - jest robione w oper level - tu po prost uzywamy EmpType sconf w KL
+
+// g: pp poszczeg. Ls sa w own modules - to oczyszcza model
+
+- resps w danym L powinny byc ograniczone do resp danej L
+
+- remem: KL jak i inne LSS sa opcjonalne, acz czasem ulatwiaja code dev
+
+
+5. pluggable component framework
+
+
+- pcf wystepuje tylko jesli na danej domenie powstalo kilka apps
+
+- if many apps musza cooper - a wszystkie bazuja na tym samym modelu
+- to translacje miedzy modelami - ograniczaja integracje
+- powstaja duplikacje i fragmentacje - koszty rosna - interoper staja sie bardzo trudne
+
+sol
+- wydziel AbstactCore z modelu - i impl. te abstract concepts w real sub-bs-s
+- vi: pozwol app'om uzywac tylko bezposrenido abstraktow z AC [pp zadnych pochodznych]
+- n: mowimy tu o kompon a nie bc'ach
+- pp components are smaller than bc
+- w jednym bc  moze byc klika komponentow
+
+prob: jak w 1 z apps potrzeba zmienic zachoanie to trzeba to zmienic w all miejscach uzycia kodu - to mega ciezkie
+
+przyklad: CIM SEMATECH ftramework
+// cut - nothing special
