@@ -143,7 +143,7 @@ c: LSS is not essential acz czysci zrozumienie domain
 3. responsibility layers
 
 c
-- w calej ksiazce jest stosowana zasada ze pojedynczym obiektom przypisujemy waski zakres responsibilities
+- W CALEJ KSIAZCE JEST STOSOWANA ZASADA ZE POJEDYNCZYM OBIEKTOM PRZYPISUJEMY WASKI ZAKRES RESPONSIBILITIES
 - kluczem na arch jest podzial layers wg resposibility
 
 - w large scales - takze dzielimy wg responsibilities
@@ -157,7 +157,7 @@ c
 
 c: zeby zobaczyc HL scale patterns - to musisz miec glebokie zrozumienie domeny // g: zatem dopiero po pracy na modelu mozna zobaczyc LSS
 
-c: niektore domany maja naturalna stratyfikacje/uwarstwienie
+C: NIEKTORE DOMANY MAJA NATURALNA STRATYFIKACJE/UWARSTWIENIE
 
 layering - najpop. pattern arch
 warstwy sa swiadomie i zalezne od warstw nizej, ale kompletnie nie sa swiadomo warstw wyzej [i sa od nich niezalezne]
@@ -184,7 +184,7 @@ example: layering a shipping system
 - z: mamy shipping system, dobrze rozwiniety, wydzielilismy core domain ...
 - problem: system jest duzy i nie wiemy jak pracowac zeby poszczeg. elems dobrze pasowaly do siebie
 - sol: szukamy LSS ktora system ujednolici
-- diagrag 16.3 - basic/init model
+- diagram 16.3 - basic/init model
 - z: team po miesiacach pracy nad modelem - zauwazyl stratyfikacje koncepcji w modelu
 	- operations
 	- capabilities [pl: zdolnosc]
@@ -261,7 +261,7 @@ how it affects ongoing design
 - sprawdzmy jak ww lss wplynie na dev nowych feats
 - new feat: dla hazardous materials beda restrykcje - nie mozna ich przewozic na okreslonych statkach i wplywac do okreslonych portow
 - zmieniamy Router - zeby byl swiadom nowych regulacji
-- jest duuuzo opcji impl new reqs
+	- jest duuuzo opcji impl new reqs
 - wpiszemy new feat w lss
 - dodamy new service HazMatRouteService.Route(kod HazMat)
 - dodaj do Cargo - prop HazMatCode // kod ten jest czescia Cargo - nie wszystko jest czescia DecisionSupport
@@ -276,7 +276,7 @@ how it affects ongoing design
 - ten model NIEkoniecznie jest lepszy czy gorszy od innych
 - acz jesli wszyscy beda uzywac layers - caly model bedzie bardziej spojny
 
-- jesli okaze sie ze uzywanie warstw tworzy 'cumbersome code' to moze trzeba bedzie te warstwy zmiejic lub porzucic
+- jesli okaze sie ze uzywanie warstw tworzy 'cumbersome code' to moze trzeba bedzie te warstwy zmienic lub porzucic
 
 
 3.1 choosing appropriate layers
@@ -298,7 +298,7 @@ to have evolution - in good direction do
 - conceptual contours
 	// g: nie wiem o co chodzi
 	
-c: w example DecSupp bezposrednio wola Capab [bez posrednictwa Supp] - czyli nie musisz miec all warstw
+c: w example DecSup bezposrednio wola Capab [bez posrednictwa Supp] - czyli nie musisz miec all warstw
 
 - pewne warstwy b czesto powtarzaja sie w pewnych domenach
 - np. w sw do zarzadzania 'capital assets' [cargo ship, factory ..] - zwykle beda capabilities/operaitons
@@ -317,6 +317,7 @@ oper
 
 
 in most cases oper/cabap - pokrywaja all layers [acz moga byc wyjatki]
+
 
 dec-sup
 - jesli potrzeba: asysty usera do podjecia decyzji lub automatyzajic decyzji - to potrzeba DesSupport
@@ -357,14 +358,14 @@ zdef. w MFowler Analysis Patts
 KL is a group of objects that describe how other group of objects should behave
 KL upraszcza design gdy czesc modelu - gdzie role/relacje miedzy encjami moga byc zmienione w config/run-time
 
-KL to nie pattern a raczej 'struktura nakladana na analysis pattern
+KL TO NIE PATTERN A RACZEJ STRUKTURA NAKLADANA NA ANALYSIS PATTERN
 
 bez KL - jesli app nie bylaby pod user'a skonfigurowana - to zaczal by uzywac app 'niezgodnie z intencja', porobil by workaroundy na behaviouirs ...
 
 w modelu mamy
 - KL
-- operational LEVEL
-... ale to ze oper jest pod knowledge - nie znaczy ze sa layers i kieunek zaleznosci
+- operational LEVEL // acz tu 'operational' nie oznacza 'oper' z layers
+... ale to ze oper jest pod knowledge - nie znaczy ze sa layers i kierunek zaleznosci
 - K moze miec bi-direct relacje z Oper
 
 
@@ -399,7 +400,7 @@ example: ..., part 2
 - vi: caly KL jest config. przez 'super-user' = ze dany EmpType ma okreslony rodzaj payrolls, retirement ...
 - ale przypisanie Emp do Emp type - jest robione w oper level - tu po prost uzywamy EmpType sconf w KL
 
-// g: pp poszczeg. Ls sa w own modules - to oczyszcza model
+// g: pp poszczeg. L-s sa w own modules - to oczyszcza model
 
 - resps w danym L powinny byc ograniczone do resp danej L
 
@@ -415,14 +416,16 @@ example: ..., part 2
 - to translacje miedzy modelami - ograniczaja integracje
 - powstaja duplikacje i fragmentacje - koszty rosna - interoper staja sie bardzo trudne
 
+// g: example: plugins in eclipse, slack ...
+
 sol
-- wydziel AbstactCore z modelu - i impl. te abstract concepts w real sub-bs-s
+- wydziel AbstactCore z modelu - i implementuj te abstract concepts w real sub-bs-s
 - vi: pozwol app'om uzywac tylko bezposrenido abstraktow z AC [pp zadnych pochodznych]
 - n: mowimy tu o kompon a nie bc'ach
 - pp components are smaller than bc
-- w jednym bc  moze byc klika komponentow
+- w jednym bc moze byc klika komponentow
 
-prob: jak w 1 z apps potrzeba zmienic zachoanie to trzeba to zmienic w all miejscach uzycia kodu - to mega ciezkie
+prob: jak w 1 z apps potrzeba zmienic zachowanie to trzeba to zmienic w all miejscach uzycia kodu - to mega ciezkie
 
-przyklad: CIM SEMATECH ftramework
+przyklad: CIM SEMATECH framework
 // cut - nothing special
