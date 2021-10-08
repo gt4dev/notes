@@ -429,3 +429,72 @@ prob: jak w 1 z apps potrzeba zmienic zachowanie to trzeba to zmienic w all miej
 
 przyklad: CIM SEMATECH framework
 // cut - nothing special
+
+
+6 how restrictive should a sturcture be?
+
+
+lss'y tu pokazane sa
+- od bardzo loose - jak system metaphore
+- do bardzo restritive - jak pluggable component framework 
+
+acz poziom restr. mozna zmieniac dla kazdego lss
+
+example - factory
+- w resp. layers - mamy okreslony kierunek zaleznosci
+- ale mozemy dodac feedback 'w gore'
+- w fabryce proces zaczyna sie od policy, przechodzi przez operations i trafia na 'floor'
+- ale na 'floor level' moze byc problem i trzeba o tym poinformowac upper layers
+   - pp do dec. supp layer - zeby pp update'nac policy, states ..
+- call nie moze isc do od lower to upper layers [bo to stworzy depend. miedzy nimi]
+- thus: opers wystawia eventy - o all zmianach
+// g: skoro all events sa wystawiane z opers - to moze es ma sens - bo tak czy siak EVENTS O ZMIANIE STANU MUSISZ WYSTAWIAC
+   - bo czesto upper layers musza moc reagowac
+- jak oper zglosi event ktory zlamie jakas rule - to wywola jakas akcje [zwykle wystawi event o zlamaniu r, ten wylapie dec-supp i podejmie akcje]
+// g: zobacz ze tylko policy zna rules i wie czy r jest zlamana czy nie, oper nic o tym nie wie
+
+example - banking
+- z: zmienia sie wartosc assetu [g: np. akcje?]
+- po wzroscie zmienia sie policy na asset
+- informowany jest tradera zeby sprawdzil i zareagowal
+
+w kazdym ww example mozna 
+- indywidualnie poszukac rozwiazania
+- ustawic dodatkowy lss pattern [o message'ach] jak komunikowac sie miedzy layer'ami
+   - bedzie to prostsze w zrozumieniu 
+
+conc
+- lss daje: conceptual coherence, insight into the domain
+- lss MUST make development easier [a nie utrudniac!]
+
+
+7 refactoring toward a fitting structure
+
+
+- zeby lss pasowal - musisz b. dobrze znac domain
+- a na start: nie znasz domain - pp lss z initu bedzie potem NIEaktualna
+- lss musi byc FEARLESS refactored w LC of project
+
+- this refactor can be expensive and difficult - but is necessary
+
+sposoby na kontrole kosztow / maxing gains
+- minimalizm
+   - keep structure simple and lightweight
+   - nie rob comprehensive [kompletny] lss
+   - lss regards ONLY the most import. concepts
+   - rest is fixed 'case-by-case'
+   
+   - on init pick eg. system metaphore or resp-layers z mala iloscia layers
+   - uporzadkuje to projekt 'od poczatku'
+
+- communication and self-discipline
+   - lss musi byc uzywany przez caly zespol, wszyscy musza ja rozumiec
+   // g: lss musi byc dobrz komunikowana, np. wiki - zeby to latwo i czesto aktualizowac
+   - terminy i relacja z lss MUSZA byc obecne w UL [jednak!]
+   
+   - lss wprowadza hl terms/guidlines - dosc luzne 
+   - teams samw musza sie dyscyplinowac zeby trzymac lss - bo lss jest zbyt loose i nienarzuca sie
+   - bez discipline - lss ma tendencje do rozkladu
+   
+   - lss na low level jest niezauwazalny w kodzie, testach ...
+   - more: w std team talks lss moze byc pomijany - stad musi byc on czescia ul - zeby teams go uzywaly daily
