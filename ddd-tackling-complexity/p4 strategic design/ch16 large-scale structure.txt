@@ -431,51 +431,54 @@ przyklad: CIM SEMATECH framework
 // cut - nothing special
 
 
-6 how restrictive should a sturcture be?
+vvv reading club
 
 
-lss'y tu pokazane sa
+6 how restrictive should a structure be?
+
+
+lss'y moga byc
 - od bardzo loose - jak system metaphore
-- do bardzo restritive - jak pluggable component framework 
+- do bardzo restritive - jak pluggable component framework [ale i sa more rigid]
 
-acz poziom restr. mozna zmieniac dla kazdego lss
+poziom restr. wewn. lss mozna tez zmieniac
 
 example - factory
-- w resp. layers - mamy okreslony kierunek zaleznosci
+- resp. layers mam kierunek zaleznosci top -> down
 - ale mozemy dodac feedback 'w gore'
 - w fabryce proces zaczyna sie od policy, przechodzi przez operations i trafia na 'floor'
-- ale na 'floor level' moze byc problem i trzeba o tym poinformowac upper layers
-   - pp do dec. supp layer - zeby pp update'nac policy, states ..
-- call nie moze isc do od lower to upper layers [bo to stworzy depend. miedzy nimi]
-- thus: opers wystawia eventy - o all zmianach
-// g: skoro all events sa wystawiane z opers - to moze es ma sens - bo tak czy siak EVENTS O ZMIANIE STANU MUSISZ WYSTAWIAC
-   - bo czesto upper layers musza moc reagowac
-- jak oper zglosi event ktory zlamie jakas rule - to wywola jakas akcje [zwykle wystawi event o zlamaniu r, ten wylapie dec-supp i podejmie akcje]
+- ale na 'floor level' moze byc problem i trzeba przekazac wyzej
+- np do decision layer - zeby pp update'nac policy, states ..
+- call nie moze isc down-up [bo stworzymy deps miedzy layers]
+- sol: opers layer wystawia eventy - o all zmianach wewnatrz niego
+// g: skoro all events sa wystawiane - to moze es ma sens - bo czesto musisz informowac swiat O zmianie stanu w bc
+   - czesto inne bc upper layers musza to wiedziec
+- jak oper-l zglosi event ktory lamie some rule - to np. policy to przechwyci, wyswtawi event do dec-supp i ten podejmie akcje
 // g: zobacz ze tylko policy zna rules i wie czy r jest zlamana czy nie, oper nic o tym nie wie
 
 example - banking
-- z: zmienia sie wartosc assetu [g: np. akcje?]
-- po wzroscie zmienia sie policy na asset
-- informowany jest tradera zeby sprawdzil i zareagowal
+- z: zmienia sie wartosc assetu [g: akcje?]
+- po wzroscie ceny - zmienia sie policy na tym asset
+- np. system informuje tradera zeby sprawdzil i zareagowal
 
-w kazdym ww example mozna 
+w kazdym ww need of tailoring lss - mozna
 - indywidualnie poszukac rozwiazania
-- ustawic dodatkowy lss pattern [o message'ach] jak komunikowac sie miedzy layer'ami
+- ustawic dodatkowy lss pattern [o message'ach down-up]
    - bedzie to prostsze w zrozumieniu 
 
 conc
-- lss daje: conceptual coherence, insight into the domain
-- lss MUST make development easier [a nie utrudniac!]
+- LSS MUST MAKE DEVELOPMENT EASIER [A NIE UTRUDNIAC!]
+- lss ma dac: conceptual coherence, insight into the domain
 
 
 7 refactoring toward a fitting structure
 
 
-- zeby lss pasowal - musisz b. dobrze znac domain
-- a na start: nie znasz domain - pp lss z initu bedzie potem NIEaktualna
-- lss musi byc FEARLESS refactored w LC of project
+- ZEBY LSS PASOWAL - MUSISZ B. DOBRZE ZNAC DOMAIN
+- ON INIT: NIE ZNASZ DOMAIN - PP INIT LSS BEDZIE WYMAGAL ZMIANY
 
-- this refactor can be expensive and difficult - but is necessary
+- LSS MUSI BYC FEARLESS REFACTORED IN PROJECT
+- THIS REFACTOR CAN BE EXPENSIVE AND DIFFICULT - BUT IS NECESSARY
 
 sposoby na kontrole kosztow / maxing gains
 - minimalizm
@@ -488,12 +491,14 @@ sposoby na kontrole kosztow / maxing gains
    - uporzadkuje to projekt 'od poczatku'
 
 - communication and self-discipline
-   - lss musi byc uzywany przez caly zespol, wszyscy musza ja rozumiec
-   // g: lss musi byc dobrz komunikowana, np. wiki - zeby to latwo i czesto aktualizowac
-   - terminy i relacja z lss MUSZA byc obecne w UL [jednak!]
+   - lss musi byc rozumiany i uzywany przez caly zespol
+   // g: lss musi byc dobrz komunikowana, np. wiki - zeby to latwo czytac/aktualizowac
    
-   - lss wprowadza hl terms/guidlines - dosc luzne 
-   - teams samw musza sie dyscyplinowac zeby trzymac lss - bo lss jest zbyt loose i nienarzuca sie
+   - terms, ich relacja, guidlines z lss
+      - MUSZA byc obecne w UL [jednak!]
+      - sa dosc luzne 
+   
+   - teams musza sie dyscyplinowac zeby trzymac lss - bo lss jest zbyt loose i nienarzuca sie
    - bez discipline - lss ma tendencje do rozkladu
    
    - lss na low level jest niezauwazalny w kodzie, testach ...

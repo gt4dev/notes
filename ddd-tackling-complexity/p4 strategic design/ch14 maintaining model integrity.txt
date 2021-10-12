@@ -3,25 +3,26 @@ ch14 maintaining model integrity
 
 przyklad
 - team1 [z domany: payments] - stworzyl obiekt Charge
-- team2 [z doemny: invoices] - stwierdzil ze brakuje 'pola x' w Charge i je dodali
-- blad - oba zespoly powinny to dogadac
+- team2 [z domeny: invoices] - stwierdzil ze brakuje 'pola x' w Charge i je dodal
+- blad - oba zespoly powinny dogadac
   - czy dodac nowe pole do Charge 
   - czy miec osobne modele
 - finalnie: utworzono osobne modele z klasami: CustomerCharge / SupplierCharge
 
-mega fundamentalny req:
-- model musi byc wewn. spojny
-  - termy sa jednoznaczne [unambigous]
-  - nie ma sprzecznych rules
+mega fundamentalny req: model jest wewn. spojny
+- termy sa jednoznaczne [unambigous]
+- nie ma sprzecznych rules
 
 - unification - stan 'internal consistency of model'
 
-- model niespojny jest bezuzyteczny!
+- model niespojny jest 'bezuzyteczny'
 
-- w big systemach - nie da sie stworzyc "one big consistent model"
-  - tj: da sie ale to duuuuzo kosztuje time/money = jest bez sensu
+w big systemach 
+- nie da sie stworzyc "one big consistent model"
+- lub to duuuuzo kosztuje time/money = jest bez sensu
 
-- c: jak masz kilka modeli to niektore moga sie rozjezdzac [acz kluczowe elementy trzeba probowac zachowac spojne]
+- jak masz kilka modeli to niektore moga sie rozjezdzac
+- kluczowe elementy trzeba probowac zachowac spojne
 
 - c: ee sam kilka razy kodowal 'one big model' i dzis wie ze to byl blad
 
@@ -34,77 +35,77 @@ ch14.1 bounded context
 
 c
 - czasem od razu widac ze mamy rozne modele, eg: system A integruje sie z systemem B
-- czasem nie widac, jak w/w sample: SupplierCharger / CustomerCharger
+- czasem nie widac, jak w/w sample z SupplierCharger / CustomerCharger
 
-c: czasem w 1 zespole [!!!] uzywamy 2 modele eg: stary i nowy model, etc ..
+c: czasem w 1 zespole [!] uzywamy 2 modele eg: stary i nowy, etc ..
 
-- technicznie translacja danych miedzy modelami zwykle jest prosta
-- trudniejsze jest uzgodnienie terms miedzy modelami [co na co sie transformuje] etc...
+- techniczna translacja danych miedzy modelami zwykle jest prosta
+- trudniejsze jest uzgodnienie terms miedzy modelami [co na co sie transformuje, etc...]
 
-- kazdy model ma explicitly okreslony zakres/granice jego uzywania [context]
+- kazdy model ma explicitly okreslone granice stosowania [context] 
+// g: tj pp wiemy ktore subdomains, features obsluguje
 - w ramach granic model jest unified [spojny]
 
-context = granice uzywania modelu, granice moga byc 'wyznaczone' przez 
-- org. zespolu
+context = granice uzywania modelu
+granice moga byc 'wyznaczone' przez 
+- org. zespolow
 - 'powiedzenie' ze model uzywamy w danej czesci app
 - fizyczne granice w kodzie [folder, osobna schema w bazie lub wyizolowane struktury]
 - ...
 
-- kodujac model "nie przejmu sie" stanem poza nim!
+- kodujac model "nie przejmu sie" stanem poza nim
 
 
 example: booking context
 - kod integrujacy BC'e - 'siedzi' miedzy BC'ami, nie siedzi w BC
 
 zla praktyke
-- mamy 2 zepoly wewn. 1 project [i to jest ok]
-- kazdy zespol pracuje nad own BC - ale o tym nie wiedza [dosc typowy case]
-- teams musza koordynowac dane, koncepcje ...
-- ale integracje robia 'nieregularnie/ad hoc'
+- mamy 2 zepoly w 1 project [i to jest ok]
+- kazdy zespol pracuje nad own BC - ale o tym nie wiedza [typowy case]
+- teams czasem/'ad hoc' koordynuja dane, koncepcje ...
 
-good praktyka - zespoly powinny
-- okreslic BCe [granice]
-- zastosowac konkretna strategie integracji BC'ow, np. shared kernel
-  - typ relacji miedzy oboma BC'ami to "1st task"
+good praktyka - zespoly
+- okreslily granice BC-ow
+- okreslily strategie integracji BC'ow, np. shared kernel
 
-- dzielenie kodu/danych - powinno byc robione BARDZO OSTROZNIE
-// g: ale powinno, zeby nie duplikowac stanow, kodu - but very ostroznie
+- okreslenie typ relacji miedzy oboma BC'ami to "1st task"
+
+- dzielenie kodu/danych miedzy bc'ami - powinno byc robione BARDZO OSTROZNIE
+// g: ale powinno, zeby nie duplikowac stanow, kodu
 
 
 2 typowe problemy - zw. ze zlaczeniem 2 BC'ow w 1 BC
 - duplicated concepts
-  - mamy kilka miejsc w modelu ktore wyrazaja ten sam lub podobny concept
-  - jak sie zmienia 1 rzecz to aktualizujemy w kilku miejscach [!!!]
-- false cognates
-  - more tricky
+  - mamy kilka miejsc w modelu ktore wyrazaja podobny [lub ten sam] concept
+  - jak sie zmienia 1 rzecz to aktualizujemy w kilku miejscach [!]
+- false cognates [bit tricky]
   - ludzie okreslaja tego samego term do okreslenia diff things
-  - przyklad "Charge" z poczatku ch 
+  - przyklad ww klasa "Charge"
 
 
 ch14.2 continuous integration
 
 
 - kiedy wiele osob pracuje na 1 bc to model ma MOCNA tendencje do fragmentacji
-- juz przy 3-4 osoby to powazny problem!
+- przy 3-4 osoby to powazny problem!
 
-- fragmentacja modelu niszczy model coherency
+- fragmentacja niszczy coherency
 
-problemy devs przy zmienie istniejacego kodu
+general problems on changing existing code
 - po zmianach - old obiekty/relacje nie dzialaja tak jak pierwotnie zakladano
-- dev nie wie ze dany feat istnieje - i duplikuje go lub robi podobny
-- dev wie o feat ale i tak go duplikuje - zeby nie zepsuc istniejacego kodu
+- dev nie wie ze dany feat istnieje - duplikuje go lub robi podobny
+- dev wie o feat ale duplikuje go - zeby nie zepsuc istniejacego feat
 
-- CI oznacza ze wszystkie prace [modele?] sa ciagle integrowane (czesto merge'owane) w finalny produkt
-- CI daje szyki feedback jak integracja nie dziala
+- CI daje szybki feedback o problemach
 
-- CI [jak WSZYSTKO!!! w DDD] operuje na 2 poziomach
-- model concepts - integration is done by
+CI dziala na 2 poziomach [jak wszystko w DDD] 
+- model concepts
   - continues talks among team members
-  - ciagle ciczenie/testowanie UL na roznych case'ach
+  - ciagle cwiczenie UL na roznych case'ach
   // g: concepts are also integrated!!!
-  - c: tech. rzadko zformalizowana
-- implementation - integr. is done by conti. builds, tests
-  
+- implementation = conti. builds, auto-tests
+
+
 MUST DO
 - odpalaj testy automatyczne
 - "bezlitosnie" cwicz UL zeby zespol mial wspolny poglad na model
@@ -114,42 +115,43 @@ MUST DO
 ch14.3 context map
 
 
-ludzie w diff zespolach moga byc nieswiadomi granic BC'ow, moga
-- tworzyc niezaplanowane interakcje
+ludzie w diff zespolach moga byc nieswiadomi granic BC'ow
+to moze 
 - rozmywac granice miedzy bc'ami
+- tworzyc nadmiarowe interakcje miedzy bc'ami
   
 - bc'e maja tendencje do "przeciekania" miedzy soba 
 
-- avoid re-use code between bc'e - to dosc ryzykowne [pp z wyjatkiem shared kernel]
-// g: pp chodzi o kod modelu domeny, a nie infra ...
+- avoid re-using code between bc'e - to dosc ryzykowne [pp z wyjatkiem shared kernel]
 
 - integracje funkcjonalnosci i danych - musza przechodzic przez translacje
 
-- mozesz zredukowac niezrozumienie przez narysowanie context map z pokazaniem relationships miedzy bc'ami
+- zredukujesz niezrozumienie przez narysowanie CM
 
 - identify each model in project and define its bounded context
-// g n: formalnie jest rozroznienie bc od modelu
 - nazwij kazdy bc [zgodnie z UL]
-- opisz kazdy punkt interakcji miedzy bc'ami, pokaz translacje interakcji, pokaz sharings [pp of model/impl]
+- opisz kazdy punkt interakcji miedzy bc'ami, pokaz translacje, sharings, ...
+// g: formalnie model jest czescia bc
 
 - map already existing terrain, not planned one
 
-mapa mozna DOWOLNA forme
-- diagram
-  - 'chmurki' z nazwami ctx
-  - 'chmurki' z wylistowanymi konkretnymi klasami w bc ...
-- text
-- zwykla dyskusja // g: dosc ulotna forma ;]
+use any map form
+- diagram chmurek z
+  - nazwami ctx
+  - wylistowanymi konkretnymi klasami w bc ...
+- zwykly text
+- zwykla dyskusja
 
 - mapa musi byc rozumiana przez wszystkich w projekcie
 
 c: jesli znajdziesz problem przy tworzeniu mapy [np. niekonsystentny bc]
-- oznacz taki bc na mapie "dragonem" ;]
+- oznacz taki bc "dragonem" ;]
 - dokonczy rozpisywanie reszty mapy
-- zaplanujesz fix "dragonow"
+- zaplanuj fix "dragonow"
 
 
 example: two contexts in shipping app
+- feat: podczas book'owania jest auto-gener routing paczek
 
 bc: booking    |                             |  bc: transport network
                |                             |
@@ -159,51 +161,51 @@ bc: booking    |                             |  bc: transport network
            |------------------------------------>| Service   |
                |                             |
 
-- app ma feat: podczas book'owania jest auto-gener. routing paczek
 - c: RoutingService 
   - uzywa intent-revealing + seff
   - result from RS jest okreslony przez assertion: RS zwraca Itinerary ktore spelnie 'RouteSpecification'
 
 c: 
-- EE poczatkowo chcial zakodowac internals of RS uzywajac modelu caller'a [booking] ale to bylby blad
+- EE chcial zakodowac RS uzywajac modelu bc:booking - ale to bylby blad
 - wyszlo - ze
-  - RS uzywa klas modelu caller'a tylko na in/out
-  - internals robia skomplikowane obliczenia - thus nie pasuja one do modelu caller'a
-// g n: wewn. alg. jest niezalezny od zewn. caller'a - Twoj czeste case!
+  - RS uzywa klas modelu bc:booking tylko na in/out
+  - impl robi skomplikowane obliczenia - nie pasujace do modelu bc:booking
+// g: wewn. alg. jest niezalezny od caller'a - czesty case!
 
 - n: czasem translacje miedzy bc'ami sa NIEMOZLIWE lub mega trudne [bo np. modele sa bardzo rozne, brakuje danych ..]
 
-- budujemy translatory miedzy modelami [dla args and result of metods]
-- tutaj: Booking-Transport Translator
-- nad BTT i jego test suite - pracuja zespoly z OBU BC'OW
+translator miedzy modelami [dla args and result of metods]
+- Booking-Transport Translator
+- BTT i jego test suite - koduja zespoly z OBU bc'ow
 - translator NIE nalezy do zadnego BC'a
-- translator musi [i jest] prosty
-- translator musi byc dobrze stestowany UT'ami - zeby uniknac problemow po zmianach w 1 z BC'ow
+- translator musi byc 
+   - prosty
+   - dobrze stestowany UT'ami - zeby uniknac problemow po zmianach w 1 z BC'ow
 
-- w example RS jest z booking i koordynuje dzialan miedzy BC'ami
-- RS dziala mega prosto
+- ww RS jest z booking, koordynuje dzialan miedzy BC'ami
+- RS jest mega prosty
   - wola metody TransportService z bc:transport!!! [zadnej magii, dodatkowych warstw ..]
-  - wczesniej oczywiscie RS wola translator - zeby przygotowac params dla TS i potem ocnvert response
+  - przed/po call - RS wola translator - zeby przygotowac params dla TS i odebrac response
   
-// g n: zauwaz ze oba zespoly dzialaja w miare niezaleznie
+// g: zauwaz ze oba zespoly dzialaja w miare niezaleznie
 
-- RS latwo przetestowac - bo sklada sie z SEFF!
+- RS latwo przetestowac - sklada sie z SEFF
 
 - kluczem do sukcesu integracji sa UT'y RS
-- testy wolaja RS - podaja set RoutingSpecification i sprawdzaja result
+- testy wolaja RS z params i sprawdzaja result
 - to baza do wspolpracy obu zespolow
-// g t: doczytaj jak test dzialaja
+
 
 - bez dzialan bc'e beda sie psuc, nachodzic na siebie
-// g: trzeba to pilnowac, nie jest to 'samograj'
+// g: trzeba granic pilnowac, nie jest to 'samograj'
 - thus
   - explicitly define BCs and ContextMap
   - [iteratively] unify models and relations
   
 // g q: jak testowac integracje
-// - oba zespoly buduja test suite na translator [ktory jest dosc prymitywna klasa]
-// - zespol od RoutingService - testuje ten service [ale pp w polaczeniu z mocked "2nd context service"]
-// - zespol od '2nd bc' - testouje ich serwis 'normalnie' [bez przejmowania sie RS etc]
+// - oba zespoly buduja test suite na translator [ktory jest 'prymitywna' klasa]
+// - zespol od RoutingService - testuje ten service [ale pp w polaczeniu z mocked TS service]
+// - zespol od '2nd bc' - testuje TS serwis 'normalnie' [bez przejmowania sie RS]
 
 organizing and docing CMaps
 - dwa istotne pts
@@ -212,10 +214,13 @@ organizing and docing CMaps
 - w kontrze VV - EE jednak doc'uje projekt 'nieformalnymi' diagramami etc [VV chce tylko kod]
 
 
+cont here vvv
+
+
 ch14.4 relationships between BCs
 
 
-cele strategi/patterns
+cele strategii/patterns
 - providing targets for succesully org-ing dev work
 - giving vocabulary for desc-ing organization
 

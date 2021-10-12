@@ -1,36 +1,32 @@
 - p4 = strategic design
 
 - w skomplikowanym systemie nie da sie znac all szczegolow
-- p4 says desc how to understand big models/complex domains
+- p4 descs how to understand big models, domains
 
 - tu wiekszosc decyzji musi byc ustalona na poziomie zespolu/miedzy zespolami
 
 - model duuuzego przedsiewziecia - nie da sie pokazac jako single unit
-- system musi byc podzielony na mniejsze na poziomie
+- system dzielimy na mniejsze na poziomie
   - koncepcji
   - implementacji
 
-- moduly maja byc odseparowane i jednoczesnie musza dobrze wspolpracowac
+- moduly musza byc odseparowane i jednoczesnie dobrze wspolpracowac
 
-- single big model bedzie trudny w utrzymaniu, bedzie mial duzo contradictions, duplications ...
-- ale tez zbyt rozdrobniony - bez dobrej integracji 
+- single big model jest trudny w utrzymaniu, ma duzo contradictions, duplications ...
+- zbyt rozdrobniony - bez dobrej integracji 
   - nie dostarczy enterprise level answers
-  - beda consistency problems [chyba chodzi o sync duplikowanych danych, propagacje zmian ..]
-// g: anyway - modularity 'wymusza' async updates wiec jakies problems zawsze tu beda ;]
+  - ma consistency problems [g: chyba chodzi o synchro kopii danych, propagacje zmian ..]
+// g: modularity 'wymusza' async updates wiec 'synchro problems' zawsze tu beda ;[
   
-cele strategic design principles
-- redukcja zaleznosci miedzy elementami systemu
-- utrzymanie miedzy nimi interoperatibility
-
-3 strategic design principles
+strategic design principles
 - context
   - the most fundamental principle
   - dobry model [small or big] musi byc wewn. spojny, bez sprzecznych definicji
 - [strategic] distillation
-  - redukuje balagan i fokusuje na waznych elementach
-  - czesty problem: wysilek idzie w 2n-ary domeny, a nie w 1st-ary
-  - mamy 'core domain' i 2nd-ary sa 'supporting elements [domains]'
+  - redukuje balagan i fokusuje prace na waznych elementach
+  - wydziela domains: core, supporting [generic ..]
+  - czesty problem: wysilek idzie w 2n-ary domenins, zamiast w 1st-ary
 - large scale structures
-  - ee da poglad na LSS 
+  - ee da poglad na kilka LSS
   - w detalach omowi tylko 1 of LSS = 'responsibility layers'
-  - c: nie ma katalogu LSS - to trzeba wymyslac on-demand/case
+  - c: nie ma katalogu LSS - trzeba je wymyslac on-demand/case

@@ -1,18 +1,20 @@
-ch-xx conclusions
+ch__ conclusions
 
 
 - ee opowiada o 5 projs w ktorych bral udzial
-- byly one ddd-podobne [ale wtedy ddd jeszcze nie istnialo]
-- czesc zamknieto, czesc wyewoluowalo, czesc zarosla ...
+- byly one semi-ddd [wtedy ddd jeszcze nie istnialo]
+- czesc zamknieto, czesc wyewoluowala, czesc odeszla od ddd ...
 
-// g: wiekszosc sw z ktorym bedziesz pracowal to 'jakies legacy'- ba aware ;]
+// g: wiekszosc sw z ktorym bedziesz pracowal to 'jakies legacy'- be aware
 
 // g: ddd mozna uzywac w malych zespolach 3 osobowe
 
 - zaden projekt nigdy nie uzyje all techs z tej ksiazki
 
 
-ch-yy appendinx
+ch__ appendinx
+
 
 - wg ee [20y ago] peugeot stosowal custom'owe rozwiazania ktorych std service nie byl w stanie naprawic
 - ford, honda - przeciwnie - nie kombinowali
+- to lepsze rozwiazanie

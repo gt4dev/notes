@@ -215,30 +215,29 @@ ch15.3.2 project risk management
 - wg ee powinno to dotyczyc tylko 'core domain'
 
 
-CH15.4 DOMAIN VISION STATEMENT
+CH15.4 DOMAIN VISION STATEMENT [dvs]
 
 
 // ref
-- gdy model jest rozwiniety - czastem trzeba wyjasnic wartosci systemu bez studiowania detali modelu
-- wazne feats modelu moga byc oparte na kilku bc'ach
-- wtedy nie zobaczysz 'szybko' HL value z modelu
+- czastem trzeba wyjasnic wartosci systemu bez wnikanie w detale modelu [szczeg. gdy jest complex]
+- wazne feats modelu moga byc zbudowane na kilku bc'ach
+- takich nie zobaczysz 'szybko' - studiujac detale modelu
 
 sol
-- opisz na 1 stronie 'core domain' i wartosci ktora wnosi
-- napisz 'statement' w miare wczesnie i update'uj dok po zmianach
+- opisz na 1 stronie 'core domain' i wartosci ktore wnosi
+- napisz to on init i update'uj po zmianach
 
 
 // book
-- on proj start - zwykle model nie istnieje - ale trzeba sfokusowac prace
+- on init - zwykle model nie istnieje - ale trzeba sfokusowac prace
 - later - trzeba wyjasnic wartosc systemu - bez wnikania w model
-- more: niektore turbo-wazne aspekty modelu sa rozlozone na wiele bc's - stad OOTB nie zobaczymy latwo ich wartosc
+- more: niektore turbo-wazne aspekty modelu sa rozlozone na wiele bc's - nie zobaczysz latwo ich wartosc
 
-- tu mowimy o 'DOMAIN vision statement' - a nie typowym 'vision statement' = notatka dla managmentu na start projektu
-- domain vs - jest typowo tworzony po 'init vision statement'
+- tu jest 'DOMAIN vision statement' a nie 'typowa' notatka dla managmentu na start projektu
+- dvs - jest tworzony jak <> wiadomo co system ma robic
 
 - dvs - opisuje ogolne wymagania na model - co apka ma robic
-- bez detali
-- dvs identifies the core domain in broad terms [bo dvs jest b. ogolne]
+   - bez detali
 
 
 CH15.5 HIGLIGHTED CORE
@@ -561,6 +560,3 @@ a musisz go zmienic
 
 2 free to choose refactor
 - wtedy refact. CD
-
-
-// 9.26.15.49.15

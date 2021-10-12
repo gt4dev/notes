@@ -1,40 +1,38 @@
 ch17 bringing the strategy together
 
 
-byly 3 ch o strategic design
-- ch14 - bc i jego relacjach
+byly 3 ch o strategic design 
+- ch14 - bc i jego relacje
 - ch15 - distilling [core, generics ..]
 - ch16 - lss [ewolucja, metafory, resp. layers ..]
 
-3 principles of strategic design = ctx, distillation, lss
-
-ww techs sie 'przenikaja' [eg. lss moze obejmowac 1 lub many bc]
+3 principles of strategic design = context, distillation, lss
 
 
 17.1 combining lss-s and bc-s
 
 
 c: 
-- resp. layers - najczesciej spotyka sie w 1 bc [g: pp bo to czesty range projektu]
-- ale stosuje sie w many-bc projektach [g: pp fizycznie mniej takich duzych projektow]
+- resp. layers - najczesciej widac wewn 1 bc [g: pp czesty case projektu]
+- ale stosuje sie w many-bc projektach
 
 c: obsluga legacy systems
-- legacy olewaja nasze resp-layers - wiec na diagrami layers - rysuj go na all L ktore on zajmuje
+- legacy olewaja nasze resp-layers - wiec na diagrami layers - legacy zajmuje many l-s
 
 c: legacy system = osobny bc
-- ee rysuje 'legacy system' na diagrami jako bc [wczesniej byly watpliwosci czy to bc]
+- ee rysuje 'legacy system' na diagramie jako bc [g: wczesniej byly watpliwosci czy to bc czy co]
 - np digram 17.4 'legacy shipping coordination context' = bc
 
-c: dostep do legacy przez acl or repository
-- dostep do ww legacy z 'new bc-es' jest realizowany 2 drogami
-   - acl - tu sie odcinamy ostro od legacy i wrapujy go w acl
-   - repository [!] - tu legacy traktujemy jako 'semi-db' i prostym repo zapisujemy =/odczytujemy z niego dane [w naszym UL]
+C: DOSTEP DO LEGACY PRZEZ ACL OR REPOSITORY
+- NEW BC-ES WOLAJA LEGACY PRZEZ
+   - ACL - TU SIE ODCINAMY OSTRO OD LEGACY I WRAPUJY W ACL
+   - REPOSITORY [!] - TU LEGACY TRAKTUJEMY JAKO 'SEMI-DB' I PROSTYM REPO ROBIMY CRUD DANYCH [W NASZYM UL]
 
 c
-- w systemie moze byc kilka lss'ow
+- w systemie moze byc kilka lss'ow, np:
    - 1 do wspolpracy miedzy bc'ami
    - 1 do strukturyzowania wnetrza duzego bc'a
-- ale nie przesadzaj - bo za duzo moze spowodowac ich erozje 
+- ale nie przesadzaj - bo za duzo = problem z utrzymaniem = erozja
 
 
 17.2 combining lss-s and distillation
@@ -44,30 +42,32 @@ c
 
 example: diagram 17.6
 - 4 warstwy: decision, policy, opers, poten
-- kazdw warstwa ma kilka modulow
-- kilka core modules [tak, bo moze byc kilka core modules], kilka generic
+- kazda warstwa ma kilka modulow/bc'ow
+- kilka core modules [tak, moze byc kilka core modules], kilka generic
 - vvc: CZESC bc'ow ma nazwe ktora odpowiada reps danej layer np. routing policy, billing policy
    - ale WIEKSZOSC ma nazwy niezalezne od resp-layer 
 - vc:
    - kazdy bc z osobna jest spojny i zrozumialy
-   - bez lss - nie widac by bylo wartosci calego systemy [a widac?], widzimy resp poszczeg. bc'ow,
-   - dzieki lss - kazdy bc ma wydestylowany konkretne resonsibilities [decision, policy ..]
+   - bez lss - nie widac by bylo wartosci calego systemy [wtf??, a 'z' widac??]
+   - dzieki lss - kazdy bc ma konkretne resonsibilities [decision, policy ..]
 
 
 17.3 assessment 1st
 
 
-kiedy robisz strategic design w projekcie - mozesz miec rozna sytuacje startowa
-zeby rozpoznac current situation:
-// g: ta lista pp pokazuje tez co jest istotne HL'owo w ddd
-- narysyj ctx map
-   - czy w ogole mozesz narysowac CM? moze sa jakies niejasnsci jak co dziala?
+- on init of strategic design in project
+   - assess current project situation
+   - find the most urgent needs
+
+do:
+- narysuj ctx map
+   - da sie w ogole narysowac? moze sa niejasnsci jak co dziala?
 - ocen UL'e
-   - czy w ogloe sa takowe w projekcie?
+   - czy w ogole sa UL'e w projekcie?
 - czy jest core domain, domain vision statement
 - ... // and many others
 
-tnx ww zorientujesz sie gdzie sa najpilniejsze potrzeby [brak cm, brak ul ..]
+// G: WW TA LISTA PP POKAZUJE CO JEST WAZNE W DDD
 
 
 17.4 who sets the strategy
@@ -80,74 +80,71 @@ tnx ww zorientujesz sie gdzie sa najpilniejsze potrzeby [brak cm, brak ul ..]
 - lepsze sa nw ways
 
 
-17.4.1 emergent structurue from app development
+17.4.1 emergent structure from app development
 
 
-- tu struktura wyrqasta z potrzeb developmentu
+- struktura wyrasta z potrzeb developmentu
 
-- jak mamy self-disciplined team + good communication - to pp SAMO idzie w dobrym kierunku - zgodnie z evolving order
-- structire can emerge spontanously - esp. from devs how look higher on project
+- JAK MAMY SELF-DISCIPLINED TEAM + GOOD COMMUNICATION - TO PP STRUKTURA SAMA POJDZIE W DOBRYM KIERUNKU 
+- drived esp. from devs with high look on project
 
-- c: leader[s] w takim teams stanowia arbiter/communicator - ale nie jest zrodlem idei, to robie team
+leaderzy w team 
+- sa arbiter'ami/facilitator'ami
+- nie sa zrodlem idei, te daja teams
 
-- jesli lss - dziala na kilku bc'ach - to przy dobrej komunhikacji miedzyzespolamia - mozliwa jest samoorganizacja i emerge of structure
-- teams dogaduje jak lss ma wygladac
-- acz teams musza byc dosc podobne, maja podobne potrzeby i wspolnie wytworzona lss bedzie wszystkich wspierac
+- jesli lss - dziala na kilku bc'ach - to przy dobrej komunikacji miedzyzespolamia - mozliwa jest samoorganizacja i emerge of structure
+- teams dogaduje wyglad lss
+- acz teams musza byc podobne, miec podobne potrzeby i wspolnie wytworzona lss ma wspierac wszystkich
 - teams nie moze byc za duzo
 
 
 17.4.2 customer-focused architecture team
 
 
-- tu centralizujemy 'struktury'
+- tu centralizujemy tworzenie 'struktury'
 - jest to ok gdy 'arch team' jest peer'em dla dev'ow a nie 'ivory tower'
-- 'arch team' tez musi uczestniczyc w dev [miec dirty hands] - zeby moc robic distillation etc...
+- 'ARCH TEAM' TEZ MUSI UCZESTNICZYC W DEV [MIEC DIRTY HANDS] - ZEBY MOC ROBIC DISTILLATION ETC...
 
 
 17.5 six essentials for strategic design [sd] decision making
 
 
-jesli lead arch robi nw to arch bedzie ok:
+JESLI LEAD ARCH ROBI NW TO ARCH BEDZIE OK
 - decisions must reach entire team
-   - wszyscy musza znac strategie i ISC wg niej
+   - WSZYSCY MUSZA ZNAC STRATEGIE I STOSOWAC JA
    - c: decisions of 'ivory tower architects' sa czesto bez sensu
 - decision process must absorb feedback
-   - robienie lss lub distilation wymaga deep understanding of domain and project needs
-   - strategic design - wymaga zaangazowania devs ktorzy robia app
-   - nasluchuj idei z tych zespolow - i uwzg. w development
-   - sd - wymaga feedback'u od dev'ow
+   - robienie lss lub distilation wymaga deep understanding of domain / project needs
+   - nasluchuj idei z dev teams i uwzg. w development/sd
 - plan must allow for evolution
    - effective sw development to bardzo dynamiczny proces
-   - the highest level decisiouns can't be rigid
-   - lss/sd musi uwzgledniac zmiany wynikajace z uczenia sie i lepszego zrozumienia domeny
+   - even the highest level decisiouns can't be rigid
+   - sd musi uwzgledniac zmiany wynikajace z lepszego zrozumienia problemu/domeny
 - arch. teams can't hire best devs
    - management czesto bierze best devs do zespolow arch
-   - ale to oslabia dev teams i nie ma kto pisac sw
-   - sol: musisz miec mocnych designers w dev teams
-      acz strategy musza tez tworzyc ludzie znajacy domene [pewnie <> te same osoby]
-- sd reqs minimalizm and humility [pokora]
-   - minimalizm is core of ANY ANY design work [not only sd]
-   - bo jak za duzo wsadzimy to jest szansa ze bedzie to smell i on pp sie rowinie
-   - ee czesto widzial overengeeniered archs i sa one counterproductive
-   - ee sam tak robil - czesto 1 good idea goni 2 i tak po chwili konczysz z overengineered arch
+   - ale to oslabia dev teams
+   - musisz miec mocnych designers w dev teams
+   - strategy musza tworzyc ludzie znajacy domene [pewnie <> te same osoby]
+- SD REQS MINIMALIZM AND HUMILITY [POKORA]
+   - MINIMALIZM IS CORE OF ANY ANY DESIGN WORK [NOT ONLY SD]
+   - bo jak za duzo wsadzimy to jest szansa ze bedzie to zarodek smell i potem calosc updanie
+   - EE CZESTO WIDZIAL [I SAM ROBIL ;] OVERENGINEERED ARCHS = SA COUNTERPRODUCTIVE
    - sol: pryncypia of ds musza zawierac tylko elementy ISTOTNIE POPRAWIAJACE jakos design'u
-   - ds musi byc minimalistyczny
-- objects are specialists, devs are generalists
-   - rem: dobry object design = obiekty maja jasne i waskie resps i maja uMalne deps do innych objects
-   - w dobrym teams - czlonkowie zespol nawzajem wtykaja nos w sprawy innych devs [interesuja sie a nie grzebia imw kodzie]
-      [kazdy - kazdemu: devs, leaders, archs ..]
-   - podsumowujac ww: let the objects be specialists and devs be generalists
-   - prob: ludzie kochaja specjalizacje, szczeg: devs nie lubia domain probs, dom. experts - nie lubia technologii ...
-   - specjalizacje sa potrzebne [bo czlowiek nie moze wiedziec all] ale zbytia specjalizacja oslabia ddd
+- OBJECTS ARE SPECIALISTS, DEVS ARE GENERALISTS
+   - dobry object design = obiekty maja jasne i waskie resps i maja micro-malne deps do innych objects
+   - w teams przeciwnie - ALL czlonkowie [devs, leaders, archs ..] nawzajem interesuja sie sprawami innych devs 
+   - in short: let the objects be specialists and devs be generalists
+   - prob: ludzie kochaja specjalizacje = devs nie lubia domain probs, domain experts - nie lubia technologii ...
+   - specjalizacje sa potrzebne [czlowiek nie moze wiedziec all] ale zbytnia specjalizacja oslabia ddd
    
 
 17.5.1 the same goes for the technical frameworks [tf]
 
 
-- tf greatly accelerat development [nie musisz sam pisac orm ;]
-- prob: czasem tf moze interferowac z impl. modelu / app layers i zastopowac jego 'easy change'
+- tf greatly accelerat development [nie musisz sam pisac 'orm' ;]
+- prob: czasem tf moze interferowac z impl. modelu / app layers i stopowac jego 'easy change'
 - nie powinno sie pisac tf for dummies [g: powinny byc highly costomizable? ale zgodnie z LiskovSubPrincile?]
-- devs MUSZA widziec jak tf prawidlowo uzywac i dajmy devs swobode
+- devs MUSZA widziec jak tf prawidlowo uzywac
 
 
 17.5.2 beware [strzesz sie] the master plan
@@ -156,5 +153,5 @@ jesli lead arch robi nw to arch bedzie ok:
 - ee podaje przyklad architekta ktory promowal idee organic growth of cities
 - wg tego arch - 'master plans fail' bo
    - nie sa dostosowane do real needs [of local communities]
-   - nie moga sie dostosowac do nieprzewidzianych zmian ktore wystapia w LC of community
-- sol: zamiast master plan - create set of principles - ktorego plany maja sie pilnowac
+   - nie sa dostosowane do nieprzewidzianych zmian w LC of community
+- sol: zamiast master plan - create set of principles - ktorego plany realizuja
