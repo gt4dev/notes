@@ -214,20 +214,16 @@ organizing and docing CMaps
 - w kontrze VV - EE jednak doc'uje projekt 'nieformalnymi' diagramami etc [VV chce tylko kod]
 
 
-cont here vvv
-
-
 ch14.4 relationships between BCs
 
 
-cele strategii/patterns
-- providing targets for succesully org-ing dev work
-- giving vocabulary for desc-ing organization
+cele patterns
+- show well org-ed relations between bc-s
+- set vocabulary for desc-ing organization
 
-- w realu 'exiting code' moze miec inne patterny niz pokazane przez ee
-- then 
-  - opisz to asis now
-  - z kazdym next refactorem - staraj sie zblizac do docelowego patternu
+- current system moze miec inne patterny niz showed by ee
+- opisz je dokladnie asis now
+- z kazdym refactorem - staraj sie isc do docelowego ee pattern
   
 - patterns cover THE MOST COMMON cases [not all!]
 
@@ -235,69 +231,61 @@ cele strategii/patterns
 ch14.5 shared kernel
 
 
-// ref
+- its very strong interdependency
+- SK powoduje baaardzo bliska relacje miedzy BC'ami
 
-shared kernel
-- sharing a part of the model and its code is a very strong interdependency
-- czasem overhead of cont. integration [miedzy bc'ami] seems to be too high w ctx
+- czasem overhead of CI [miedzy bc'ami] jest too high
 - to szczegolnie widoczne kiedy
-  - teams nie maja skill'a dla CI 
-  - one team is too big - i dzielimy duuzy BC/team na mniejsze glownie ze wzgl. organizacyjnych
-- i kiedy tak rozdzielone teams - stosuja CI - to jest to overhead - bo moze powinny realnie wspoldzielic czesc UL/model/code?
+  - teams nie maja skill'a w CI
+  - big team dzielimy na mniejsze ze wzgl. organizacyjnych
+    - stosowanie CI tutaj to overhead - moze powinni oni wspoldzielic czesc UL/model/code?
 
 sol
-- zespoly wydzielaja maly fragment UL/modelu/kodu/bazy/... - ktory beda wspoldzielic
+- zespoly wydzielaja maly fragment UL/modelu/kodu/bazy/... - ktory wspoldziela
 - oznacz explicit shared obszar [g: np. pakiet]
-- ten obszar moze byc zmieniany TYLKO po konsultacji miedzy zesplami
-// g: nawet jak projekt nie uzywa BC'ow [HPortalen] to zmiany w 'other BC-s' musza byc konsultowane z owner'ami
+- ten obszar moze byc zmieniany TYLKO w konsultacji miedzy zesplami
+// g: nawet jak projekt nie uzywa BC'ow [big bull of mad] to zmiany w 'other BC-s' musza byc konsultowane z owner'ami
 
 - define CI - ktory bedzie pilnowal by SK byl maly i spojny [g: sensie UL] i by pasowal do UL'i innych BC-ow/teams
+- po zmianach SK - OBU zespolom musza przejsc testy [ktore pp leza obok SK]
 
-- SK powoduje baaardzo bliska relacje miedzy BC'ami
 - SK musi byc maly
 
+- use case
+- mamy 2 rozlaczone bc'e
+- zespoly traca kupe czasu na translacje
+- jednoczesnie oba modele sa "slabe" bo nie uzywaja 'czesciowo wspolnego UL'
 
-// book
-
-- nieskordynowane zespoly pracuja na blisko dzialajacych apps
-- mimo ze apps sa spokrewnione - teams produkuja nie pasujace produkty
-- z: mamy 2 rozlaczone bc'e
-  - zespoly traca kupe czasu na translacje
-  - jednoczesnie oba modele sa "slabe" bo nie uzywaja 'czesciowo wspolnego UL'
-
-sol
-- wyznacz podzbior domeny - dzielone przez oba zespoly
-- podzbior zawiera: kod, scheme db ...
-- podzbior jest modyfikowany TYLKO po konsultacjach miedzy teams
-
-- po zmianach SK - OBU zespolom musza przejsc testy [ktore pewnie sa obok SK]
-
-- bc'e integruja sie przez shared-kernel 
-- a w innych czesciach moga sie dodatkowo integrowac przez 'translacje'
+c: te same bc'e moga integrowac sie przez shared-kernel i jednoczesnie przez inne mechs
 
 
 ch14.6 customer/supplier development teams
 
 
-// ddd-ref-2015
-- mamy 2 zespoly: upstream [wysyla dane] / downstream [pobiera dane]
+- mamy 2 zespoly: upstream [narzuca zmiany] / downstream [nie ma wplywu na zmiany]
 - US moze miec sukces niezaleznie od DS
-- DS - zeby miec sukces - potrzebuje uslug z US
+- DS - zeby miec sukces - potrzebuje wsparcia US
+- c: US moze byc hamowany przez DS - bo boi sie zmiany - zeby nie zepsuc DS
 
-mozliwe ze
-- DS jest zdany na laske US
-- US jest hamowany przez DS [bo boi sie zmiany zeby nie zepsuc DS]
+c: czesto jest problem z dogadaniem sie
+- ds ma prawo veta na zmiany w us  
+- cooper jest cumbersome
+.. utrudnia to rozwij obu bc'ow
 
 sol
 - ustal relacje cust-supp miedzy teams
-- potrzeby z DS - plannuj, budzetuj, impl w US
-- tworzymy scheduler, commitment na prace [kazdy wie co robic] ...
+- potrzeby z DS - plannuj i realizuj w US [np. w iteracjach realizuj new feats]
 
-- us traktuje ds jako customer [podczas prac planowania, prac ..]
+- cooper w cust/supp jest zformalizowana [wspolne: planowanie, rozw. problemow, pakiet testow]
 
-- opracuj WSPOLNIE automated acceptance tests - ktore beda testowac wystawiany z upstream interfejs
-- us dodaje testy do swojego 'test suite' - i nie martwi sie wiecej ze cos spieprzy swoimi zmianami w ds
-// g: upstream wystawia 'interfejs'
+- us traktuje ds jako customer [podczas planowania, impl ..]
+- ds zachowuje sie jak 'customer'
+
+- testy sa UBER CRUCIAL!!!
+- opracuj WSPOLNIE automated acceptance tests - do testowania interfejsu z upstream
+- us dodaje testy do swojego 'test suite' 
+- us moze zmieiac swoj kod - nie martwi sie ze cos spieprzy w usludze
+// g: upstream wystawia 'interfejs' - ale pp niezawsze
 
 
 // book
@@ -309,42 +297,27 @@ typowo: oba systemy
 - obsluguja innych users [maja mocno rozdzielne modele, bc-e]
 - sa napisane w innych technologiach [co wymusza rozdzielnosc]
 
-- czesto ds ma prawo veta na zmiany w us  
-- albo kooper. jest cumbersome
-- i utrudnia to rozwij obu bc'ow/modeli
-
-podczas planowania w us - just address ds needs, plan works for some iteration 123 ...
-
-// g: c: ut'y sa po stronie upstream, chociaz to ds bedzie pp wolal serwis us i to ds [pp] powinien testowac us [?]
-// ale nie - testy akcept. sa po stronie us
+// g: 
+// ut'y [testy akceptacyjne] sa po stronie upstream, chociaz to ds wola serwis us
 // dzieki temu us od razu widzi jak cos spieprzy w 'kontrakcie'
 
-- ds ma sie zachowywac jak 'customer'
-- us dopytuje ds jak co ma dzialac ... std relacja z customer'em
-
-- testy sa UBER CRUCIAL!!!
-- uruchamiane po stronie us ale kodowane razem z ds
-- bez testow - us bedzie paralizowany obawa przed zmianami!!!
-
-- cust/supp - moze byc uzywany miedzy firmami [na zasadzie std relacji z cust - ktorego 'powazamy' ;]
-
-- imp n: cooper w cust/supp jest zformalizowana [wspolne: planowanie, rozw. problemow, pakiet testow]
-
-imp factors
-- cust jest traktorwane bardo powaznie [a nie jak ktos kto 'blaga o features']
-  - n: moze byc wielu customers - ich rzadania moga byc "uwspolnione"
+- cust/supp - moze byc uzywany miedzy firmami, na zasadzie relacji z supp-'szanowany-cust'
+- cust jest traktowany bardzo powaznie [cust nie 'blaga o features']
+- c: moze byc wielu customers - ich rzadania moga byc "uwspolnione"
   
 example
-- analyses pobiera dane z booking [zeby wyliczyc optymalne strat. zarabiania: wyzszy overbooking, 1st book for high contracts ..]
+- analyses pobiera dane z booking [zeby wyliczyc optymalne strategia zarabiania: wyzszy overbooking, 1st book for high contracts ..]
 - duzo danych trzeba przeslac z us do ds
 - c: us potrzebuje tool do reliable notifying ds o 'zmianionych danych' i jakis 'export utility'
-// g: dane z us do ds nie musza isc serwisem, moze byc inny tool
-// q: q skad ds wie co sie zmienilo? calosc przelicza? a: pp zalezy to od case'a
+// g: dane z us do ds nie musza isc serwisem, moze byc inny kanal
 
-c: ee czesto widzial cus-sup pattern, czesto nieformalnie zorg, gdzie mgt zespolow dogadywal zmiany miedzy bc'ami
+c: ee czesto widzial cus-sup pattern, czesto nieformalnie zorg, gdzie management zespolow dogadywal zmiany miedzy bc'ami
 // g: miekkie skills sa potrzebne
 
-cus-sup sprawdza sie best jak oba teams maja wspolny top management
+- cus-sup sprawdza sie best jak oba teams maja wspolny top management
+
+
+cont. here vvv
 
 
 ch14.7 conformist
