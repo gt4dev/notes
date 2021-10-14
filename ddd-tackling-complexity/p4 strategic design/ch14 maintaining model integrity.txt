@@ -317,71 +317,54 @@ c: ee czesto widzial cus-sup pattern, czesto nieformalnie zorg, gdzie management
 - cus-sup sprawdza sie best jak oba teams maja wspolny top management
 
 
-cont. here vvv
-
-
 ch14.7 conformist
 
 
-// reference
-case: 
-- mamy us/ds
-- us nie ma zadnej "motywacji" zeby realizowac needs of ds
+- case: us nie ma zadnej "motywacji" zeby realizowac ds needs
+- ew. altruizm motywuje us zeby cooper z ds 
+- ale to wystarczy tylko na przekazanie wyjasnien z us do ds 'jak co dziala'
 
-- c: tylko altruizm moze motywowac us zeby dawac promises dla ds - ale to bardzo malo pp w realizacji
-
-- ds musi nauczyc sie pracowac z tym co ma aktualnie dane, nie moze oczekiwac wiecej
-
-kontrowersyjne
-- wyeliminuj zlozonosc tranlacji miedzy bc'ami - przez niewolnicze dostosowanie sie do modelu us
-- to 'srednie' rozw. dla designers - ale podjescie conformity ENORMOUSLY simplify integration
-// g: to dosc dziwne - bo dla kazdego innego podejscia brak translacji 'uprosci integracje'
-
-- bierzesz UL z us
-
-- c: altruizm wystarczy tylko na pobranie z us do ds tylko wyjasnienia jak to dziala
-
-
-// book
-
-- confor - moze warto sotsowac kiedy supp/cust zachodzi miedzy 'obcymi firmami', bez wspolnego managementu
-inne cases
-- supp ma many customers i nie wszystkich ceni
-- supp zmienia model dzialania i porzuca stary model
+- ds musi nauczyc sie pracowac z tym co aktualnie ma, niczym wiecej
 
 sciezki integracji
 - ds rezygnuje z us bo np
   - zyski sa przeszacowane
   - koszty sa niedoszacowane
-  .. i to oznacza relacje 'SEPARATED WAYS'
-- musimy korzystac z us [bo polityka, bo wazne dane wystawia ..]
+  .. i idziemy w 'SEPARATED WAYS'
+- musimy korzystac z us [bo polityka, bo wystawia wazne dane ..]
   - przez ANTI-CORRUPTION LAYER
     - bo model us nie podoba nam sie i chcemy sie od niego odizolowac
   - CONFORMIST - jesli model us jest w miare ok
 
-- w confor - zaleznosc ds od us jest turbo duza
+niewolnicze uzaleznienie od modelu us
+- conformity ENORMOUSLY simplify integration
+- eliminuje tranlacje miedzy bc'ami
 
-- confor - jest podobny do shared kernel
+use cases
+- kiedy relacja supp/cust zachodzi miedzy 'obcymi firmami', bez wspolnego managementu
+- supp ma wielu customers i nie wszystkich ceni
+- supp zmienia model dzialania i porzuca stary model
+
+
+- zaleznosc ds od us jest turbo duza
+
+confor jest podobny do shared kernel
 - bo czesc modelu/kodu jest wspolna
-- ale
-  - w SK - mamy kooperacje miedzy teams
-  - w confo - zgadzamy sie na all co us daje
-
-// g: ale ten model chyba [wg tego co SS mowil] jest raczej nieuzywany
+- ale w SK - mamy teams cooper
+- w confo - bierzemy co daje us
 
 
 ch14.8 anticorruption layer
 
 
-// ref15
-- w typowo miedzy bc'ami mamy only translations
-- ale podczas intergracji z trydnym zespolem/systemem - translacja ma 'agresywny ch-er' - ACL
+- typowo miedzy bc'ami mamy tylko translacja
+- przy intergracji z trudnym ZESPOLEM/SYSTEMEM - translacja ma 'agresywny ch-er' = ACL
 
-how it works
-- ds client tworzy 'isolating layer' ktory wyrazi features of us w termach 'ds UL'
-// g: ale std translacje - tez zmieniaja lang [chyba]
+- ds tworzy 'isolating layer' ktory wyrazi us w termach ds
+// g: acz std translacja tez zmieniaja UL
 
-zwykle nie chcesz zalezec od zewn. modelu [bo np. jest niespojny]
+- c: czasem nie chcesz zalezec od zewn. modelu bo np. jest niespojny
+
 
 // book
 
@@ -392,75 +375,69 @@ zwykle nie chcesz zalezec od zewn. modelu [bo np. jest niespojny]
 - finalnie new model bedzie przypominal model z old systemu
 
 - old systems maja zwykle week models
-- acz integracja czesto jest MUST HAVE i musimy sie integrowac
-- acz integracja jest mega dobra forma re-use'a old systemu
+- acz integracja czesto jest MUST HAVE
+- plus: integracja jest mega re-use'em old systemu = good
 
 c
-- czesto nowy system musi cooper z wieeeeeeeloma old systemami
-- pp nowy model bedzie pod wplywem modeli starych systemow
-- moze nastapic 'corruption' of new model!!!
+- czesto nowy system musi cooper z wieeeeloma old systemami
+- pp nowy system bedzie pod wplywem modeli starych systemow
+- MOZE WYSTAPIC 'CORRUPTION' OF NEW MODEL!!!
 
-- w integracji czesto skupiamy sie na technikalaich [uzgodnienie transportu, modeli danych ...]
-- czesto jest pomijane upewnienie sie ze modele pasuja do siebie semantycznie
-- czesto devs sa w bledzie kiedy wymieniamy mega podobne dane miedzy systemami - i mysla ze znacza one 'to samo'
-- zwykle NIE jest to to samo!!!
-- zwykle wystepuja subtelne ale wazne roznice w znaczeniu danych
+- w integracji czesto skupiamy sie na technikaliach [uzgodnienie transportu, modeli ...]
+- czesto pomijamy sprawdzenie ze modele pasuja do siebie semantycznie
+- czesto devs sa w bledzie kiedy wymieniamy b. b. podobne dane miedzy systemami 
+  - mysla ze to 'to samo' - zwykle sa subtelne ale WAZNE roznice w ZNACZENIU tych danych = bug
 
-c
-- jesli widzimy wrecz identyczne dane w 2 systemach
-- to zwykle BLEDEM jest robienie interfejsu do 2nd systemu i operaowanie na LL [bo to pp rozne dane]
+- c: interface wg ee = interkacja, polaczenie miedzy systemiami (nie Java syntax)
 
-n: wg ee: interface = interkacja, polaczenie miedzy systemiami (a nie Java syntax)
-
-operowanie na LL interfajsie powoduje ze
-- nie wyrazimy dobrze termow z 2nd systemu
-- zabrudzimy nasz model 'zle zrozumianymi' termami z 2nd systemu
+- robienie LL interfejsu do 2nd systemu - to zwykle BUG
+- bo termy z 2nd systemu sa zle wyrazone [naszym zlym ich zrozumieniem]
 
 SOL
-- musisz stworzyc acl ktory wystawi feats of 2nd system - uzywajac terms naszego systemu
+- stworzyc ACL ktory wystawi feats of 2nd system w UL naszego systemu
 
 - acl to translator koncepcji / zachowan z jednego bc w inny
 
-- acl sam z siebie moze byc calkiem big/complex piece of soft
-// g: i to rozroznia acl od 'std translation layers'
+- acl moze byc calkiem complex piece of soft
+// g: odroznia to acl od 'std translation layers'
 
-interf. wystawiony z acl
+acl interf.
 - zwykle ma forme kilku serwisow [uzywajacych w 'local UL']
-- c: czasem ma forme entity [tak, entity]
+- c: czasem ma forme entity [tak, entity!]
+// moze chodzi tu o repo jak w p4-strategy?
 
 IMPLING ACL
 - acl zawiera: fasady, adaptery, translatory, serwisy ...
-- ta struktura to tylko propozycja od ee 
-- fasada - wystawia 'raw methods' of external system, wola extern system, dziala na outer system model
+- ta struktura to tylko propozycja ee 
+- fasada - wystawia 'raw methods' [bez translacji etc] of external system, wola extern system
 - adapter - transformuje wywolania i dane z naszego systemu na outer i odwrotnie
-- serwis - wystawiony do wywolan dla naszego bc, wola adaptery etc...
+- serwis - wystawiony outer system dla nas, wola adaptery etc...
 - translator 
   - adapter wie jak wywolac fasade
-  - transformacje danych sa robione w translatorze
+  - translator - transformacje dane miedzy UL'ami
 
-// g: acl zawiera 'translator' 
-// thus 'translator' to mech. ktory transformuje dane z 1 to other class
+// g: acl i 'std integracje' zawiera 'translator' - pp zmienia on dane miedzy UL'ami
 
-// g: global n: detale patternow etc ... doczytuj w ksiazce, sam tego nie wymyslaj
+// g: GLOBAL n: detale all patternow etc ... doczytuj w ksiazce, sam tego nie wymyslaj
 
 notes
 1 your bc wola zewn. system, ale czasem zewn. system wola your bc [np. jakis event zwrotny etc]
   - robisz wtedy 2-directed acl
 2 gdzie wrzucic acl
-  - czasem jest na serwerze z your bc, czasem dziala na serwerze z outer system, 
-  - czasem czesci dziala tu i tu [linia podzialu jest np. na adapter'ach - roznie]
+  - czasem jest na serwerze z your bc, czasem na serwerze z outer system, 
+  - czasem czesci dziala i tu i tu
 // g: remember ze acl - glownie oddziela od CONCEPTUAL CORRUPTION [a nie tech. problems]
 3 if possible - zlec po stronie outer-system wykonanie serwisow pod twoje potrzeby
-  - zaoszczedz to w cholere roboty
-4 olewasz to, a to blad - szeroka integracja jest czaslochlonna
-  - kupa roboty z translatorami, przemodelowaniem outer model na nasz ...
-    - duza zadan = moze sie to wymknac z kontroli
-  - mozna zniszczyc integrity of our bc model
+  - zaoszczedz to kupe roboty
+4 moze jednak conformist?
+  - szeroka integracja jest czaslochlonna
+  - kuuuupa roboty z translatorami, przemodelowaniem outer model na nasz ...
   - czsem lepiej uproscic integracje = uzyc conformist
 5 do acl mozesz dodac features: logging calls, auditing ..
 
-acl uzywamy glownie gdy nie mamy wyplywu na zewn. system
-ale czasem mozemy uzyc do integracji z outer OWN system - szczegolnie gdy outer system ma inny model
+acl uzywamy glownie gdy 
+- nie mamy wyplywu na zewn. system
+- outer system ma inny model
 
 EXAMPLE: LEGACY BOOKING APP
 - acl glownie chroni nasz model przed zewn. wplywami
@@ -468,8 +445,11 @@ EXAMPLE: LEGACY BOOKING APP
 - thus: mozemy poczatkowo sie z kims zintegrowac acl'em, a z czasem odciac od niego [przejac czesc feats]
 
 chinski mor
-- dynastia ktora go budowala - upadla finansowo przez to
-- w przypadku acl podobnie - koszty izolacji moga byc wyzsze niz benefity
+- dynastia ktora go budowala - upadla przez to 'finansowo'
+- podobnie w acl - KOSZTY IZOLACJI MOGA BYC WYZSZE NIZ BENEFITY
+
+
+vvv cont here
 
 
 ch14.9 separate ways
