@@ -449,96 +449,73 @@ chinski mor
 - podobnie w acl - KOSZTY IZOLACJI MOGA BYC WYZSZE NIZ BENEFITY
 
 
-vvv cont here
-
-
 ch14.9 separate ways
 
 
-// ref15
-
-- c: musisz byc ruthless jesli chodzi o def. wymagan ;]
-- jesli BC'a maja malo znaczaca relacje - to nalezy ja przeciac i znalezienie work-around [prostszy niz integracja]
+- jesli BC'a maja malo znaczaca relacje - to przetnij ja i znajdz work-around [prostszy niz integracja]
 - integr. jest ZAWSZE EXPENSIVE a czasem zyski sa male
 
 
-// book
-
-nieoczywiste:
-- koszty integracji
+nieoczywiste ..
+.. koszty integracji
   - koniecznosc koordynacji zespolow
   - wymuszenie kompromisow w zespolach
-- problemy
-  - zespol moze nie byc gotowy organizacyjnie, moze nie wypuszczac reqed feats na czas ...
+.. problemy
+  - zespol moze nie byc gotowy organizacyjnie, moze nie release'owac na czas ...
   - ciezko przygotowac model ktory zaadresuje 'own needs' i needs of outer team
-    // g: tu EE jest niespojny bo pisal ze nie patrzysz poza bc
 
-- czesto integracji nie warto robic [na poziomie modeli, bc'ow]
-// g: czesto jako model widzisz dane - ale pamietaj tez o BEHAVIOURS!!!
+- czesto integracji nie warto robic na poziomie modeli
+// g: pamietaj ze model to dane + BEHAVIOURS!!!
 
-- zamiast integrowac - pozwol dev'om znalezc "inne rozwiazanie"
+- zamiast integrowac - znajdzcie "inne rozwiazanie"
 - zintegruj features na poziomie ui, middleware ...
-  - ale tu tez na tym wyzszym poziomie - minimalizuj wymiane danych miedzy BC'ami
-  - to turbo wygodne [vs integr. na poziomie modelu]
+- to turbo wygodne [vs integr. na poziomie modelu]
+- n: na wyzszym poziomie tez minimalizuj wymiane danych miedzy BC'ami
   
-EXAMPLE: INSURANCE ...
+EXAMPLE: INSURANCE
 - byl projekt ktory integrowal feats dla agantow, obsluge odszkodowan ...
-- po roku byl fail - nie wypracowali rozwiazania - pp bylo za trudne
-- sol: stworzyli set malych apps - ktore integrowaly sie na poziomie 'ui'
-- tu byl sukces!
-- ale potem wrocili do old way - i znowu byl fail ;]
-// g: Ty czesto laczysz diff models na poziomie models - a to bez sensu
+- po roku byl fail - pp zadanie bylo za trudne
+- stworzyli set malych apps - zintegrowanych na poziomie 'ui' = byl sukces
+- potem wrocili do old way = znowu byl fail
+// g: b. czesto laczysz diff models na poziomie models - to moze bez sensu?
 
 
 ch14.10 open host service
 
 
-// ref15
-
-- jak bc-e integruja sie pojedynczo miedzy soba - robienie osobnych translacji miedzy nimi ma sens
-  - kazdy ("bc caller") zachowuje spojny wewn. model
-  - dla kazdego bc-a z ktorym sie integrujesz - tworzysz 'integration layer'
-- ale jak 1 bc integruje sie z wieeeeeloma innymi bc'ami
-  - to robienie indywidualnych tranlacji nie ma sensu, zwalnie development
-  - potem trzeba to jeszcze utrzymywac ...
-// g: trans-layer zawsze jest ale czy zawsze transluje UL miedzy BC'ami? 
-// t: sprawdz projs of vv, pilo ...
+- jak bc-e integruja sie indywidualnie miedzy soba 
+  - robienie indywidualnych translacji miedzy nimi ma sens
+- jak 1 bc integruje sie z wieeeeeloma innymi bc'ami
+  - robienie indywidualnych tranlacji nie ma sensu [koszt wytworzenia, potem utrzymania ..]
 
 SOL
-- wystaw dany podsystem jako "protokol" / serie serwisow
+- wystaw system jako "protokol" / serie serwisow
 - jak trzeba - dodawaj nowe feats - na potrzeby all clients
 
-- ale jak masz wsrod klientow - 1 special - to dla niego mozesz przygotowac translotor, zeby ten need obsluzyc ...
-// g: cos tu nie rozumiem
+- jak masz wsrod many klientow - 1 special - mozesz przygotowac mu special translotor
+// g: wtf?
 
-- w tej relacji all clients sa ds, wiekszosc w roli conformisty, ale czesc zbuduje ACL
-// g: moze conformista nie jest zly jak masz w miare dobre relacje miedzy zespolami, dobry model z us ...
-// g: in worst case zrob just ACL ;]
-
-// book
+- klienci sa ds'ami, typowo w roli conformisty, czesc buduje ACL
+// g: 'moze' conformista nie jest zly jak masz w dobre relacje miedzy zespolami, dobry model z us ...
 
 - to calkiem complex - stworzyc interfejs uzywany przez wiele zespolow
-- thus - rob to tylko jesli masz duzo klientow [tysiace?]
+- thus - rob to tylko jesli masz wielu klientow [dziesiatki, setki ..]
 - klienci sa coupled do modelu OH
-  // g: acz moga uzyc acl
+// g: acz moga uzyc acl
 
 
 ch14.11 published language
 
 
-// ref15
-
 - dodajemy common lang miedzy 2+ bc'ami [kazdy BC ma own UL, transformujemy go na PL i potem na UL of next BC]
 
-- useful - jesli ktorys nie mozemy korzystac z modelu z bc'ow bo jest too complex or too poor
-
-n: jesli ktorys z modeli uzyjemy jako PL - to trudno go potem rozwijac, zostaje zamrozony
-
-// g: pub-LANG - to forma UL?
+- useful - jesli nie mozemy [jako PL] korzystac z modelu z bc'ow [bo jest np. too complex, too poor]
+- jesli modeli bc uzyjemy jako PL - to trudno go potem rozwijac, zostaje zamrozony
 
 SOL
 - use WELL-DOCED shared [published] language
-- to jezyk POSREDNI miedzy BC'ami wiec robimy translacje z BC1 na PL i z PL na BC2
+- PL to jezyk POSREDNI miedzy BC'ami 
+  - robimy translacje z BC1 na PL i z PL na BC2
 
 - many industreis have ready to use "data interchange PLs"
 - firmy wewn. tez moga zdef taki PL
@@ -546,32 +523,30 @@ SOL
 - PL jest czesto uzywany z OHS
 
 
-// book
-
 sample cases
 - integrujemy 2 stare systemy, nie wiemy jakim modelem wymieniac dane/interakcje
-- app A i B maja wymieniac dane, nie wiemy ktora app do ktorej ma sie dostosowac
-  - moze nie moga sie wzajemnie uzalezniac - thus uzyj PL
+- app A i B maja wymieniac dane
+  - nie wiemy ktora app do ktorej ma sie dostosowac
+  - apps nie moga sie wzajemnie uzalezniac
   - uzycie modelu jednej z apps - zamrozi jej model na zmiany
   
 - c: OHS uzywa model domeny do wymiany danych miedzy systemami // g: really?
-- w PL publikujemy specjalny jezyk/protokul
 
 c
 - xml i dtd defs wiele standards w przemysle/biznesie
 - to forma PL
 
-EXAMPLE: ..
+example: db2
 - EE robil system ze many users mialo laczyc sie do DB2 - ale majac tylko 1 lic. na DB2
 - EE opracowal PL [podzbior sql'a db2] i dzialalo [n: tu PL byl 'techniczny', nie domanowy - ale przyklad oddaje intencje PL ;]
 
-EXAMPLE: CHEMISTRY
-- jest PL do opisu czastek chemicznych Chemical Markup Language
-- use it do wymiany danych (o str. checmicznych) miedzy apps
+example: chemistry
+- PL do opisu czastek chemicznych = Chemical Markup Language
+- use it do wymiany danych o struct. chemicznych
 
-c: jak mamy protokul PL - to mega giga duuuuzo outer tools moze z niego korzystac
-np. w/w CML jest uzywany przez apps do wizualizacji czastek etc...
-daje to mega potencjal
+c:
+- jak uzywamy PL - to duuuuzo outer apps moze na nim bazowac
+- ww CML uzywanym do wymiany danych, do wizualizacji czastek ...
 
 // g: moze PL ma sens w przypadku gdy tych integracji jest duuuuzo [jak ohs]
 
@@ -587,34 +562,37 @@ example
 
 - each blind men - creates own bc with it's model of elephant
 
-zintegrujmy w/w bc-e
+integrujmy ww bc-e
 - sample bc-e
-  - | elephane |-------|> | wall |
-  - | elephane |-------|> | tree |
-  - | elephane |-------|> | snake |
+  - | elephant |----extends----> | wall |
+  - | elephant |----extends----> | tree |
+  - | elephant |----extends----> | snake |
   - ...
-- men chca share'owac infa o elephant [np. lokacja]
+- men chca share'owac infa o lokacji elephant
 - aktualnie each bc ma juz own property for location [rozne: location, positions, gps-metrics ..]
-- kazdy bc ma own PoV 'czym jest elephant'
-- c: kazdy men bedzie twierdzil ze to jego model jest ok
-- ale all bc-e maja wspoldzielic elephant-location
+- kazdy men bedzie twierdzil ze jego model jest 'lepszy'
 
-- z: po dluuugich i ciezkich dyskusjach men zauwazyli ze rozmawiaja o czyms jednym
-- powstal nowy diagram relacji miedzy bc'ami [dosc hc]
+- po dluuugich dyskusjach men zauwazyli ze rozmawiaja o czyms jednym
+- powstal nowy diagram relacji miedzy bc'ami [bardzo hc, daleki od realu] - z share'owana lokacja
 
-- vin: diff apps can desc the same reality but from diff PoV
-- to implikuje problems - jak apps maja sie dogadac, jak update'owac
+vin: 
+- diff apps can desc THE SAME REALITY - FROM DIFF PoV
+- to implikuje problems - jak apps maja wymieniac dane ...
 
 n
-- model polaczonych bc-ow jest 'bez sensu' ale dziala [owner'zy nie odkryli jeszcze calej prawdy o modelu]
-- nowe insighe sie pojawia i trzeba do zrefaktoryzowac
+- ww model z shared location jest 'bez sensu' ale dziala
+- owner'zy nie odkryli jeszcze calej prawdy o modelu
+- jak pojawia sie nowe insighe - trzeba bedzie refaktoryzowac
 
-- jak masz wiele bc'ow do integracji to dopracuj ich perspektywy patrzenia w domain 
-- zeby byly spojne [unified] - zeby kazdy widzial 'slonia'
+- JAK MASZ WIELE BC'OW DO INTEGRACJI TO DOPRACUJ ICH PERSPEKTYWY PATRZENIA NA JEDNA DOMAIN 
+- ZEBY BYLY SPOJNE [UNIFIED] - ZEBY KAZDY WIDZIAL 'SLONIA'
 
 c
 - there is no way for blind men to see whole elephant
 - this prob can be fixed - if they realize their view on bc's are incomplete
+
+
+vvv cont here
 
 
 ch14.13 choosing your model context strategy
