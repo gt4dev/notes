@@ -1,7 +1,7 @@
 - w "model driven design" polaczenie modelu i impl jest na poziomie impl
 
 - asocjacje latwo sie rysuje na diagramie
-- ale sa potencjalnie trudne do zakodowania
+- ale sa trudne do 'utrzymania'
 
-- jasne zdef. czym jest E, VO .. zwieksza czytelnosc modelu/kodu, ulatwia projektowanie
-- mieszanie definicji - konczy sie choasem
+- jasne zdef. czym jest E, VO ... zwieksza czytelnosc modelu/kodu
+- inaczej jest chaos

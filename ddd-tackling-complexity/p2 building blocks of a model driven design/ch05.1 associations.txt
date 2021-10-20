@@ -3,29 +3,29 @@
 
 - przejscie z modelu do impl jest szczegolnie tricky dla asocjacji
 
-- kazda asocjacja z modelu - w programie jest odzwieciedlona properties'ami
+- kazda asocjacja z modelu - w impl jest properties'ami
 
-asocjacje moge byc oparte na diff mechs
-- klasyczne refs [do pojo-s]
-- zwracanie obiektu zbudowanego podczas wolania 'property-get' [look-up do db, ...]
+mech asocjacji
+- klasyczne refs [miedzy pojo-s]
+- zwracanie obiektu zbudowanego podczas wolania 'property-get' [przez look-up do db, ...]
 
-z punktu widzenia modelu
+z punktu widzenia model
 - widzimy tylko property
-- "nie interesuje nas" internal mech asocjacji [ref, lookup ..]
+- "nie interesuje nas" mech asocjacji [ref, lookup ..]
 
 w real-life najwiecej relacji jest typu:
 - many to many
 AND
 - bidirectional
 
-- 1st sketches of domain model - tez maja duzo w/w relacji
-- ale to b. czesto
+- 1st sketches model maja duzo ww relacji
+- to czesto
   - niepotrzebnie komplikuje model
-  - nic nie mowi o rzeczywistej semantyce relacji
+  - nic nie mowi o realnej semantyce z domeny
   
 metody upraszczania asocjacji
 - imposing traversal direction
-- dodaj kwalifikator [eliminacja */multplicity/wielosci]
+- dodaj kwalifikator [eliminacja: */multplicity/wielosci]
 - usuniecie nieistotnych asocjacji
 
 - upraszczanie wymaga zrozumienia domeny
@@ -38,22 +38,24 @@ sample - add direction
 - usa mialo wielu prezydentow
 - mamy relacje: 1 to many, bidirect
 - ale "nikt" nie startuje od G.Washington'a i pyta "czyim byl prezydentem"
-- upraszczamy relacje - set unidirect.
-  | Country | --------[president]-*-> | Person |
+- ustawiamy relacje unidirect.
+                    president
+  | Country | -------------*-> | Person |
 - teraz klasa Person nie zalezy od idei "president" klasy Country ..
 
-sample - kwalifikowana relacja
+sample - add qualifier
 - jest tylko 1 prezydent w danym momencie
-- uzycie kwalifikatora redukuje relacje do "1 to 1"!!!
+- uzycie kwalifikatora redukuje relacje z 1-m do 1-1 !!!
 - dodatkowo modelu pokazuje wazna regule biznesowa
 
-  | Country |[period] ----------[president]--> | Person |
+                            president
+  | Country |[period] ---------------> | Person |
              ^^^^^^^^ kwalif.
-             
 
+c
 - dodajac unidirect. traversal na relacje many-to-many
 - robisz relacje 1-to-many
-- ktora jest znacznie prostsza w implementacji
+- jest duzo prostsza w implementacji
 
 - usun relacja ktora nie wnosi wartosci do modelu [np. nie potrzebujes danej wiedzy]
 
@@ -61,8 +63,9 @@ sample - kwalifikowana relacja
 EXAMPLE - ASSOCIATIONS IN A BROKERAGE ACCOUNT
 
 - model
-  - brokerage account -------*-> investment
-  - ................. ---------- customer
+  - brokerage account | -------*-> | investment
+                      | 
+                      | ---------- | customer
 - kod
   class BrokerageAccount {
     Set getInvestments() {...}   // 1-to-m
@@ -74,11 +77,11 @@ EXAMPLE - ASSOCIATIONS IN A BROKERAGE ACCOUNT
     Customer getCustomer() {return customer;} // <-- zwroc zainicjowane pole klasy
   - SQL
     Customer getCustomer() {
-      zapytaj w RT baze, stworz obiekt Customer, return it // to tylko przyklad, not clean code
+      zapytaj baze, stworz and return Customerit // u: not clean code
     }
 - z client PoV - nie ma roznicy miedzy w/w impls [pojo, sql]
 
-usuniecie multiplicity BroAcc -----*-> Inv
+usuniecie ww multiplicity
 - z: z b.needs wynika ze BroAcc moze miec tylko jedna (!!!) Inv dla danego stock'a [kij z semantyka]
 - nowy model
   - | brokerage account |[stock] -------> | investment |
@@ -89,5 +92,3 @@ usuniecie multiplicity BroAcc -----*-> Inv
     } 
     ...
   }
-
-

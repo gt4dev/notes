@@ -7,9 +7,9 @@
 - vo to NIE "e bez identity"
 - vo opisuje rzeczy
 
-sample: color as vo
+sample: color
 - uzycie vo color moze byc proste [from client PoV]
-- ale internals moga byc complex [np: alg. mieszania kolorow i tworzenia new vo]
+- ale internals moga byc complex [np: alg. mieszania kolorow, tworzenia new vo]
 
 - vo-s moga zawierac inne vo-s [i to sporo]
 - vo-s moga ref'owac entities
@@ -31,11 +31,10 @@ conceptual whole [CO]
 - sample: 
   - klasa Customer ma attrs: id, name, phone, street, city ...
   - attrs: street, city ... wydzielamy do osobnej klasy Address = CO
-  - nowy model | Cusomter |<>------- | Address |
+  - nowy model | Cusomter |<>-------| Address |
 
 czy Address to VO czy E
-- ZALEZY: od systemu, "kto pyta"
-- przyklady [ale duuuuzo zalezy od reqs]
+- ZALEZY "kto pyta", np:
 - jako vo
   - adres jest 'prostym' infem o miejscu dostarczeniu paczki
   - nie ma znaczenia ze wiele innych objects ma ref do tego samego czy identycznego vo
@@ -66,7 +65,7 @@ czy Address to VO czy E
 reasons to allow mutability [mainly performance]
 - value changes frequently
 - vo creation/deletion is expensive
-- if replacement disturbs clastering/other techs
+- if replacement disturbs clastering, ...
 - not sharing vo-s
 vvvi: anyway: if vo is mutable = DON'T SHARE IT!!!
 
@@ -79,7 +78,7 @@ c: DB speed up
   - jako ze vo sa immutable [replaced] - it's not problem!!!
 
 
-## 2 DEIGNING ASSOCIATIONS THAT INVOLVE VO-S
+## 2 DESIGNING ASSOCIATIONS THAT INVOLVE VO-S
 
 
 - fewer associations -> better
