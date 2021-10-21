@@ -6,13 +6,13 @@
   - module details - w/o worrying ab. outer m-s
   - modules interactions - w/o worrying ab. m-s details
 
-- human has limit of how many things can understand at once hence ...
-- keep rules
+- human has limited number of things can understand at once
+- thus keep rules
   - low coupling between m-s
   - high cohesion inside m
-- these rules are
+- ww rules are
   - important on m-s level
-  - on class level - it's 2nd-ary aim, "nice to have"
+  - 2nd-ary aim, "nice to have" - on class level
 
 - podzial i nazwy m-s [eg customer] - wynikaja wprost z UL
 
@@ -31,8 +31,6 @@ brak refactora prowadzi do
 - low cohesion inside m
 
 
-EXAMPLE: PACKAGE CODING CONV. IN JAVA
-
 EE 
 - recoms imports like "import some.pack.*"
 - NOT "import some.specific.Klazz"
@@ -46,4 +44,4 @@ trzymaj osobno each layer [layered architecture]:
 - user interface
 - domain layer
 
-// g: old j2ee spec is rage against the "MDA/DDD"
+// g: old j2ee spec is 'rage against' the "MDA/DDD"

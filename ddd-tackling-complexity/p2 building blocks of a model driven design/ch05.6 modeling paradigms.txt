@@ -4,7 +4,7 @@
 - UL jest niezalezne od paradygmatu
   - opisuje reguly/logike
 
-vin: don't fight the paradigm of modeling [but also framework/lib/..]
+vin: don't fight the paradigm of modeling [framework/lib/..]
 - w przypadku problemow z impl. modelu w danym paradygmacie -> zmien model [domeny]
 - zawsze znajdzie sie inny model ktory lepiej pasuje do danego paradygmatu
 // g: zmiana modelu nie zmienia UL [?]

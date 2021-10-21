@@ -5,9 +5,9 @@ in real business
 - objects are heavily inter-connected
 - trudno znalezc ostre granice
 
-przyklad braku granic
-- usuwasz e Person
-- co z e Address - usunac, zostawic?
+przyklad
+- usuwasz e:Person
+- co z e:Address - usunac, zostawic?
 
 - problem rosnie gdy rownoczenie dane crud'uje wielu users
 
@@ -22,11 +22,11 @@ rozw. w/w probs wymaga znajomosci domeny
 
 model musi
 - utrzymac invariants
-- wprowadzac loose between high contending aggs/entities
+- wprowadzac loose between high contending [rywalizujace] aggs/entities
 
 - pozornie to techniczne trudnosci [zw. z tx]
 - realnie to problemy modelu (esp. braku granic = aggs)!!!
-- fix these probs na poziomie modelu
+- fix ww na poziomie modelu
 
 c: patterns agg history
 - p/b derived from pattern 'ownership relation'
@@ -35,10 +35,9 @@ c: patterns agg history
 agg def
 - agg = zestaw e/vo, ktore traktujemy jako single unit z PoV of changing data
 - agg ma root i granice [nested e-s, vo-s ...]
-- others can ref only root
+- OTHERS CAN REF ONLY ROOT
 - root has to have global id, nested e-s can have local id 
-// g: pp nie ma zakazu dostepu do inners form outer
-// g: acz lepiej ukrywac agg details = wysawiac dane jako vo-s
+// g: outer can know some internals, eg: nested e id, some vo's ..
 
 sample
 - roots: | car |-----| engine |
@@ -81,8 +80,8 @@ sample
 - wielu users rownoczesnie crud'uje each e
   
 step 1: each e is agg
-- w 1 tx chronimy zmiany na 1 e
-- nie chronimy invariantu - buuuuuuu
+- 1 tx chroni zmiany wewn. 1 e
+- nie chronimy invariantu ;[
 
 step 2
 - create agg: po + "po line item" [with price]

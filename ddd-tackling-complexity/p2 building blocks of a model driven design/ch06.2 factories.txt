@@ -4,16 +4,16 @@
 
 analogia
 - jest silnik samochodu i fabryka silnikow
-- silnik siebie nie stworzy - ma inne zadanie
+- silnik siebie nie stworzy - to nie jego zadanie
 - identycznie w OO - sa obiekty i ich fabryki
 
 CAN'T mix resp of
 - creating object
 - object's logic itself
 
-even simple call of obj constr "can be bad"
+even simple call of obj constr CAN be bad
 - makes client hard dependent to object
-- trudno potem zmieniac object bez zmiany klienta
+- trudno zmieniac object bez zmiany klienta
 
 klient
 - nie powien tworzyc obiektow
@@ -28,7 +28,7 @@ factory patterns
 - builder
 - ...
 
-reqs for good f
+in good f
 - creation is atomic
 - after creation
   - all invariants are satisfied
@@ -40,13 +40,12 @@ reqs for good f
 
 
 - f to najczesciej metoda hooked on existing domain object
-  - ma wtedy dostep do init data of 'host'
+  - ma dostep do init data of 'host'
 - rzadziej jest sandalone
-  - glownie gdy tworzymy veeery complex object
+  - glownie gdy tworzymy veeeeery complex object
 
 
-n: n/w way A & B - both are f hooked on existing object
-
+below way A & B - both are f hooked on existing object
 
 way A: place f on object which owns created object
 
@@ -55,15 +54,16 @@ sample: you crete obj to add it to existing agg
 - client does't know agg internals
 - agg is resp. for assuring consistency of 
   - new object
-  - agg itself after adding new object
+  - 'this/host-agg' after adding created object to itself
 
-sample
+
+SAMPLE
 
 <root>        <f method>                     
 purchaseOrder.newItem(productNumber,quantity):IdOfCreatedInternalEntity
 
 - f tworzy internal e
-- utworzone obiekty te sa JUZ dodane do agg!!! [chyba?]
+- utworzone obiekty te sa JUZ dodane do agg [chyba?]
 
 way B: place f on object spawning new object
 
@@ -86,7 +86,7 @@ customer = 'john'                           stockSymbol = sthFromParam
 
 
 - zwykle chcemy f-s
-- ale czasem best jest direct constr call
+- ale czasem constr
 
 cases
 - obj nie jest czescia hierarchii, nie uzywa polimorfizow, interface'ow ...
@@ -111,7 +111,7 @@ cases
 
 
 - vo f - od razu tworzy finalna wersje obj [bo vo jest immutable]
-- vo e - raczej tworzy e w minimalnej wersji
+- e f  - raczej tworzy e w minimalnej wersji
 
 
 ## 6 RECONSTITUTING STORED OBJECT

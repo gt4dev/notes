@@ -1,12 +1,12 @@
 - kazdy obiekt ma LC
-  - krotkie [vo, transient / 1 operation]
+  - krotkie [vo, np: na czas operacji]
   - dluugie [e, wiele lat]
   
 typical problems of LC
-- keeping integrity [invariants] througout LC
+- KEEPING INTEGRITY [INVARIANTS] througout LC
 - keeping model clean from techs of handling object LC
 
-a/m probs are addressed by
+am address:
 - aggregate - maintain integrity
 - factory - addresses init of LC
 - repository - addresses middle/end of LC

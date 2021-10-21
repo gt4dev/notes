@@ -1,25 +1,22 @@
-vvvvv cont here
-
 # SERVICES
 
 
-- sometimes it isn't a thing
 - some operations don't belong to any object
 
 common mistakes
 - too fast putting operations into services
-- dodawanie metod do obiektow gdzie one nie pasuja
+- adding methods to objects were they don't fit
 
 - service dzialaja zwykle na wielu obiektach
-// g: a metody obiektu pracuja w jego ctx
+// g: metody obiektu zwykle w jego ctx
 
 - service nie ma stanu
 // g: bo nie dziala w ctx obiektu
 
-- nazwa klasy/metod - pochodza z UL
+- nazwy klas/metod - pochodza z UL
 - service name to raczej activity [nie noun] AccountChecker
 - params and results use domain objects
-- operacje sa elementem domeny
+- operacje sa czescia domeny
 
 
 ## 1 SERVICES AND ISOLATED DOMAIN LAYER
@@ -44,7 +41,7 @@ sample: transfer pieniedzy
 - glowne zastosowanie s = modelowanie zachowan
 - dodatkowe = hiding details, decoupling clients from domain details [e,vo ..]
 
-'graining levels'
+graining levels:
 - medium-grained service - hides complex flow behind simple method
 - fine-grained access to domain - allow leaking knowlege to caller side
 
