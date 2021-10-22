@@ -6,33 +6,31 @@ ch07.01 introducing the cargo shiping system
 
 - asocjacja kwalifikowana [qualified]
 
-| Customer |----------*--[ role | Cargo |
+| Customer |----------*--[ role ]| Cargo |
                          ^^^^^^^^
 - Cargo ma metode getCustomer(string role):Customer
 - many customers coop with a Cargo, each with diff role [shipper, payer, receiver ..]
-- dana role moze grac tylko 1 customer
-- dzieki w/w kwalifikacji mamy relacje m-to-1 zamiast m-to-m [bylo by Cargo.Customers:List<Customer>]
+- dana role moze grac tylko 1 Customer
+- dzieki ww kwalifikacji relacja jest m-to-1 zamiast m-to-m [bylo by Cargo.Customers:List<Customer>]
 // g: acz
-// - bez kwalif. nie bylo by info o role - a juz inny model
+// - bez kwalif. nie bylo by info o role - a to juz inny model
 // - Cust. nic nie wiem o Cargo [unidirect relation] wiec i tak mamy 1-to-1
 - role moze byc
   - string [super simple case]
   - vo class
   // g: cokowliek co moze byc "key w hash-map"
-- n: w samples 'prezydent usa', 'investments' tez nie ma slownika dat, a tylko fakt kwalifikacji
+- c: w samples 'prezydent usa'/'investments' tez nie ma slownika dat/symboli-stacks, a tylko fakt kwalifikacji
 
 btw
 - nie myl kwalifikacji z nazwa relacji w std asocjacji
+- eg: Customer ma attr 'List<Cargo> cargos'
 
                     cargos
 | Customer |-----------*-- | Cargo |
 
-- Customer ma attr 'List<Cargo> cargos'
-
-
 - zauwaz ze w modelu v00, class diagram [rys 7.1] - reprezentuje klasy
 - nie wiadomo jeszcze ktora klasa to e, vo ...
-- w modelu v00 only focus on projecting classes for terms from UL, desc associations
+- w modelu v00 focus on projecting classes and associations for terms from UL
 
 c: nice pattern: sledzenie historii zmian w app
 - EE w modelu zapisuje historie w DeliveryHistory
@@ -44,15 +42,14 @@ ch07.02 isolating the domain: introducing the applications
 
 
 EE wyroznil 3 'serwisy aplikacyjne' (nazywa je "application functions")
-AS'y:
 - tracking query [sledzenie cargo]
 - booking app [przygotowuje cargo]
 - incident logging app ["whatever"]
 
 VVVVVI
-these classes are coordinators
-AS can't work out the answers 
-AS searches answers in domain layer
+- ASes are coordinators
+- AS can't work out the answers 
+- AS searches answers in domain layer
 
 
 ch07.03 distinguishing entities and value objects
@@ -66,7 +63,7 @@ class Customer
 - w v0 - id mozna przepisywac recznie miedzy systemami
 - this settles 'continuity of identity' between those systems
 - mamy 'rozszerzenie encji'
-// g: acz czy to rozsadne id? bo to najtrudniejsza forma id
+// g: acz czy to rozsadne id? to najtrudniejsza forma id
 
 class Cargo
 - dwie identyczne crates [skrzynie] musza byc rozroznialne
@@ -80,20 +77,20 @@ class HandlingEvent
 // g: acz czy to rozsadne? co jesli time or type will change
 
 class Location
-- dwa miejsca z ta sama nazwa - to nie sa ta sama lokacja
+- dwa miejsca z ta sama nazwa - nie sa ta sama lokacja
 - thus it's entity
 - id = auto-generated
 
 class DeliveryHistory
-- mega ciekawe
+- ciekawe
 - DHs nie sa interchangable = thus sa e-s
 - ale DH ma relacja 1-1 z Cargo
-- DH ma ID 'pozyczone' z Cargo
-// g: chyba wcale nie ma id
+- DH ma ID z Cargo
+// g: albo wcale nie ma id
 
 class DeliverySpecification
 - kilka Cargos moze miec to samo DS, nie potrzebujemy rozroznienia obiektow
-- thus DS is VOs
+- thus it is VOs
 
 
 ch07.03.1 role and other attrs
@@ -107,11 +104,10 @@ ch07.03.1 role and other attrs
 ch07.04 designing associations in the shipping domain
 
 
-- dodajemy traversal directions do diagramu
-- w modelu v0 - all jest bidirectional
-- vin: bidirectional are problematic in design/code
+- dodajemy traversal directions do asso
+- bidirectional are hard in design/code
 
-- traversal direction better express insight of the domain, deeps the model
+- traversal direction better express insight of the domain, deepens the model
  
 asso Customer-Cargo
 - Customer nie jest specyf. dla Cargo
@@ -119,16 +115,16 @@ asso Customer-Cargo
 - thus keep Customer free from any additional responsibilities
 - n: jak potrzebujesz wyszukac Cargo by Customer i odwrotnie 
   - no problem: add methods to Cargo repo
-  - nadal nie potrzeba by Customer mial ref do Cargo
+  - tu nie potrzeba by Customer mial ref do Cargo
 
 asso Cargo-DeliveryHistory
-- b. ciekawe
+- ciekawe
 - asso zostaje bidirectional bo
   - sledzenie historii jest kluczowe dla Cargo
   - historia musi refowac do jej subject
   
-Cargo-DeliverySpecification
-- b. ciekawe
+asso Cargo-DeliverySpecification
+- ciekawe
 - DS jest vo-sem
 - vo zwykle nie ma ref'a do owner'a - stad relacja jest directed
 
@@ -136,7 +132,7 @@ circular reference
 Cargo --- DeliveryHistory ---> HandlingEvents ---> Cargo [again]
 - circular references logically exists often in business
 - nie da sie ich 'wyeliminowac' z modelu - musza byc uwzglednione
-- da sie to zakodowac acz bywa tricky [g: cos trzeba 'lazy-loadowac'?]
+- kodowanie jest a bit tricky [g: cos trzeba 'lazy-loadowac'?]
 
 inny ciekawy case
 HandlingEvent --*-------0..1--> CarierMovement
@@ -149,7 +145,7 @@ ch07.05 aggregate boundaries
 
 - Customer, Location, CarriesMovement musza byc root aggregates
 - bo sa wspoldzielone przez many Cargos
-- klasy te tworza 'globalne dane/dane dostepne niezaleznie od innych' stad sa dostepne jako roots
+- klasy te tworza 'globalne dane', dostepne dla wszystkich - stad sa jako roots
 
 - Cargo tez jest rootem
 
@@ -178,8 +174,8 @@ ch07.06 selecting repositories
 
 
 - tylko agg root moze miec repo [ale nie musi]
-- to jakie repo potrzeba - wynika z potrzeb UC'ow
-- np: potrzebujesz w UC wyciagnac Customers ktorzy spelniaja kryteria y - budujesz repo z metoda
+- jakie repo potrzeba wynika z UC'ow
+- np: potrzebujesz wyciagnac Customers ktorzy spelniaja kryteria y - budujesz repo z metoda
 
 
 ch07.07 walking through scenarios
@@ -187,9 +183,9 @@ ch07.07 walking through scenarios
 
 - co jakis czas testuj koncepcyjnie model - wykonuj scenariusze/UC-e i sprawdzaj czy model dziala
 
-c: impl. roles w Cargo
-- uzywamy simple Map customerRoles = new HashMap();
-- same klucze/role - pewnie sa zdefinowane w innym miejscu
+c: roles w Cargo
+- uzywamy simple property Map customerRoles = new HashMap();
+- same klucze/role - pewnie sa zdefinowane w innym miejscu [?]
 
 
 ch07.08 object creation
@@ -201,8 +197,8 @@ od constr wymagamy zeby stworzyl obiekt ktory
 // wpp attrs - set in factory
 
 c: bidirect 1-1 asso Cargo-DeliveryHistory
-- means: zadna ze stron nie jest komplenta bez counterparta
-- oba obiekty musza byc stworzone razem i powiazane - zeby zachowac relacje
+- means: zadna ze stron nie jest komplenta bez 2nd
+- oba obiekty musza byc stworzone razem i powiazane
 
 constr Cargo(string id) { // n2
   id = id
@@ -219,9 +215,9 @@ n2: w constr. przekaz all needed attrs tworzace id
 
 - EE recoms ustawianie 'non-identity' attrs poza constr, w factory method
 static HandlingEvent HandlingEvent:newLoading(Cargo c, CarrierMovement cm, Date time) { // n1
-  var result = new HandlingEvent(c, LOADING_EVENT, time) // n2
-  result.setCM(cm); // n3
-  return result
+  var he = new HandlingEvent(c, LOADING_EVENT, time) // n2
+  he.setCM(cm); // n3
+  return he;
 }
 
 n1: nazwa factory - oddaje term z UL - "tworzymy loading event"
@@ -231,7 +227,7 @@ n2:
 n3: non-ident. attr of HE jest ustawiany poza constr
 
 c: 
-- EE refuje miedzy agg roots by ref a nie id [vide w/w Cargo, CarrierMovement]
+- EE refuje miedzy agg roots by ref a nie id [vide w/w Cargo, CarrierMovement]??
 - to sie chyba zmienilo od czasow VV
 
 c: cycle references
@@ -239,13 +235,10 @@ c: cycle references
 - "zadna filozofia" ;]
 
 
-#########
-
-
 ch07.09 pause for refactoring: alter design
 
 
-- czasem trzeba refactor'owac model zeby dalej go rozwijac
+- czasem trzeba zrefactor'owac model zeby dalej go rozwijac
 
 performance problem of curr. model
 - dodajac HandlingEvent - trzeba tez w 1 tx zmodyfikowac DeliveryHistory
@@ -255,11 +248,11 @@ performance problem of curr. model
   - with query to db ["lazy loading" on access to this attr]
 - it allows calling many tx-es without conflicting each other
 
-- w/w budowanie kolekcji DeliveryHistory.events [chyba] rob w HE Repo
+- ww budowanie kolekcji DeliveryHistory.events [chyba] rob w HE Repo
 
-// g: w/w 'lazy loading' to [chyba] std podejscie - gdy agg 1 ma asso do agg 2 i 1 ma wczytac dane 2
+// g: ww 'lazy loading' to [chyba] std podejscie - gdy agg 1 ma asso do agg 2 i 1 ma wczytac dane 2
 
-- c: w/w trick z DH - rozw. tez problem z circle reference - wg EE it's no more problem
+- c: ww trick z DH - rozw. tez problem z circle reference - wg EE it's no more problem
 
 
 ch07.10 modules in shipping model
@@ -268,13 +261,11 @@ ch07.10 modules in shipping model
 c: efekt pakietowania wg infra
 - jesli pakietujesz klasy wg infra [np. vo-sy do pakietu z vo, service'y do service'ow ...]
 - to finalnie masz
-  - w pakietach klasy ktore maja malo ze soba wiele wspolnego [low cohesion]
-  - miedzy pakietami: duzo zaleznosci miedzy [high coupling]
-- to dokladnie odwrotnosc 'oczekiwan' [high coh in modules, low coupling between m-s]
+  - w pakietach klasy ktore sa slabo powiazane [low cohesion]
+  - miedzy pakietami: duzo zaleznosci [high coupling]
+- to dokladna odwrotnosc 'oczekiwan': high coh in modules, low coupling between m-s
 
 - podzial na moduly wynika z UL
-
-// g: [pp?] na diagramie sa moduly = BC-e, bo kazdy adresuje inny typ aplikacji/user'a
 
 
 ch07.11 intro a new feature: allocation checking
@@ -282,8 +273,8 @@ ch07.11 intro a new feature: allocation checking
 
 connecting the two systems
 - z: booking app korzysta jednoczesnie z local system/UL [cargo repo] i remote system/UL [sales management system]
-- prob: booking app korzysta z 2 diff ULs
-- fix: translate remote UL to local UL - zeby miec 1 UL i moc dalej robic MDD
+- prob: booking app korzysta z 2 ULs
+- fix: translate remote UL to local UL - zeby miec 1 UL i dalej robic MDD
 - translator class - anty-corruption layer [more ch14]
   - pobiera z remote tylko feats req by local reqs/model
   - re-abstract remote terms to local
@@ -296,7 +287,7 @@ connecting the two systems
 prob: type of cargo z SLS musimy reprezentowac w local UL
 - w remote app [SMS] kategorie sa zbiorem strings z nazwami
 - use pattern 'enterprise segment' z analyse patterns fowler'a
-  - create w local UL vo EnterpriseSegment - reprezentujacym kategorie Cargo
+  - create w local UL vo:EnterpriseSegment - reprezentujacym kategorie Cargo
   - AllocationChecker translates miedzy EnterpriseSegment i SMS's category string
   - n: naturalnie stub of SMS uzywa category as string [native param from SMS, niewidoczne w out domain]
 
@@ -309,4 +300,3 @@ ch07.11.3 performance tuning
 - tune'ujemy performance AllocationChecker'a
 - niektore zapytania do remote system - mozna cache'owac [query o categories]
 - niektore musza byc real calls [robienie alokacji transportu]
-

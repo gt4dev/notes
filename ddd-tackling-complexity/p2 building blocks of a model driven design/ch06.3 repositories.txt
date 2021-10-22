@@ -1,24 +1,22 @@
-vvv cont here
-
-
 # REPOSITORIES
 
 
-zeby miec obiekt
-- albo go wyszukujesz [repo], tworzysz [factory]
-- albo robisz travers po asocjacji [z innego obj]
+ways to access to object
+- wyszukanie [repo], stworzenia [factory]
+- travers po asocjacji [z innego obj]
 
 // g
-- niezaleznie gdzie [db, vm0 ..] i w jakiej postaci masz e [class, db-row ..]
-- to koncepcyjnie [regardless of form] - stanowia 1 e
+- e moze miec rozne postacie [class, db-row ..] i miejsce zapisu [db, vm0 ..] i w jakiej postaci masz e 
+- nieazleznie od formy - jest to e
 
-klient nie moze miec
-- zbyt duzej mozliwosci traversowania po assocjacjach -> it muddles the model
-- direct db access [bo nie bedzie uzywal aggs do crud'owania data]
+klient nie moze
+- za duzo traversowania po assocjacjach -> it muddles the model
+- direct db access -> nie bedzie uzywal aggs do zmiany data
   
-- agg internals [e/vo] can be accessed only by travers [from the root]
+- AGG INTERNALS [E/VO] CAN BE ACCESSED ONLY BY TRAVERS [FROM THE ROOT]
+- ROOTS CAN'T BE ACCESSED BY TRAVERSAL - BUT BY REPO
 
-- main repos resp = remove from model techs regarding reading/saving data
+- repo resp = remove from model techs regarding reading/saving data
 
 - w modelu mamy tylko interface
 - klient szuka wg params [w postaci obiektow modelu]
@@ -34,15 +32,15 @@ factory vs repo
 - f tworzy obiekty - ktore sa w mem [nie sa stored yet]
 - r zapisuje obiekty z pamieci do store'a lub czyta ze store do pamieci [reconstitute]
 
-- provide repos to access only agg roots [which can't be accessed by traversal]
+- provide repos to access only agg roots
 
-- btw: repos ulatwiaja testowanie kodu [bo latwo w miejsce heavy infra wstawic mock]
+- btw: repos ulatwiaja testowanie kodu [w miejsce heavy repo infra wstaw mock]
 
 
 ## 1 QUERYING A REPO
 
 
-metoda searching by 
+metoda searching by
 - id - moze zwrocic 1 obj
 - any attr - moze zwrocic many objs
   
@@ -66,8 +64,9 @@ repos can search by
 ## 3 IMPL A REPO
 
 
-- r impl varies deping on underlying tech [mem, db, file ..]
-- thus = many possibilities of impling
+- many possibilities of impling
+- id deps on underlying tech [mem, db, file ..]
+
 
 recoms
 - leave tx control to the client [don't commit after save to repo ...]
@@ -82,9 +81,7 @@ recoms
 ## 4 WORKING WITH YOUR FRAMEWORK
 
 
-fwk moze
-- wspierac tworzenie repos
-- byc totalnie przeciw repos
+fmk moze wspierac lub byc totalnie wspak - tworzeniu repos
 
 c: 
 - entity z old ejb != e from ddd
@@ -92,7 +89,7 @@ c:
 
 
 DON'T FIGHT YOUR FRAMEWORKS!!!!!!!
-- eg: to dotyczy tez robienie immutable vo w Realm [Realm tego nie ma i nie da sie]
+// g: dotyczy to tez robienie immutable vo w Realm [Realm tego nie ma i tyle]
 
 
 ## 5 THE RELATIONSHIP WITH FACTORIES
@@ -104,7 +101,7 @@ DON'T FIGHT YOUR FRAMEWORKS!!!!!!!
 - r during reconstituting creates object
 - many consider r as kind of f
   - from tech PoV it's ok
-  - from model PoV - reconstitution is NOT creation [conceptualy 1 is existing, 1st completely new obj]
+  - from model PoV - reconstitution is NOT creation [conceptualy 1 is existing, 1 is new obj]
 
 - teoretycznie r moglo by uzywac f do reconst. obiektow - ale to rzadka praktyka
 

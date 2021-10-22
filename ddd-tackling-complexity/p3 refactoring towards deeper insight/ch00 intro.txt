@@ -1,3 +1,6 @@
+vvvv cont here
+
+
 - model musi byc wypracowany iteracyjnie [nie waterfall]
 - miedzy domain experts i devs
 - eg flow: modelowanie, kodowanie ...

@@ -4,12 +4,12 @@
 c: uzywanie relacyjnej db i oo w app = mixing paradgims
 
 - db schema doesn't have to reflect domain model
-- mapping tools can handle diffs [ale wiadomo - z limitami]
+- mapping tools can handle diffs [acz z limitami]
 
-- best if db comes from domain
-- if separated db/domain = more work is needed [analyses, coding ...]
+- best if db is derived from domain
+- else -> more work is needed [analyses, coding ...]
 
-diffs miedzy modelami mozna zasypac przez
+diffs miedzy modelami [domain/db] mozna zasypac przez
 - tworzenie less rich domain
 - intro denormalizations in db
 - ... 
