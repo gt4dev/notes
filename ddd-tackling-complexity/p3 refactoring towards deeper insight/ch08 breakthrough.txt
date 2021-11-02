@@ -3,7 +3,7 @@ ch08 breakthrough
 
 - zwrot z refactor'a nie jest liniowy
 - male refactory - daja maly zwrot, zwalczaja entropie
-- mega wartosc dodaje nowa wizja modelu
+- mega wartosc daje wprowadzenie nowej wizj modelu
 
 
 ch08.01 story of breakthrough
@@ -18,8 +18,8 @@ ch08.01 story of breakthrough
 // g: musisz, musisz, musisz testowac model na konkretnych przykladach 
 // g: to super destyluje wiedze, pozwala zrozumiec domene, refine'uje model
 
-c: experci domenowi musza rozumiec model
-- domain experts zglaszali ze nie rozumieja w/w modelu v1
+c: experci domenowi musza rozumiec model z app
+- domain experts zglaszali ze nie rozumieja modelu
 - ale mysleli ze to technikalia ktorych nie musza rozumiec
 - in real: experci musza BARDZO DOBRZE rozumiec model, musza!!!
 

@@ -1,8 +1,8 @@
 ch09 making implicit concepts explicit
 
 
-wiele b. dobrych refactors modelu jest po
-- znalezieniu implcit elements [object, relations]
+wiele b. dobrych refactors jest
+- po znalezieniu implcit elements [object, relations]
 - making them explicit
 
 // g: na modelu 
@@ -39,7 +39,7 @@ contradictions
 ch09.2 how to model less obvious kinds of concepts
 
 
-- wg ee next 3 constrs were not obvious when he started oo modeling ;]
+- wg ee next 3 patterns were not obvious when he started oo modeling
 
 
 ch09.2.1 explicit constraints
@@ -81,11 +81,10 @@ good version
 
 sygnaly ostrzegawcze ze constraint is distoring design of host
 - c reqs data not available on host object
-- c appear in multiple diff objects
+- c appear in multiple objects
 
 w w/w cases - mozliwe ze c nalezy
-- przesunac do innego obiektyu
-- dodac do modelu jako nowe obiekty/relacje [see next sample]
+- dodac do modelu jako nowe obiekty/relacje
 
 
 example: overbooking policy
@@ -126,13 +125,12 @@ ch09.2.3 specification
 - s wymyslil ee z fowler'em w '97
 
 s 
-- pridives concise way of expressing rules
+- prodives concise way of expressing rules
 - extracts rules/spec from conditional logic
 - makes rules/spec explicit in model
 
-- wg ee - stosowanie own patterns - czesto jest bez sensu, nawet szkodliwe ;]
-- many old projects tested diff ways - use this exper
-- mozna 'latami' szukali prawidlowej budowy pattern'u
+- wg ee - stosowanie own patterns - czesto jest bez sensu, nawet szkodliwe
+- many old projects tested diff ways - use their exp
 
 // w ch10 tez jest o s
 
@@ -142,14 +140,14 @@ sample: invoice.IsDeliquent():bool
   - complex tests
     - lepsi customers moga przekraczac limit o x days
     - trzeba sprawdzic historie zamowien customer'a
-- w/w r-s nie maja wiele wspolnego z Invoice [thus sa w s a nie invoice]
+- w/w r-s nie maja wiele wspolnego z Invoice [thus sa w spec]
 - ale te r-s powinny byc w domain layer
 - s zawiera business r-s!!!
 
 solutions
 - create spec. object that evaluate to boolean
 - place there logic [r-s] of tests
-- s to vs'y  
+- s'y to vs'y
 // g: sample "Cargo diagram"  ma spec jako vo
 
 - s wyraza constraints narzucane na inny obiekt
@@ -163,8 +161,8 @@ sample: DeliquentInvoiceSpecification
 - s sprawdza Invoice'y
 - client call
   deliquentInvoSpec.IsDeliquent(invoice123) // tested object is passed to spec
-- DIS ma pola biznesowe np 'standard grace period = 20d'
-- pola sa inited pod konkretna grupe Invoices - do testowania
+- DIS ma property biznesowe np 'standard grace period = 20d'
+- propsy te sa inited pod konkretna grupe Invoices
 - DIS zwraca true - tz. invoice jest 'deliquent'
 
 - dostosuj pattern do 'own needs' - nie trzymaj sie tego sztywn - no point
@@ -173,7 +171,7 @@ sample: DeliquentInvoiceSpecification
 ch09.2.4 applying and implementing specification
 
 
-// gt: co o spec mowi vv, check iddd index
+// g: co o spec mowi vv, check iddd index
 
 - s unifikuje czesc funkcjonalnosci ktore sa zwykle mocno rozrzucone w app
 - funkcjonalnosci:
@@ -181,7 +179,7 @@ ch09.2.4 applying and implementing specification
   - selekcja - select an object[s] from collection 
   - building to order - spec is specing the creation of new object fitting spec // gt: skad taka nazwa?
 - s lokuje te feats w 1 miejscu
-all of them are 'the same s-s' on concept level
+all of them are 'the same s' on concept level
 
 // g: "all" specs maja meth isSatisfiedBy(..):bool
 
@@ -195,7 +193,7 @@ sample
 - b.need: app shows warning - if saler checks customer with delinquent bill [zaległy rachunek]
 - podczas otwierania ekranu - app calls:
     public boolean accountIdDelinquent(Customer customer) {
-      var invoice = customer.pobierzJakisTamInvoice()
+      var invoice = customer.pobierzJakisInvoice()
       Specification spec = new DelinquentInvoiceSpecification(today);
       return spec.isSatisfiedBy(invoice); // true = spec fulfilled = account is delinquent
     }
@@ -228,11 +226,11 @@ sample
 SELECTION [QUERYING]
 
 
-- cel: zbudowac spec ktora ustaw kryteria selecta
+- cel: zbudowac spec ktora ustawia kryteria selecta
 
 - wg ee obie spec [validation i selection] to ten sam concept - roznia sie "jedynie" impl.
 
-sample: demo ze obie w/w s to te same koncepcje
+sample: prove of am
 - wez spec z prev. sample
 - do repo InvoiceRepository add method selectSatisfying(InvoiceSpec is)
 - z: repo keeps data in mem in List<Invoice>
@@ -265,4 +263,4 @@ sample: building from spec
 
 - wg ee: "mimo ze tak nie wyglada to "spec building" to ten sam koncept spec co przy walidacji/selekcji" 
 
-// gt: dziwny pomysl - zapamieta tylko ze ze spec mozna tworzyc obiekty
+// g: dziwny pomysl - zapamieta tylko ze ze spec mozna tworzyc obiekty

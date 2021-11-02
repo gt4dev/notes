@@ -1,18 +1,14 @@
-vvvv cont here
-
-
 - model musi byc wypracowany iteracyjnie [nie waterfall]
 - miedzy domain experts i devs
-- eg flow: modelowanie, kodowanie ...
 
 
 1. levels of refactoring
 
 
-- r = redesign sw w sposob ktory nie zmienia jego funkcjonalnosci
+- r = redesign sw w sposob ktory nie zmienia funkcjonalnosci
 - zeby robic r - musisz miec unit tests - zeby wiedziec czy feat nadal dziala
-// g: zeby robic r na poziomie modulow - musisz miec testy na poziomie modulow [integracyjne?] 
-// g: ut'ami testujesz tylko units - zatem tylko units mozesz r-owac
+// g: zeby robic r na poziomie modulow - musisz miec testy na poziomie modulow?
+// g: pp jak masz ll ut'y to refactorujesz tylko ll kod
 
 - r-s ktore maja biggest impact = r-s motywowane przez nowe spojrzenie na domene lub czyszczace model
 
@@ -27,7 +23,7 @@ type r-s
 
 classic approach to modeling
 - find verbs/nouns in specification
-- build from them objects and methods
+- build from am objects and methods
 
 - w/w is oversimplification
 - useful only for learning OO ;]
@@ -37,7 +33,7 @@ classic approach to modeling
 // g: wraz z nauka domeny - opracowujesz DEEP model
 
 'deep model' 
-- model ktory wydestylowal bardzo pierwotne 'primary concerns' z domeny
+- model ktory destyluje pierwotne 'primary concerns' domeny
 - odcina sie od powierzchownych aspektow domeny/use-cases
 
 
