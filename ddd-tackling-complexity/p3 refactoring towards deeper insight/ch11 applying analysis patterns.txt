@@ -1,3 +1,5 @@
+vvv cont here
+
 ch11 applying analysis patterns
 
 
