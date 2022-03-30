@@ -288,10 +288,7 @@ sol
 // g: upstream wystawia 'interfejs' - ale pp niezawsze
 
 
-// book
-- glowny flow danych: od us do ds
-- ale moze byc tez (lekki) flow w 2nd side
-// g: n ze oba kierunki integracji moga byc obsluzone przez 1 interfajs [w us]
+// g: oba kierunki integracji moga byc obsluzone przez 1 interfajs [w us]
 
 typowo: oba systemy 
 - obsluguja innych users [maja mocno rozdzielne modele, bc-e]
@@ -402,7 +399,7 @@ SOL
 // g: odroznia to acl od 'std translation layers'
 
 acl interf.
-- zwykle ma forme kilku serwisow [uzywajacych w 'local UL']
+- zwykle ma forme kilku serwisow [uzywajacych 'local UL']
 - c: czasem ma forme entity [tak, entity!]
 // moze chodzi tu o repo jak w p4-strategy?
 
@@ -484,7 +481,7 @@ ch14.10 open host service
 
 
 - jak bc-e integruja sie indywidualnie miedzy soba 
-  - robienie indywidualnych translacji miedzy nimi ma sens
+  - robienie indywidualnych translacji miedzy nimi MA sens
 - jak 1 bc integruje sie z wieeeeeloma innymi bc'ami
   - robienie indywidualnych tranlacji nie ma sensu [koszt wytworzenia, potem utrzymania ..]
 
@@ -592,9 +589,6 @@ c
 - this prob can be fixed - if they realize their view on bc's are incomplete
 
 
-vvv cont here
-
-
 ch14.13 choosing your model context strategy
 
 
@@ -610,7 +604,7 @@ c: czesto polityczne decyzje wplywaja na granice bc'ow i ich relacje
 2. putting ourselves in context
 przyklad zawezenia obszaru dzialania
 - typowo bedziesz w proj. 'under change' i bedzie sie on komunikowal z 2nd system
-- your system bedzie skaldal sie z 2x bc i beda one gadac z 2x inne bc'e
+- your system bedzie skladal sie z 2x bc i beda one gadac z 2x inne bc'e
 - in 1st you will be interested in your bc's, as 2nd: relacjami z other bc's
 
 3. transforming boundries
@@ -671,6 +665,7 @@ jak nie da sie clash rozwiazac [albo nie chcesz ich rozw.] to idz w 'separated w
 
 7. caterging to special needs
 
+
 - w ramach 1 biznesu - rozne grupy moga miec rozny zargon [ul]
 - mimo ze all ma wspolna baze
 - ustandaryzowanie zargonu moze byc hard i nieefektywne
@@ -684,12 +679,14 @@ jak nie da sie clash rozwiazac [albo nie chcesz ich rozw.] to idz w 'separated w
 
 8. deployment
 
+
 - uzgadniasz w cust/supp - kto, co, kiedy wypuszcza
 - warto miec "translation layers" w 1 procesie zeby miec ich 1 wersje 
 // g: acz to czasy pre-microserive'owe - to sie moglo zmienic
 
 
 9. trade-off
+
 
 - nice chart 
   - x - poziom komunik. miedzy teams
@@ -705,6 +702,7 @@ jak nie da sie clash rozwiazac [albo nie chcesz ich rozw.] to idz w 'separated w
 
 
 ch14.14 transformations
+
 
 czesto bedziesz musial
 - przesuwac granice bc'ow

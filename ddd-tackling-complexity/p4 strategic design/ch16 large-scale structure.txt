@@ -160,7 +160,7 @@ c: zeby zobaczyc HL scale patterns - to musisz miec glebokie zrozumienie domeny 
 C: NIEKTORE DOMANY MAJA NATURALNA STRATYFIKACJE/UWARSTWIENIE
 
 layering - najpop. pattern arch
-warstwy sa swiadomie i zalezne od warstw nizej, ale kompletnie nie sa swiadomo warstw wyzej [i sa od nich niezalezne]
+warstwy sa swiadomie i zalezne od warstw nizej, ale kompletnie nie sa swiadome warstw wyzej [i sa od nich niezalezne]
 
 warto wydzielic do warstw 'major resps'
 zasada dot. kazdej skali LL i HL
@@ -169,7 +169,7 @@ zasada dot. kazdej skali LL i HL
 
 c: idea 'major resps' i 'layers' sa rozdzielne - ale warto je polaczyc - zrobic resp. layers ;]
 
-c: layer resp must be a bit broader than resp of individual objects it contains [tak ze kazdy obiekt pasuje do majro resp]
+c: layer resp must be a bit broader than resp of individual objects it contains [tak ze kazdy obiekt pasuje do major resp]
 
 SOL
 - spojrz na zaleznosci w modelu z PoV koncepcji [ktore sa w tym modelu]
@@ -188,7 +188,7 @@ example: layering a shipping system
 - z: team po miesiacach pracy nad modelem - zauwazyl stratyfikacje koncepcji w modelu
 	- operations
 	- capabilities [pl: zdolnosc]
-		- podloze ww operacji
+		- podloze ww 'operations'
 
 operational resps
 - w 'opers layer' umieszczamy wszelkie activities of the company [przeszle, biezace, przyszle/planowane]
@@ -201,7 +201,7 @@ capability resps
 
 vi
 - w innym ctx TransportLeg moze byc w warstwie operacji!!!
-- np. w app gdzie firma mialaby flote statkow i TransportLeg reprezentowal by operujace na statku
+- np. w app gdzie firma mialaby flote statkow i TransportLeg reprezentowal by operacje na statku
 - conc: all zalezy od ctx uzycia - ta sama klasa raz moze byc w opers a raz w capabs
 - a nawet model moze adresowac oba ww case: wowczas model powinien moze wyroznic layers TransportOperations i CargoOperations
 - i transportLeg raz bylby w opers a raz w capabs
@@ -224,7 +224,7 @@ co z customer?
 
 decission support
 - kilka tygodni dalej - zbieranie wiedzy - nastepuje ewolucja
-- okazuje sie ze Router nie jest czaescia operacji
+- okazuje sie ze Router nie jest czescia operacji
 - DS dostarcza tools do planowania i podejmowania decisions
 	- czesc decisions moze zautomatyzowac np auto-re-route cargo kiedy zmieni sie schedule
 - Router to serwis [!] - pomaga wybrac best route do wyslania cargo - to pasuje do DS layer

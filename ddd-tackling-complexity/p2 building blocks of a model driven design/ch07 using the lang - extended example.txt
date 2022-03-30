@@ -93,12 +93,16 @@ class DeliverySpecification
 - thus it is VOs
 
 
+
 ch07.03.1 role and other attrs
 
 
 // role - jako kawalifikator przy Cargo
 - role has no history or continuity
 - jest to vo - moze byc dzielony miedzy wiele Cargo-Customer associations
+
+
+====
 
 
 ch07.04 designing associations in the shipping domain
@@ -186,6 +190,9 @@ ch07.07 walking through scenarios
 c: roles w Cargo
 - uzywamy simple property Map customerRoles = new HashMap();
 - same klucze/role - pewnie sa zdefinowane w innym miejscu [?]
+
+
+=====
 
 
 ch07.08 object creation

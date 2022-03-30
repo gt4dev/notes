@@ -42,7 +42,7 @@ agg def
 sample
 - roots: | car |-----| engine |
             |
-            +--------| wheel |  /  | postion |  /  | tier |
+- nested e  +--------| wheel |  /sth/  | postion |  /sth/  | tier |
                
 - wydaje sie ze engine should be nested in car
 - ale w modelu to rownoprawne e-sy
@@ -53,7 +53,7 @@ inne cech agg
 - root is resp for checking invariants
 - inside agg
   - root can keep refs to internal e-s, vo-s
-  - internal e can ref other internal e - only transiently
+  - internal e can ref other internal e (of agg) - only transiently
 - tylko root moze byc wczytany z db
   - internals are read by associations traversal [eager|lazy loadeded]
 - internals can ref other roots
